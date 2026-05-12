@@ -34,7 +34,12 @@
   --radius:    4px;
   --radius-lg: 10px;
   --hdr:       52px;
-  --bot:       48px;
+
+  /* safe-area insets — filled by the browser on notched phones */
+  --sat: env(safe-area-inset-top,    0px);
+  --sar: env(safe-area-inset-right,  0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left,   0px);
 }
 
 /* ══ RESET ══ */
@@ -44,14 +49,20 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: 'Space Mono', monospace;
+  /* Fill the full screen including areas behind the notch */
   height: 100%;
+  /* On iOS PWA: extend into the top/bottom safe areas */
+  padding-top: var(--sat);
+  padding-bottom: var(--sab);
+  padding-left: var(--sal);
+  padding-right: var(--sar);
   overflow: hidden;
   display: flex;
   flex-direction: column;
 }
 
 /* ══════════════════════════════════════════
-   HEADER
+   HEADER — sits below the front camera
 ══════════════════════════════════════════ */
 header {
   height: var(--hdr);
@@ -63,6 +74,8 @@ header {
   border-bottom: 1px solid var(--border);
   background: var(--surface);
   z-index: 30;
+  /* No extra padding-top needed here because body already
+     has padding-top: env(safe-area-inset-top) */
 }
 
 .logo {
@@ -142,7 +155,7 @@ header {
 .btn-export-open:hover { background: rgba(232,160,32,.22); border-color: var(--accent); }
 
 /* ══════════════════════════════════════════
-   MAIN LAYOUT
+   MAIN LAYOUT  (mobile: column, desktop: row)
 ══════════════════════════════════════════ */
 .layout {
   flex: 1;
@@ -152,18 +165,30 @@ header {
   min-height: 0;
 }
 
-/* ── PREVIEW ZONE ── */
+/* ── PREVIEW ZONE ──────────────────────────
+   On mobile this is a dedicated strip at the
+   top that shows the canvas at the correct
+   aspect ratio — it shrinks/grows with orientation.
+   The canvas-frame is centered inside it.
+── */
 .preview-zone {
-  flex: 1 1 auto;
-  min-height: 0;
+  /* flex-shrink:0 + intrinsic height from the canvas-frame
+     means it takes exactly the space the canvas needs */
+  flex-shrink: 0;
   background: #000;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden;
+  /* Give it a max fraction of vertical space so the
+     control panel is never completely hidden on small screens */
+  max-height: 42vh;
 }
 
+/* The frame sizes itself to the chosen ratio, constrained
+   by the available width of the preview-zone strip.
+   JS fitFrame() sets explicit px dimensions. */
 .canvas-frame {
   position: relative;
   flex-shrink: 0;
@@ -193,14 +218,12 @@ header {
 .empty-state p { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; opacity: .4; }
 
 /* ── PLAYER SHELLS ── */
-/* center flex for all skins */
 .mp3-wrap, .cd-wrap, .vinyl-wrap-outer {
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
   z-index: 2;
 }
 
-/* visibility toggled by skin class on #app */
 .skin-mp3 .cd-wrap,
 .skin-mp3 .vinyl-wrap-outer { display: none; }
 .skin-cd .mp3-wrap,
@@ -237,15 +260,17 @@ header {
 
 /* ══════════════════════════════════════════
    BOTTOM CONTROL PANEL
+   flex:1 so it fills everything below preview
 ══════════════════════════════════════════ */
 .ctrl-panel {
-  flex-shrink: 0;
+  flex: 1 1 auto;
+  min-height: 0;
   background: var(--surface);
   border-top: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   z-index: 20;
-  /* height controlled by contents; scrollable tabs */
+  overflow: hidden;
 }
 
 /* transport bar */
@@ -348,10 +373,11 @@ header {
 .ctrl-tab-btn:hover { color: var(--text); }
 .ctrl-tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-/* ── CTRL BODY ── */
+/* ── CTRL BODY — scrollable ── */
 .ctrl-body {
+  flex: 1;
   overflow-y: auto;
-  max-height: 42vh; /* don't eat too much screen */
+  min-height: 0;
 }
 
 /* ══════════════════════════════════════════
@@ -544,69 +570,69 @@ header {
    MP3 PLAYER SKIN
 ══════════════════════════════════════════ */
 .mp3-shell {
-  width: clamp(200px, 36%, 280px);
+  width: clamp(160px, 30%, 240px);
   background: linear-gradient(155deg, #282828 0%, #181818 100%);
-  border-radius: 18px;
-  padding: clamp(12px, 2.5%, 18px);
+  border-radius: 16px;
+  padding: clamp(8px, 2%, 14px);
   box-shadow: 0 0 0 1px #333, 0 24px 70px rgba(0,0,0,.85),
               inset 0 1px 0 rgba(255,255,255,.07);
 }
 .mp3-art-box {
   width: 100%; aspect-ratio: 1;
-  border-radius: 10px;
+  border-radius: 8px;
   overflow: hidden;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   background: #111;
   display: flex; align-items: center; justify-content: center;
-  font-size: 28px; color: #2a2a2a;
+  font-size: 22px; color: #2a2a2a;
   border: 1px solid #2a2a2a;
 }
 .mp3-art-box img { width: 100%; height: 100%; object-fit: cover; }
 .lcd {
   background: #0a1a08;
-  border-radius: 7px; padding: 10px;
+  border-radius: 6px; padding: 8px;
   border: 1px solid #0d2a0a;
   box-shadow: inset 0 2px 8px rgba(0,0,0,.8);
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
-.lcd-track { font-family: 'Orbitron', monospace; font-size: 8px; color: #4aff60; letter-spacing: 2px; margin-bottom: 4px; opacity: .7; }
-.lcd-title { font-family: 'Orbitron', monospace; font-size: 11px; color: #7aff8a; letter-spacing: 1px; font-weight: 700; margin-bottom: 8px; line-height: 1.2; }
-.lcd-prev  { font-size: 8px;  color: #2a6a30; font-family: 'Space Mono', monospace; min-height: 12px; }
-.lcd-curr  { font-size: 10px; color: #7aff8a; font-family: 'Space Mono', monospace; font-weight: bold; min-height: 13px; }
-.lcd-next  { font-size: 8px;  color: #2a6a30; font-family: 'Space Mono', monospace; min-height: 12px; }
-.lcd-prog  { display: flex; align-items: center; gap: 6px; margin-top: 7px; }
+.lcd-track { font-family: 'Orbitron', monospace; font-size: 7px; color: #4aff60; letter-spacing: 2px; margin-bottom: 3px; opacity: .7; }
+.lcd-title { font-family: 'Orbitron', monospace; font-size: 9px; color: #7aff8a; letter-spacing: 1px; font-weight: 700; margin-bottom: 6px; line-height: 1.2; }
+.lcd-prev  { font-size: 7px;  color: #2a6a30; font-family: 'Space Mono', monospace; min-height: 10px; }
+.lcd-curr  { font-size: 9px;  color: #7aff8a; font-family: 'Space Mono', monospace; font-weight: bold; min-height: 11px; }
+.lcd-next  { font-size: 7px;  color: #2a6a30; font-family: 'Space Mono', monospace; min-height: 10px; }
+.lcd-prog  { display: flex; align-items: center; gap: 5px; margin-top: 5px; }
 .lcd-bar-bg { flex: 1; height: 2px; background: #0d3010; border-radius: 1px; }
 .lcd-bar-fill { height: 100%; background: #4aff60; border-radius: 1px; width: 0%; transition: width .3s linear; }
-.lcd-time { font-family: 'Orbitron', monospace; font-size: 7px; color: #4aff60; }
-.mp3-btns { display: flex; align-items: center; justify-content: center; gap: 10px; }
+.lcd-time { font-family: 'Orbitron', monospace; font-size: 6px; color: #4aff60; }
+.mp3-btns { display: flex; align-items: center; justify-content: center; gap: 8px; }
 .mp3-btn {
   background: #252525; border: 1px solid #333; color: #777;
-  width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 12px;
+  width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 10px;
   display: flex; align-items: center; justify-content: center;
   box-shadow: 0 2px 4px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.04);
   transition: all .12s;
 }
 .mp3-btn:hover { background: #2e2e2e; color: #eee; }
-.mp3-btn.play { width: 42px; height: 42px; background: var(--accent); border-color: var(--accent2); color: #000; font-size: 15px; }
+.mp3-btn.play { width: 34px; height: 34px; background: var(--accent); border-color: var(--accent2); color: #000; font-size: 12px; }
 .mp3-btn.play:hover { background: var(--accent2); }
 
 /* ══════════════════════════════════════════
    CD PLAYER SKIN
 ══════════════════════════════════════════ */
-.cd-shell { width: clamp(220px, 40%, 320px); }
+.cd-shell { width: clamp(190px, 36%, 280px); }
 .cd-body {
   background: linear-gradient(135deg, #c8c8c8 0%, #a0a0a0 50%, #b8b8b8 100%);
-  border-radius: 14px 14px 7px 7px; padding: 16px;
+  border-radius: 14px 14px 7px 7px; padding: 12px;
   box-shadow: 0 20px 60px rgba(0,0,0,.85), inset 0 1px 0 rgba(255,255,255,.4);
 }
 .cd-lid {
   background: linear-gradient(160deg, #d8d8d8, #b0b0b0);
-  border-radius: 12px 12px 0 0; padding: 14px; text-align: center;
+  border-radius: 12px 12px 0 0; padding: 10px; text-align: center;
   border-bottom: 2px solid #909090;
 }
-.cd-brand { font-family: 'Orbitron', monospace; font-size: 8px; color: #555; letter-spacing: 4px; margin-bottom: 8px; }
+.cd-brand { font-family: 'Orbitron', monospace; font-size: 7px; color: #555; letter-spacing: 4px; margin-bottom: 6px; }
 .cd-window {
-  width: clamp(100px, 40%, 140px); aspect-ratio: 1;
+  width: clamp(80px, 34%, 120px); aspect-ratio: 1;
   margin: 0 auto; background: #111; border-radius: 50%;
   border: 3px solid #888;
   box-shadow: inset 0 0 20px rgba(0,0,0,.8), 0 2px 8px rgba(0,0,0,.5);
@@ -620,39 +646,39 @@ header {
 .cd-disc.spinning { animation-play-state: running; }
 @keyframes cdSpin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
 .cd-disc-img { width:100%;height:100%;border-radius:50%;object-fit:cover;position:absolute;inset:0;opacity:.7;mix-blend-mode:overlay; }
-.cd-hole { width:18px;height:18px;background:#888;border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:inset 0 1px 3px rgba(0,0,0,.8);z-index:2; }
-.cd-display { background:#0d1a0d;border-radius:5px;padding:8px 10px;margin-top:10px;border:1px solid #888; }
-.cd-display-title { font-family:'Orbitron',monospace;font-size:9px;color:#50ff50;letter-spacing:1px;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
-.cd-lyric { font-family:'Space Mono',monospace;font-size:10px;color:#80ff80;min-height:14px; }
-.cd-lyric.dim { color:#2a5a2a; font-size:8px; }
-.cd-prog-row { display:flex;align-items:center;gap:6px;margin-top:7px; }
+.cd-hole { width:14px;height:14px;background:#888;border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:inset 0 1px 3px rgba(0,0,0,.8);z-index:2; }
+.cd-display { background:#0d1a0d;border-radius:4px;padding:6px 8px;margin-top:8px;border:1px solid #888; }
+.cd-display-title { font-family:'Orbitron',monospace;font-size:8px;color:#50ff50;letter-spacing:1px;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.cd-lyric { font-family:'Space Mono',monospace;font-size:9px;color:#80ff80;min-height:12px; }
+.cd-lyric.dim { color:#2a5a2a; font-size:7px; }
+.cd-prog-row { display:flex;align-items:center;gap:5px;margin-top:5px; }
 .cd-bar-bg { flex:1;height:2px;background:#0a2a0a;border-radius:1px; }
 .cd-bar-fill { height:100%;background:#50ff50;border-radius:1px;width:0%;transition:width .3s linear; }
-.cd-time { font-family:'Orbitron',monospace;font-size:7px;color:#50ff50; }
-.cd-btns { display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px; }
+.cd-time { font-family:'Orbitron',monospace;font-size:6px;color:#50ff50; }
+.cd-btns { display:flex;align-items:center;justify-content:center;gap:6px;margin-top:8px; }
 .cd-btn {
   background:linear-gradient(to bottom,#999,#777);border:1px solid #666;color:#333;
-  width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:11px;
+  width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:9px;
   display:flex;align-items:center;justify-content:center;
   box-shadow:0 2px 4px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.3);
   transition:all .1s;
 }
 .cd-btn:active { transform:translateY(1px); }
-.cd-btn.play { width:40px;height:40px;background:linear-gradient(to bottom,#e8a020,#c07010);border-color:#a05000;color:#fff;font-size:14px; }
+.cd-btn.play { width:32px;height:32px;background:linear-gradient(to bottom,#e8a020,#c07010);border-color:#a05000;color:#fff;font-size:12px; }
 
 /* ══════════════════════════════════════════
    VINYL SKIN
 ══════════════════════════════════════════ */
-.vinyl-shell { width: clamp(260px, 50%, 380px); }
+.vinyl-shell { width: clamp(220px, 46%, 340px); }
 .turntable {
   background: linear-gradient(135deg,#1a1008 0%,#0d0d06 100%);
-  border-radius: 7px; padding: 20px;
+  border-radius: 6px; padding: 14px;
   box-shadow: 0 20px 60px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.04), 0 0 0 1px #2a2010;
 }
-.tt-top { display:flex; gap:16px; align-items:flex-start; margin-bottom:16px; }
+.tt-top { display:flex; gap:12px; align-items:flex-start; margin-bottom:12px; }
 .vinyl-disc-wrap { position:relative; flex-shrink:0; }
 .vinyl-disc {
-  width: clamp(120px, 28vw, 180px); aspect-ratio: 1;
+  width: clamp(90px, 22vw, 140px); aspect-ratio: 1;
   border-radius: 50%;
   background: repeating-radial-gradient(circle at center,#111 0px,#181818 2px,#111 3px,#181818 5px);
   box-shadow: 0 0 0 2px #222, 0 10px 30px rgba(0,0,0,.8);
@@ -670,23 +696,23 @@ header {
 }
 .vinyl-label img { width:100%;height:100%;object-fit:cover; }
 .vinyl-label-ph { width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#000; }
-.vinyl-hole { width:7px;height:7px;background:#333;border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2; }
-.tonearm-base { width:14px;height:14px;background:radial-gradient(circle,#bbb,#888);border-radius:50%;position:absolute;top:-16px;right:-22px; }
-.tonearm { width:2.5px;height:80px;background:linear-gradient(to bottom,#aaa,#888);position:absolute;top:-8px;right:-18px;transform-origin:top center;transform:rotate(-22deg);border-radius:2px;transition:transform .5s ease; }
+.vinyl-hole { width:6px;height:6px;background:#333;border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2; }
+.tonearm-base { width:11px;height:11px;background:radial-gradient(circle,#bbb,#888);border-radius:50%;position:absolute;top:-13px;right:-18px; }
+.tonearm { width:2px;height:65px;background:linear-gradient(to bottom,#aaa,#888);position:absolute;top:-6px;right:-15px;transform-origin:top center;transform:rotate(-22deg);border-radius:2px;transition:transform .5s ease; }
 .tonearm.playing { transform:rotate(4deg); }
-.tonearm::after { content:'';width:7px;height:7px;background:#ccc;border-radius:50%;position:absolute;bottom:-3px;left:50%;transform:translateX(-50%); }
-.tt-info { flex:1; display:flex; flex-direction:column; gap:8px; }
-.tt-label-tag { font-family:'Bebas Neue',sans-serif; font-size:9px; letter-spacing:3px; color:#4a3a10; }
-.tt-title { font-family:'Playfair Display',serif; font-size:clamp(13px,2vw,18px); color:var(--accent); font-style:italic; line-height:1.2; }
-.tt-artist { font-family:'Bebas Neue',sans-serif; font-size:10px; letter-spacing:3px; color:#888; }
-.tt-lyric-box { background:rgba(0,0,0,.4); border:1px solid #2a2010; border-radius:3px; padding:10px; }
-.tt-lyr { font-family:'Playfair Display',serif; font-size:clamp(9px,1.5vw,12px); color:#3a3020; min-height:1em; font-style:italic; }
-.tt-lyr.curr { font-size:clamp(11px,2vw,15px); color:var(--accent); font-weight:700; }
-.tt-ctrls { display:flex; align-items:center; gap:8px; }
+.tonearm::after { content:'';width:6px;height:6px;background:#ccc;border-radius:50%;position:absolute;bottom:-3px;left:50%;transform:translateX(-50%); }
+.tt-info { flex:1; display:flex; flex-direction:column; gap:6px; }
+.tt-label-tag { font-family:'Bebas Neue',sans-serif; font-size:8px; letter-spacing:3px; color:#4a3a10; }
+.tt-title { font-family:'Playfair Display',serif; font-size:clamp(11px,1.8vw,15px); color:var(--accent); font-style:italic; line-height:1.2; }
+.tt-artist { font-family:'Bebas Neue',sans-serif; font-size:9px; letter-spacing:3px; color:#888; }
+.tt-lyric-box { background:rgba(0,0,0,.4); border:1px solid #2a2010; border-radius:3px; padding:7px; }
+.tt-lyr { font-family:'Playfair Display',serif; font-size:clamp(8px,1.2vw,10px); color:#3a3020; min-height:1em; font-style:italic; }
+.tt-lyr.curr { font-size:clamp(9px,1.6vw,13px); color:var(--accent); font-weight:700; }
+.tt-ctrls { display:flex; align-items:center; gap:6px; }
 .tt-prog { flex:1; height:2px; background:#2a2010; border-radius:1px; cursor:pointer; }
 .tt-prog-fill { height:100%; background:var(--accent); border-radius:1px; width:0%; transition:width .3s linear; }
-.tt-time { font-family:'Space Mono',monospace; font-size:8px; color:#4a3a10; white-space:nowrap; }
-.tt-btn { background:none; border:1px solid #4a3a10; color:var(--accent); width:32px;height:32px; border-radius:50%; cursor:pointer; font-size:12px; display:flex;align-items:center;justify-content:center; transition:background .12s; flex-shrink:0; }
+.tt-time { font-family:'Space Mono',monospace; font-size:7px; color:#4a3a10; white-space:nowrap; }
+.tt-btn { background:none; border:1px solid #4a3a10; color:var(--accent); width:26px;height:26px; border-radius:50%; cursor:pointer; font-size:10px; display:flex;align-items:center;justify-content:center; transition:background .12s; flex-shrink:0; }
 .tt-btn:hover { background:rgba(232,160,32,.1); }
 
 /* ══════════════════════════════════════════
@@ -698,6 +724,11 @@ header {
   z-index: 100;
   display: flex; align-items: center; justify-content: center;
   padding: 16px;
+  /* respect safe areas inside the modal too */
+  padding-top:  max(16px, var(--sat));
+  padding-bottom: max(16px, var(--sab));
+  padding-left:  max(16px, var(--sal));
+  padding-right: max(16px, var(--sar));
   backdrop-filter: blur(4px);
   opacity: 0; pointer-events: none;
   transition: opacity .2s;
@@ -818,9 +849,8 @@ header {
 ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
 
 /* ══════════════════════════════════════════
-   DESKTOP WIDE: side-by-side option
-   ≥ 1024px: preview fills left half,
-   ctrl panel is a right sidebar
+   DESKTOP WIDE ≥ 1024px
+   Preview fills left half, ctrl panel = right sidebar
 ══════════════════════════════════════════ */
 @media (min-width: 1024px) {
   .layout {
@@ -828,20 +858,17 @@ header {
   }
   .preview-zone {
     flex: 1 1 auto;
+    max-height: none; /* no height cap on desktop */
+    align-self: stretch;
   }
   .ctrl-panel {
     width: 360px;
-    flex-shrink: 0;
+    flex: 0 0 360px;
     border-top: none;
     border-left: 1px solid var(--border);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-  }
-  .ctrl-body {
-    max-height: none;
-    flex: 1;
-    overflow-y: auto;
   }
 }
 </style>
@@ -881,7 +908,7 @@ header {
 <!-- ════════ MAIN LAYOUT ════════ -->
 <div class="layout skin-mp3" id="app">
 
-  <!-- ── PREVIEW ── -->
+  <!-- ── PREVIEW ZONE — always above the ctrl panel ── -->
   <div class="preview-zone" id="previewZone">
     <div class="canvas-frame landscape" id="canvasFrame">
       <div class="bg-layer" id="bgLayer"></div>
@@ -996,11 +1023,11 @@ header {
   </div>
 
   <!-- ══════════════════════════════════════
-       CONTROL PANEL (below preview / right sidebar)
+       CONTROL PANEL
   ══════════════════════════════════════ -->
   <div class="ctrl-panel" id="ctrlPanel">
 
-    <!-- Transport row (always visible) -->
+    <!-- Transport row -->
     <div class="transport">
       <div class="status-dot" id="statusDot"></div>
       <button class="transport-btn" onclick="seekRel(-10)" title="Back 10s">⏮</button>
@@ -1029,7 +1056,6 @@ header {
       <!-- ═══ SETUP ═══ -->
       <div id="pane-setup">
 
-        <!-- File uploads -->
         <div class="setup-grid">
           <label class="upload-card" id="audioCard">
             <input type="file" accept="audio/*" onchange="loadAudio(this)">
@@ -1053,13 +1079,11 @@ header {
           </label>
         </div>
 
-        <!-- Title / Artist -->
         <div class="meta-row">
           <input type="text" id="songTitle"  class="meta-input" placeholder="Song Title">
           <input type="text" id="songArtist" class="meta-input" placeholder="Artist / Band">
         </div>
 
-        <!-- Lyrics -->
         <div class="lyrics-area-wrap">
           <span class="field-label">Lyrics</span>
           <p style="font-size:9px;color:var(--muted);margin-bottom:6px;line-height:1.6">
@@ -1075,7 +1099,6 @@ header {
       <!-- ═══ TIMESTAMPS ═══ -->
       <div id="pane-timestamps" style="display:none;">
 
-        <!-- Hint bar -->
         <div class="ts-hint">
           <kbd>Space</kbd> stamp current line
           <kbd>P</kbd> play/pause
@@ -1107,7 +1130,6 @@ header {
     </div>
     <div class="modal-body">
 
-      <!-- Canvas preview -->
       <div>
         <div class="modal-section-title">LIVE PREVIEW</div>
         <div class="preview-canvas-wrap" id="previewCanvasWrap">
@@ -1122,7 +1144,6 @@ header {
         </div>
       </div>
 
-      <!-- Format -->
       <div>
         <div class="modal-section-title">OUTPUT FORMAT</div>
         <div class="fmt-cards">
@@ -1144,7 +1165,6 @@ header {
         </div>
       </div>
 
-      <!-- Quality -->
       <div>
         <div class="modal-section-title">QUALITY</div>
         <div class="quality-row">
@@ -1160,7 +1180,6 @@ header {
         </p>
       </div>
 
-      <!-- Export -->
       <div>
         <div class="exp-progress-wrap" id="expProgressWrap">
           <div class="exp-bar-bg"><div class="exp-bar" id="expBar"></div></div>
@@ -1210,26 +1229,48 @@ function setOrient(o, btn) {
   fitFrame();
 }
 
+/**
+ * fitFrame — sizes the canvas-frame to the correct aspect ratio
+ * while fitting inside the preview-zone strip.
+ *
+ * On mobile (column layout) the preview-zone has max-height:42vh.
+ * We must not exceed that height, and we must not exceed the full
+ * zone width. The canvas-frame gets explicit px dimensions so the
+ * aspect-ratio CSS is a fallback/visual hint only — the frame always
+ * shows the correct ratio regardless of orientation.
+ */
 function fitFrame() {
   const zone  = document.getElementById('previewZone');
   const frame = document.getElementById('canvasFrame');
+
   const ratio = currentOrient === 'landscape' ? 16/9
               : currentOrient === 'portrait'  ? 9/16
               : 1;
-  const avW = zone.clientWidth  - 24;
-  const avH = zone.clientHeight - 24;
-  if (ratio >= 1) {
-    const w = Math.min(avW, avH * ratio);
-    frame.style.width  = w + 'px';
-    frame.style.height = (w / ratio) + 'px';
+
+  // Available space (leave a small gutter)
+  const avW = zone.clientWidth  - 8;
+  const avH = zone.clientHeight - 8;
+
+  // Fit within the zone keeping aspect ratio
+  let fw, fh;
+  if (avW / ratio <= avH) {
+    // width-constrained
+    fw = avW;
+    fh = avW / ratio;
   } else {
-    const h = Math.min(avH, avW / ratio);
-    frame.style.height = h + 'px';
-    frame.style.width  = (h * ratio) + 'px';
+    // height-constrained
+    fh = avH;
+    fw = avH * ratio;
   }
+
+  frame.style.width  = fw + 'px';
+  frame.style.height = fh + 'px';
 }
+
 window.addEventListener('resize', fitFrame);
+// Also refit after fonts / layout settle
 setTimeout(fitFrame, 80);
+setTimeout(fitFrame, 400);
 
 // ─── SKIN ────────────────────────────────
 function setSkin(skin, btn) {
@@ -1433,12 +1474,10 @@ audio.addEventListener('timeupdate', () => {
   const dur = audio.duration || 1;
   const pct = (t / dur * 100).toFixed(1) + '%';
 
-  // fills
   ['lcdFill','cdFill','ttFill','mainFill'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.width = pct;
   });
-  // times
   ['lcdTime','cdTime','ttTime'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.textContent = fmt(t);
@@ -1489,7 +1528,6 @@ document.addEventListener('keydown', e => {
   if (e.code === 'ArrowDown'){ e.preventDefault(); if (currentIdx < lineItems.length - 1) setActive(currentIdx + 1); }
 });
 
-// live meta update
 document.getElementById('songTitle').addEventListener('input', e => {
   const v = e.target.value || 'UNTITLED';
   const a = document.getElementById('songArtist').value || 'ARTIST';
@@ -1552,7 +1590,6 @@ function initPreviewCanvas() {
 }
 
 function drawFrame(ctx, W, H, t) {
-  // bg
   if (bgImg && bgImg.complete) {
     ctx.filter = 'brightness(0.35)';
     fillFit(ctx, bgImg, W, H);
@@ -1564,7 +1601,6 @@ function drawFrame(ctx, W, H, t) {
   } else {
     ctx.fillStyle = '#0d0d0d'; ctx.fillRect(0,0,W,H);
   }
-  // vignette
   const vig = ctx.createRadialGradient(W/2,H/2,H*.3,W/2,H/2,H*.8);
   vig.addColorStop(0,'transparent'); vig.addColorStop(1,'rgba(0,0,0,.55)');
   ctx.fillStyle = vig; ctx.fillRect(0,0,W,H);
