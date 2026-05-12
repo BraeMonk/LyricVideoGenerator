@@ -49,7 +49,8 @@ body {
   padding-bottom: var(--sab);
   padding-left: var(--sal);
   padding-right: var(--sar);
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
 }
@@ -109,10 +110,25 @@ header {
   flex:1; display:flex; flex-direction:column; overflow:hidden; min-height:0;
 }
 .preview-zone {
-  flex-shrink:0; background:#000;
-  display:flex; align-items:center; justify-content:center;
-  position:relative; overflow:hidden; max-height:42vh;
+  flex: 1 1 auto;
+  min-height: 340px;
+  height: 42vh;
+
+  background:#000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
 }
+
+@media (max-width: 768px) {
+  .preview-zone {
+    height: 50vh;
+    min-height: 320px;
+  }
+}
+   
 .canvas-frame {
   position:relative; flex-shrink:0;
   box-shadow:0 0 0 1px #1a1a1a, 0 12px 60px rgba(0,0,0,.9);
@@ -1215,6 +1231,12 @@ function fitFrame() {
   const wc = document.getElementById('waveCanvas');
   wc.width  = Math.round(fw);
   wc.height = 60;
+
+  document.getElementById('canvasFrame').style.display = 'none';
+
+  requestAnimationFrame(() => {
+    document.getElementById('canvasFrame').style.display = 'block';
+  });
 }
  
 window.addEventListener('resize', fitFrame);
@@ -2157,6 +2179,18 @@ document.getElementById('songTitle')
 
 document.getElementById('songArtist')
   .addEventListener('input', toggleFx);
+
+window.addEventListener('load', () => {
+  fitFrame();
+});
+
+window.addEventListener('resize', () => {
+  fitFrame();
+});
+
+window.addEventListener('orientationchange', () => {
+  setTimeout(fitFrame, 250);
+});
    
 </script>
 </body>
