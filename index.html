@@ -88,14 +88,27 @@ header {
 .pill-btn:last-child { border-right:none; }
 .pill-btn:hover { background:rgba(255,255,255,0.05); color:var(--text); }
 .pill-btn.active { background:var(--accentDim); color:var(--accent); }
- 
+
 .orient-icon { display:inline-block; border:1.5px solid currentColor; border-radius:1px; flex-shrink:0; }
 .orient-icon.ls { width:14px; height:9px; }
 .orient-icon.pt { width:9px;  height:14px; }
 .orient-icon.sq { width:11px; height:11px; }
- 
-.skin-pill { font-size:10px; padding:0 10px; }
- 
+
+/* ── Skin dropdown ── */
+.skin-select-wrap { position:relative; display:flex; align-items:center; }
+.skin-select {
+  background:var(--surface2); border:1px solid var(--border2);
+  color:var(--text); font-family:'Space Mono',monospace; font-size:9px;
+  letter-spacing:1px; padding:0 28px 0 10px; height:30px;
+  border-radius:3px; cursor:pointer; appearance:none; -webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23505050'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 8px center;
+  transition:border-color .15s,color .15s; max-width:180px;
+}
+.skin-select:focus { outline:none; border-color:var(--accent); color:var(--bright); }
+.skin-select:hover { border-color:var(--muted2); color:var(--bright); }
+.skin-select option, .skin-select optgroup { background:#181818; color:var(--text); font-size:11px; }
+
 .btn-export-open {
   background:var(--accentDim); border:1px solid rgba(232,160,32,.3);
   color:var(--accent); padding:0 12px; height:30px;
@@ -654,7 +667,318 @@ header {
 .tt-btn { background:none;border:1px solid #4a3a10;color:var(--accent);width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;transition:background .12s;flex-shrink:0; }
 .tt-btn:hover { background:rgba(232,160,32,.1); }
  
+/* ══════════════════════════════════════════
+   NEW SKINS
+══════════════════════════════════════════ */
+.ext-wrap {
+  position:absolute; inset:0; display:flex;
+  align-items:center; justify-content:center; z-index:2;
+}
+
+/* show/hide all skins */
+.skin-mp3        .ext-wrap,
+.skin-cd         .ext-wrap,
+.skin-vinyl      .ext-wrap { display:none; }
+.skin-vhs        .mp3-wrap, .skin-vhs        .cd-wrap, .skin-vhs        .vinyl-wrap-outer { display:none; }
+.skin-boombox    .mp3-wrap, .skin-boombox    .cd-wrap, .skin-boombox    .vinyl-wrap-outer { display:none; }
+.skin-amp        .mp3-wrap, .skin-amp        .cd-wrap, .skin-amp        .vinyl-wrap-outer { display:none; }
+.skin-applemusic .mp3-wrap, .skin-applemusic .cd-wrap, .skin-applemusic .vinyl-wrap-outer { display:none; }
+.skin-spotify    .mp3-wrap, .skin-spotify    .cd-wrap, .skin-spotify    .vinyl-wrap-outer { display:none; }
+.skin-daw        .mp3-wrap, .skin-daw        .cd-wrap, .skin-daw        .vinyl-wrap-outer { display:none; }
+.skin-filmreel   .mp3-wrap, .skin-filmreel   .cd-wrap, .skin-filmreel   .vinyl-wrap-outer { display:none; }
+.skin-neon       .mp3-wrap, .skin-neon       .cd-wrap, .skin-neon       .vinyl-wrap-outer { display:none; }
+.skin-ticket     .mp3-wrap, .skin-ticket     .cd-wrap, .skin-ticket     .vinyl-wrap-outer { display:none; }
+.skin-waveform   .mp3-wrap, .skin-waveform   .cd-wrap, .skin-waveform   .vinyl-wrap-outer { display:none; }
+.skin-polaroid   .mp3-wrap, .skin-polaroid   .cd-wrap, .skin-polaroid   .vinyl-wrap-outer { display:none; }
+.skin-jcard      .mp3-wrap, .skin-jcard      .cd-wrap, .skin-jcard      .vinyl-wrap-outer { display:none; }
+
+/* hide ext-wraps for classic skins */
+.skin-mp3    .ext-wrap,
+.skin-cd     .ext-wrap,
+.skin-vinyl  .ext-wrap { display:none !important; }
+
+/* show only matching ext-wrap */
+.skin-vhs        #vhsWrap,
+.skin-boombox    #boomboxWrap,
+.skin-amp        #ampWrap,
+.skin-applemusic #appleMusicWrap,
+.skin-spotify    #spotifyWrap,
+.skin-daw        #dawWrap,
+.skin-filmreel   #filmreelWrap,
+.skin-neon       #neonWrap,
+.skin-ticket     #ticketWrap,
+.skin-waveform   #waveformWrap,
+.skin-polaroid   #polaroidWrap,
+.skin-jcard      #jcardWrap { display:flex; }
+
+/* ── VHS / Cassette ── */
+.vhs-shell {
+  width:clamp(200px,42%,300px);
+  background:linear-gradient(160deg,#1a1a2e,#0f0f1a);
+  border-radius:8px; padding:14px;
+  border:2px solid #2a2a4a;
+  box-shadow:0 0 0 1px #111,0 20px 60px rgba(0,0,0,.9),0 0 30px rgba(80,80,200,.08);
+}
+.vhs-label {
+  background:linear-gradient(135deg,#e8a020,#c07010);
+  border-radius:4px; padding:8px 10px; margin-bottom:10px;
+}
+.vhs-label-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(11px,2vw,17px); letter-spacing:3px; color:#000; line-height:1.1; }
+.vhs-label-artist { font-family:'Space Mono',monospace; font-size:7px; color:#4a2000; letter-spacing:1px; margin-top:2px; }
+.vhs-tape-window {
+  background:#000; border-radius:4px; padding:8px;
+  border:1px solid #2a2a4a; margin-bottom:8px;
+  display:flex; align-items:center; gap:8px;
+}
+.vhs-reel { width:28px; height:28px; border-radius:50%; border:3px solid #3a3a5a; flex-shrink:0; position:relative; }
+.vhs-reel::after { content:''; position:absolute; top:50%; left:50%; width:8px; height:8px; background:#0f0f1a; border-radius:50%; transform:translate(-50%,-50%); }
+.vhs-reel.spinning { animation:vhsSpin 1.2s linear infinite; }
+@keyframes vhsSpin { to{transform:rotate(360deg)} }
+.vhs-tape-info { flex:1; display:flex; flex-direction:column; gap:3px; }
+.vhs-lyric { font-family:'Space Mono',monospace; font-size:8px; color:#3a3a6a; min-height:10px; }
+.vhs-lyric.curr { color:#9090ff; font-size:9px; font-weight:bold; }
+
+/* ── Boombox ── */
+.boombox-shell {
+  width:clamp(220px,50%,340px);
+  background:linear-gradient(160deg,#2a1a0a,#1a1008);
+  border-radius:10px; padding:12px;
+  border:2px solid #4a2a10;
+  box-shadow:0 0 0 1px #111,0 20px 60px rgba(0,0,0,.95);
+}
+.boombox-top { display:flex; gap:10px; align-items:center; margin-bottom:8px; }
+.boombox-speaker {
+  width:clamp(46px,12%,64px); aspect-ratio:1; border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#3a2a1a,#1a1008);
+  border:3px solid #4a3a20;
+  box-shadow:inset 0 0 10px rgba(0,0,0,.8);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.boombox-speaker-inner { width:55%; height:55%; border-radius:50%; background:repeating-radial-gradient(circle,#1a1008 0px,#2a2010 2px,#1a1008 4px); }
+.boombox-center { flex:1; }
+.boombox-lcd {
+  background:#0a1a08; border-radius:4px; padding:6px 8px;
+  border:1px solid #1a3a10; box-shadow:inset 0 2px 6px rgba(0,0,0,.8);
+}
+.boombox-lcd-title { font-family:'Orbitron',monospace; font-size:8px; color:#60ff60; letter-spacing:1px; margin-bottom:4px; }
+.boombox-lyric { font-family:'Space Mono',monospace; font-size:8px; color:#2a5a2a; min-height:10px; }
+.boombox-lyric.curr { color:#80ff80; font-size:9px; font-weight:bold; }
+.boombox-antenna { width:3px; height:36px; background:linear-gradient(to top,#4a3a20,#9a8a60); border-radius:2px; align-self:flex-start; flex-shrink:0; }
+
+/* ── Guitar Amp ── */
+.amp-shell {
+  width:clamp(200px,44%,300px);
+  background:linear-gradient(160deg,#1c1408,#0d0d0a);
+  border-radius:6px; padding:12px;
+  border:3px solid #2a2010;
+  box-shadow:0 0 0 1px #0a0a08,0 24px 70px rgba(0,0,0,.95);
+}
+.amp-grill {
+  background:repeating-linear-gradient(0deg,#1a1208 0px,#1a1208 3px,#2a2010 3px,#2a2010 4px);
+  border-radius:4px; height:clamp(48px,10vw,72px); margin-bottom:10px;
+  border:1px solid #2a2010; display:flex; align-items:center; justify-content:center;
+}
+.amp-speaker-circle { width:55%; aspect-ratio:1; border-radius:50%; border:2px solid #3a3020; background:rgba(0,0,0,.6); display:flex; align-items:center; justify-content:center; }
+.amp-speaker-inner { width:40%; aspect-ratio:1; border-radius:50%; background:#1a1208; border:1px solid #2a2010; }
+.amp-controls { display:flex; align-items:center; gap:8px; }
+.amp-knob { width:16px; height:16px; border-radius:50%; background:radial-gradient(circle at 35% 35%,#666,#333); border:1px solid #555; flex-shrink:0; }
+.amp-lcd { flex:1; background:#0a0f08; border-radius:3px; padding:5px 7px; border:1px solid #1a2010; }
+.amp-lcd-title { font-family:'Orbitron',monospace; font-size:7px; color:#60a060; letter-spacing:1px; margin-bottom:3px; }
+.amp-lyric { font-family:'Space Mono',monospace; font-size:8px; color:#2a4a2a; min-height:10px; }
+.amp-lyric.curr { color:#80ff60; font-size:9px; font-weight:bold; }
+.amp-power { width:10px; height:10px; border-radius:50%; background:#1a4a10; box-shadow:0 0 6px #40ff20; flex-shrink:0; }
+
+/* ── Apple Music ── */
+.applemusic-shell {
+  width:clamp(180px,36%,260px);
+  background:rgba(28,28,30,0.96);
+  border-radius:18px; padding:16px;
+  border:1px solid rgba(255,255,255,0.08);
+  box-shadow:0 20px 60px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.05);
+}
+.am-art { width:100%; aspect-ratio:1; border-radius:12px; overflow:hidden; background:#1c1c1e; margin-bottom:12px; display:flex; align-items:center; justify-content:center; font-size:24px; color:#3a3a3c; }
+.am-art img { width:100%; height:100%; object-fit:cover; }
+.am-title { font-family:-apple-system,'Helvetica Neue',sans-serif; font-size:clamp(11px,1.8vw,15px); font-weight:700; color:#fff; margin-bottom:2px; }
+.am-artist { font-family:-apple-system,'Helvetica Neue',sans-serif; font-size:clamp(9px,1.4vw,12px); color:#fe375f; margin-bottom:10px; }
+.am-lyric { font-family:-apple-system,'Helvetica Neue',sans-serif; font-size:clamp(8px,1.2vw,11px); color:rgba(255,255,255,.35); min-height:14px; line-height:1.4; }
+.am-lyric.curr { color:rgba(255,255,255,.9); font-weight:600; }
+.am-prog-wrap { display:flex; align-items:center; gap:6px; margin-top:10px; }
+.am-bar-bg { flex:1; height:3px; background:#3a3a3c; border-radius:2px; }
+.am-bar-fill { height:100%; background:#fff; border-radius:2px; width:0%; transition:width .3s linear; }
+.am-time { font-family:'Space Mono',monospace; font-size:7px; color:#636366; }
+
+/* ── Spotify Now Playing ── */
+.spotify-shell {
+  width:clamp(200px,40%,280px);
+  background:#121212;
+  border-radius:12px; padding:14px;
+  border:1px solid #282828;
+  box-shadow:0 20px 60px rgba(0,0,0,.9);
+}
+.sp-art { width:100%; aspect-ratio:1; border-radius:6px; overflow:hidden; background:#282828; margin-bottom:10px; display:flex; align-items:center; justify-content:center; font-size:24px; color:#404040; }
+.sp-art img { width:100%; height:100%; object-fit:cover; }
+.sp-title { font-family:-apple-system,'Helvetica Neue',sans-serif; font-size:clamp(11px,1.8vw,15px); font-weight:700; color:#fff; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sp-artist { font-family:-apple-system,'Helvetica Neue',sans-serif; font-size:clamp(9px,1.4vw,12px); color:#b3b3b3; margin-bottom:10px; }
+.sp-lyric { font-family:-apple-system,'Helvetica Neue',sans-serif; font-size:clamp(8px,1.2vw,11px); color:#535353; min-height:14px; line-height:1.4; }
+.sp-lyric.curr { color:#fff; font-weight:700; font-size:clamp(9px,1.4vw,13px); }
+.sp-prog-wrap { display:flex; align-items:center; gap:6px; margin-top:10px; }
+.sp-bar-bg { flex:1; height:4px; background:#535353; border-radius:2px; cursor:pointer; }
+.sp-bar-fill { height:100%; background:#1db954; border-radius:2px; width:0%; transition:width .3s linear; }
+.sp-time { font-family:'Space Mono',monospace; font-size:7px; color:#535353; }
+
+/* ── DAW / Studio ── */
+.daw-shell {
+  width:clamp(220px,52%,360px);
+  background:#1a1a1a;
+  border-radius:4px; padding:12px;
+  border:1px solid #333;
+  box-shadow:0 20px 60px rgba(0,0,0,.95);
+}
+.daw-titlebar { background:#2a2a2a; border-radius:3px 3px 0 0; padding:5px 10px; display:flex; align-items:center; gap:6px; margin:-12px -12px 10px; border-bottom:1px solid #333; }
+.daw-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.daw-dot.r{background:#ff5f57;} .daw-dot.y{background:#ffbd2e;} .daw-dot.g{background:#28c940;}
+.daw-titlebar-text { font-family:'Space Mono',monospace; font-size:8px; color:#666; flex:1; text-align:center; letter-spacing:1px; }
+.daw-track-row { display:flex; gap:6px; align-items:center; margin-bottom:6px; }
+.daw-track-label { font-family:'Space Mono',monospace; font-size:7px; color:#666; width:36px; flex-shrink:0; letter-spacing:1px; }
+.daw-waveform-strip { flex:1; height:22px; background:#111; border-radius:2px; border:1px solid #2a2a2a; position:relative; overflow:hidden; }
+.daw-waveform-fill { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+.daw-playhead { position:absolute; top:0; bottom:0; width:2px; background:var(--accent); box-shadow:0 0 6px var(--accent); transition:left .1s linear; }
+.daw-lyric { font-family:'Space Mono',monospace; font-size:8px; color:#505050; padding:4px 0; min-height:12px; text-align:left; }
+.daw-lyric.curr { color:#e8a020; font-weight:bold; }
+.daw-status { display:flex; gap:8px; align-items:center; margin-top:6px; padding-top:6px; border-top:1px solid #222; }
+.daw-status-dot { width:7px; height:7px; border-radius:50%; background:#27ae60; box-shadow:0 0 5px #27ae60; }
+.daw-status-text { font-family:'Space Mono',monospace; font-size:7px; color:#444; letter-spacing:1px; }
+
+/* ── Film Reel ── */
+.filmreel-shell {
+  width:clamp(200px,44%,300px);
+  background:#0a0a0a;
+  border-radius:8px; padding:14px;
+  border:2px solid #1a1a1a;
+  box-shadow:0 20px 60px rgba(0,0,0,.95);
+}
+.filmstrip { display:flex; gap:3px; margin-bottom:10px; overflow:hidden; border-radius:3px; }
+.filmstrip-frame {
+  flex:1; aspect-ratio:4/3; background:#111; border-radius:2px;
+  border:1px solid #222; overflow:hidden; position:relative;
+  display:flex; align-items:center; justify-content:center;
+}
+.filmstrip-frame img { width:100%; height:100%; object-fit:cover; opacity:.6; }
+.filmstrip-frame::before,.filmstrip-frame::after {
+  content:''; position:absolute; left:0; right:0; height:10%;
+  background:repeating-linear-gradient(90deg,#000 0px,#000 6px,transparent 6px,transparent 10px);
+}
+.filmstrip-frame::before{top:0;} .filmstrip-frame::after{bottom:0;}
+.filmreel-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(12px,2vw,18px); letter-spacing:4px; color:#fff; margin-bottom:2px; }
+.filmreel-artist { font-family:'Space Mono',monospace; font-size:8px; color:#666; letter-spacing:2px; margin-bottom:8px; }
+.filmreel-lyric { font-family:'Bebas Neue',sans-serif; font-size:clamp(10px,1.6vw,14px); letter-spacing:2px; color:#333; min-height:18px; }
+.filmreel-lyric.curr { color:#e8a020; font-size:clamp(12px,2vw,16px); }
+
+/* ── Neon Sign ── */
+.neon-shell {
+  width:clamp(200px,48%,320px);
+  background:#05080d;
+  border-radius:6px; padding:18px;
+  border:1px solid #0a1a2a;
+  box-shadow:0 20px 60px rgba(0,0,0,.95),0 0 60px rgba(0,120,255,.04);
+}
+.neon-title {
+  font-family:'Bebas Neue',sans-serif; font-size:clamp(18px,4vw,34px);
+  letter-spacing:6px; text-align:center; margin-bottom:4px;
+  color:#ff4080;
+  text-shadow:0 0 10px #ff4080,0 0 30px #ff4080,0 0 60px rgba(255,64,128,.4);
+}
+.neon-artist {
+  font-family:'Bebas Neue',sans-serif; font-size:clamp(10px,1.6vw,14px);
+  letter-spacing:4px; text-align:center; color:#40c0ff;
+  text-shadow:0 0 8px #40c0ff,0 0 20px rgba(64,192,255,.5);
+  margin-bottom:12px;
+}
+.neon-lyric {
+  font-family:'Bebas Neue',sans-serif; font-size:clamp(12px,2vw,18px);
+  letter-spacing:3px; text-align:center; color:#2a2a3a; min-height:22px;
+  transition:color .2s,text-shadow .2s;
+}
+.neon-lyric.curr {
+  color:#80ffb0;
+  text-shadow:0 0 10px #80ffb0,0 0 30px rgba(128,255,176,.6);
+}
+.neon-divider { border:none; border-top:1px solid #0a1a2a; margin:10px 0; }
+
+/* ── Concert Ticket ── */
+.ticket-shell {
+  width:clamp(200px,46%,300px);
+  background:linear-gradient(160deg,#f5e8d0,#e8d8b8);
+  border-radius:6px; padding:14px;
+  border:2px solid #c8a870;
+  box-shadow:0 20px 60px rgba(0,0,0,.9);
+  position:relative;
+}
+.ticket-shell::before {
+  content:''; position:absolute; top:50%; left:-8px; width:16px; height:16px;
+  background:#080808; border-radius:50%; transform:translateY(-50%);
+}
+.ticket-shell::after {
+  content:''; position:absolute; top:50%; right:-8px; width:16px; height:16px;
+  background:#080808; border-radius:50%; transform:translateY(-50%);
+}
+.ticket-header { border-bottom:2px dashed #c8a870; padding-bottom:10px; margin-bottom:10px; }
+.ticket-event { font-family:'Bebas Neue',sans-serif; font-size:clamp(14px,2.4vw,22px); letter-spacing:4px; color:#1a0a00; }
+.ticket-artist-name { font-family:'Bebas Neue',sans-serif; font-size:clamp(10px,1.6vw,14px); letter-spacing:3px; color:#6a4a20; }
+.ticket-body { display:flex; gap:10px; align-items:flex-start; }
+.ticket-art { width:clamp(44px,12%,60px); aspect-ratio:1; border-radius:3px; overflow:hidden; background:#c8a870; flex-shrink:0; }
+.ticket-art img { width:100%; height:100%; object-fit:cover; }
+.ticket-info { flex:1; }
+.ticket-lyric { font-family:'Space Mono',monospace; font-size:8px; color:#9a8060; min-height:12px; line-height:1.6; }
+.ticket-lyric.curr { color:#1a0a00; font-weight:bold; font-size:9px; }
+.ticket-number { position:absolute; bottom:10px; right:12px; font-family:'Orbitron',monospace; font-size:7px; color:#c8a870; letter-spacing:2px; }
+
+/* ── Waveform Only ── */
+.waveform-shell {
+  width:clamp(200px,60%,420px);
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+}
+.waveform-bars { display:flex; align-items:flex-end; gap:2px; height:60px; width:100%; }
+.wf-bar { flex:1; background:var(--accent); border-radius:1px 1px 0 0; opacity:.6; transition:height .1s ease; min-height:2px; }
+.wf-bar.active { opacity:1; background:var(--accent2); }
+.waveform-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(12px,2vw,18px); letter-spacing:4px; color:#fff; }
+.waveform-lyric { font-family:'Space Mono',monospace; font-size:clamp(9px,1.4vw,12px); color:var(--muted); min-height:14px; text-align:center; }
+.waveform-lyric.curr { color:var(--accent); }
+
+/* ── Polaroid ── */
+.polaroid-shell {
+  background:#f0ede6;
+  border-radius:2px; padding:10px 10px 28px;
+  box-shadow:0 20px 60px rgba(0,0,0,.9),0 2px 8px rgba(0,0,0,.4);
+  width:clamp(160px,32%,230px);
+}
+.polaroid-photo { width:100%; aspect-ratio:1; overflow:hidden; background:#d0cdc6; margin-bottom:8px; display:flex; align-items:center; justify-content:center; font-size:28px; color:#b0ada6; }
+.polaroid-photo img { width:100%; height:100%; object-fit:cover; }
+.polaroid-caption { font-family:'Space Mono',monospace; font-size:8px; color:#3a3530; text-align:center; letter-spacing:1px; }
+.polaroid-lyric { font-family:'Space Mono',monospace; font-size:7px; color:#8a8580; min-height:10px; text-align:center; margin-top:3px; }
+.polaroid-lyric.curr { color:#3a3530; font-weight:bold; font-size:8px; }
+
+/* ── Cassette J-Card ── */
+.jcard-shell {
+  width:clamp(200px,46%,300px);
+  background:linear-gradient(160deg,#f8f0e0,#ede0c8);
+  border-radius:3px; padding:12px;
+  border:1px solid #c8b890;
+  box-shadow:0 20px 60px rgba(0,0,0,.9);
+}
+.jcard-spine { background:#1a0a00; height:8px; border-radius:1px; margin-bottom:10px; position:relative; overflow:hidden; }
+.jcard-spine::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(90deg,transparent 0px,transparent 18px,rgba(255,255,255,.08) 18px,rgba(255,255,255,.08) 20px); }
+.jcard-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(16px,3vw,26px); letter-spacing:4px; color:#1a0a00; line-height:1; margin-bottom:2px; }
+.jcard-artist { font-family:'Space Mono',monospace; font-size:8px; color:#6a5040; letter-spacing:2px; margin-bottom:8px; }
+.jcard-art { width:100%; aspect-ratio:2/1; overflow:hidden; background:#c8a870; border-radius:2px; margin-bottom:8px; display:flex; align-items:center; justify-content:center; font-size:20px; color:#9a7850; }
+.jcard-art img { width:100%; height:100%; object-fit:cover; }
+.jcard-lyric { font-family:'Space Mono',monospace; font-size:8px; color:#9a8870; min-height:12px; line-height:1.6; }
+.jcard-lyric.curr { color:#1a0a00; font-weight:bold; font-size:9px; }
+.jcard-side { display:flex; justify-content:space-between; margin-top:8px; }
+.jcard-side-label { font-family:'Bebas Neue',sans-serif; font-size:9px; letter-spacing:2px; color:#6a5040; }
+
 /* ══ EXPORT MODAL ══ */
+
 .modal-overlay {
   position:fixed; inset:0; background:rgba(0,0,0,.92); z-index:100;
   display:flex; align-items:center; justify-content:center; padding:16px;
@@ -976,10 +1300,34 @@ header {
         <span class="orient-icon sq"></span>1:1
       </button>
     </div>
-    <div class="pill-group" role="group" aria-label="Player skin">
-      <button class="pill-btn skin-pill active" onclick="setSkin('mp3',this)">📻 MP3</button>
-      <button class="pill-btn skin-pill" onclick="setSkin('cd',this)">💿 CD</button>
-      <button class="pill-btn skin-pill" onclick="setSkin('vinyl',this)">🎵 VINYL</button>
+    <div class="skin-select-wrap">
+      <select id="skinSelect" class="skin-select" onchange="setSkinFromSelect(this)">
+        <optgroup label="── Classic ──">
+          <option value="mp3">📻 MP3 Player</option>
+          <option value="cd">💿 CD Player</option>
+          <option value="vinyl">🎵 Vinyl</option>
+        </optgroup>
+        <optgroup label="── Retro ──">
+          <option value="vhs">📼 VHS / Cassette</option>
+          <option value="boombox">📻 Boombox</option>
+          <option value="amp">🎸 Guitar Amp</option>
+        </optgroup>
+        <optgroup label="── Modern ──">
+          <option value="applemusic">🎧 Apple Music</option>
+          <option value="spotify">🎧 Spotify Card</option>
+          <option value="daw">💻 DAW / Studio</option>
+        </optgroup>
+        <optgroup label="── Cinematic ──">
+          <option value="filmreel">🎬 Film Reel</option>
+          <option value="neon">🌆 Neon Sign</option>
+          <option value="ticket">🎪 Concert Ticket</option>
+        </optgroup>
+        <optgroup label="── Minimal ──">
+          <option value="waveform">〰️ Waveform Only</option>
+          <option value="polaroid">📸 Polaroid</option>
+          <option value="jcard">📄 Cassette J-Card</option>
+        </optgroup>
+      </select>
     </div>
     <button class="btn-ai-producer" onclick="openAiProducer()">
       <span class="ai-spark">✦</span> AI PRODUCE
@@ -1101,7 +1449,213 @@ header {
         </div>
       </div>
 
+            <!-- VHS -->
+      <div class="ext-wrap" id="vhsWrap" style="display:none">
+        <div class="vhs-shell">
+          <div class="vhs-label">
+            <div class="vhs-label-title" id="vhsTitle">Track Title</div>
+            <div class="vhs-label-artist" id="vhsArtist">ARTIST</div>
+          </div>
+          <div class="vhs-tape-window">
+            <div class="vhs-reel" id="vhsReel1"></div>
+            <div class="vhs-tape-info">
+              <div class="vhs-lyric" id="vhsPrev"></div>
+              <div class="vhs-lyric curr" id="vhsCurr">—</div>
+              <div class="vhs-lyric" id="vhsNext"></div>
+            </div>
+            <div class="vhs-reel" id="vhsReel2"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOOMBOX -->
+      <div class="ext-wrap" id="boomboxWrap" style="display:none">
+        <div class="boombox-shell">
+          <div class="boombox-top">
+            <div class="boombox-speaker"><div class="boombox-speaker-inner"></div></div>
+            <div class="boombox-center">
+              <div class="boombox-lcd">
+                <div class="boombox-lcd-title" id="boomboxTitle">TRACK TITLE</div>
+                <div class="boombox-lyric" id="boomboxPrev"></div>
+                <div class="boombox-lyric curr" id="boomboxCurr">—</div>
+                <div class="boombox-lyric" id="boomboxNext"></div>
+              </div>
+            </div>
+            <div class="boombox-speaker"><div class="boombox-speaker-inner"></div></div>
+            <div class="boombox-antenna"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AMP -->
+      <div class="ext-wrap" id="ampWrap" style="display:none">
+        <div class="amp-shell">
+          <div class="amp-grill">
+            <div class="amp-speaker-circle"><div class="amp-speaker-inner"></div></div>
+          </div>
+          <div class="amp-controls">
+            <div class="amp-knob"></div>
+            <div class="amp-knob"></div>
+            <div class="amp-lcd">
+              <div class="amp-lcd-title" id="ampTitle">TRACK TITLE</div>
+              <div class="amp-lyric" id="ampPrev"></div>
+              <div class="amp-lyric curr" id="ampCurr">—</div>
+              <div class="amp-lyric" id="ampNext"></div>
+            </div>
+            <div class="amp-knob"></div>
+            <div class="amp-power"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- APPLE MUSIC -->
+      <div class="ext-wrap" id="appleMusicWrap" style="display:none">
+        <div class="applemusic-shell">
+          <div class="am-art" id="amArtBox">🎵</div>
+          <div class="am-title" id="amTitle">Track Title</div>
+          <div class="am-artist" id="amArtist">Artist</div>
+          <div class="am-lyric" id="amPrev"></div>
+          <div class="am-lyric curr" id="amCurr">—</div>
+          <div class="am-lyric" id="amNext"></div>
+          <div class="am-prog-wrap">
+            <div class="am-bar-bg"><div class="am-bar-fill" id="amFill"></div></div>
+            <div class="am-time" id="amTime">0:00</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SPOTIFY -->
+      <div class="ext-wrap" id="spotifyWrap" style="display:none">
+        <div class="spotify-shell">
+          <div class="sp-art" id="spArtBox">🎵</div>
+          <div class="sp-title" id="spTitle">Track Title</div>
+          <div class="sp-artist" id="spArtist">Artist</div>
+          <div class="sp-lyric" id="spPrev"></div>
+          <div class="sp-lyric curr" id="spCurr">—</div>
+          <div class="sp-lyric" id="spNext"></div>
+          <div class="sp-prog-wrap">
+            <div class="sp-bar-bg"><div class="sp-bar-fill" id="spFill"></div></div>
+            <div class="sp-time" id="spTime">0:00</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DAW -->
+      <div class="ext-wrap" id="dawWrap" style="display:none">
+        <div class="daw-shell">
+          <div class="daw-titlebar">
+            <div class="daw-dot r"></div><div class="daw-dot y"></div><div class="daw-dot g"></div>
+            <div class="daw-titlebar-text" id="dawTitleBar">UNTITLED — LYRIC.STUDIO</div>
+          </div>
+          <div class="daw-track-row">
+            <div class="daw-track-label">LEAD</div>
+            <div class="daw-waveform-strip">
+              <div class="daw-waveform-fill" id="dawWaveStrip"></div>
+              <div class="daw-playhead" id="dawPlayhead" style="left:0%"></div>
+            </div>
+          </div>
+          <div class="daw-track-row">
+            <div class="daw-track-label">LYRIC</div>
+            <div class="daw-waveform-strip" style="background:#0d0d0d;">
+              <div class="daw-lyric" id="dawPrev" style="position:absolute;left:6px;top:2px;"></div>
+            </div>
+          </div>
+          <div class="daw-lyric curr" id="dawCurr" style="padding:4px 0 2px;">—</div>
+          <div class="daw-lyric" id="dawNext"></div>
+          <div class="daw-status">
+            <div class="daw-status-dot"></div>
+            <div class="daw-status-text">REC READY · 44.1kHz · 24bit</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FILM REEL -->
+      <div class="ext-wrap" id="filmreelWrap" style="display:none">
+        <div class="filmreel-shell">
+          <div class="filmstrip" id="filmstrip">
+            <div class="filmstrip-frame" id="filmFrame1"></div>
+            <div class="filmstrip-frame" id="filmFrame2"></div>
+            <div class="filmstrip-frame" id="filmFrame3"></div>
+            <div class="filmstrip-frame" id="filmFrame4"></div>
+          </div>
+          <div class="filmreel-title" id="filmTitle">Track Title</div>
+          <div class="filmreel-artist" id="filmArtist">ARTIST</div>
+          <div class="filmreel-lyric" id="filmPrev"></div>
+          <div class="filmreel-lyric curr" id="filmCurr">—</div>
+          <div class="filmreel-lyric" id="filmNext"></div>
+        </div>
+      </div>
+
+      <!-- NEON -->
+      <div class="ext-wrap" id="neonWrap" style="display:none">
+        <div class="neon-shell">
+          <div class="neon-title" id="neonTitle">TRACK TITLE</div>
+          <div class="neon-artist" id="neonArtist">ARTIST</div>
+          <hr class="neon-divider">
+          <div class="neon-lyric" id="neonPrev"></div>
+          <div class="neon-lyric curr" id="neonCurr">—</div>
+          <div class="neon-lyric" id="neonNext"></div>
+        </div>
+      </div>
+
+      <!-- CONCERT TICKET -->
+      <div class="ext-wrap" id="ticketWrap" style="display:none">
+        <div class="ticket-shell">
+          <div class="ticket-header">
+            <div class="ticket-event" id="ticketTitle">TRACK TITLE</div>
+            <div class="ticket-artist-name" id="ticketArtist">ARTIST</div>
+          </div>
+          <div class="ticket-body">
+            <div class="ticket-art" id="ticketArt">🎵</div>
+            <div class="ticket-info">
+              <div class="ticket-lyric" id="ticketPrev"></div>
+              <div class="ticket-lyric curr" id="ticketCurr">—</div>
+              <div class="ticket-lyric" id="ticketNext"></div>
+            </div>
+          </div>
+          <div class="ticket-number">NO. 001</div>
+        </div>
+      </div>
+
+      <!-- WAVEFORM ONLY -->
+      <div class="ext-wrap" id="waveformWrap" style="display:none">
+        <div class="waveform-shell">
+          <div class="waveform-bars" id="waveformBars"></div>
+          <div class="waveform-title" id="waveformTitle">TRACK TITLE</div>
+          <div class="waveform-lyric curr" id="waveformCurr">—</div>
+        </div>
+      </div>
+
+      <!-- POLAROID -->
+      <div class="ext-wrap" id="polaroidWrap" style="display:none">
+        <div class="polaroid-shell">
+          <div class="polaroid-photo" id="polaroidPhoto">📸</div>
+          <div class="polaroid-caption" id="polaroidCaption">TRACK TITLE</div>
+          <div class="polaroid-lyric" id="polaroidPrev"></div>
+          <div class="polaroid-lyric curr" id="polaroidCurr">—</div>
+          <div class="polaroid-lyric" id="polaroidNext"></div>
+        </div>
+      </div>
+
+      <!-- J-CARD -->
+      <div class="ext-wrap" id="jcardWrap" style="display:none">
+        <div class="jcard-shell">
+          <div class="jcard-spine"></div>
+          <div class="jcard-title" id="jcardTitle">TRACK TITLE</div>
+          <div class="jcard-artist" id="jcardArtist">ARTIST</div>
+          <div class="jcard-art" id="jcardArt">🎵</div>
+          <div class="jcard-lyric" id="jcardPrev"></div>
+          <div class="jcard-lyric curr" id="jcardCurr">—</div>
+          <div class="jcard-lyric" id="jcardNext"></div>
+          <div class="jcard-side">
+            <div class="jcard-side-label">SIDE A</div>
+            <div class="jcard-side-label" id="jcardTime">0:00</div>
+          </div>
+        </div>
+      </div>
+
       <!-- ── LYRIC OVERLAY — bottom of frame ── -->
+
       <div class="lyric-overlay" aria-live="polite">
         <div class="lyric-lines-stack">
           <div class="lyric-prev-line" id="overlayPrev"></div>
@@ -1516,14 +2070,34 @@ setTimeout(fitFrame, 80);
 setTimeout(fitFrame, 400);
  
 // ─── SKIN ────────────────────────────────
-function setSkin(skin, btn) {
+const ALL_SKINS = ['mp3','cd','vinyl','vhs','boombox','amp','applemusic','spotify','daw','filmreel','neon','ticket','waveform','polaroid','jcard'];
+const CLASSIC_SKINS = ['mp3','cd','vinyl'];
+const EXT_SKIN_WRAPS = { vhs:'vhsWrap', boombox:'boomboxWrap', amp:'ampWrap', applemusic:'appleMusicWrap', spotify:'spotifyWrap', daw:'dawWrap', filmreel:'filmreelWrap', neon:'neonWrap', ticket:'ticketWrap', waveform:'waveformWrap', polaroid:'polaroidWrap', jcard:'jcardWrap' };
+
+function setSkin(skin) {
   currentSkin = skin;
   const app = document.getElementById('app');
   app.className = 'layout skin-' + skin + ' lyr-style-' + currentLyrStyle;
+  // hide all ext wraps
+  Object.values(EXT_SKIN_WRAPS).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+  // show matching ext wrap
+  if (EXT_SKIN_WRAPS[skin]) {
+    const el = document.getElementById(EXT_SKIN_WRAPS[skin]);
+    if (el) el.style.display = 'flex';
+  }
   toggleFx();
-  document.querySelectorAll('.skin-pill').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+  // sync dropdown
+  const sel = document.getElementById('skinSelect');
+  if (sel) sel.value = skin;
 }
+
+function setSkinFromSelect(sel) {
+  setSkin(sel.value);
+}
+
  
 // ─── LYRIC STYLE ─────────────────────────
 function setLyrStyle(style, card) {
@@ -1555,13 +2129,18 @@ function toggleFx() {
     if (el) el.style.display = fxSkinLyrics ? '' : 'none';
   });
 
-  // Skin visibility
+  // Skin visibility — classic skins
   document.getElementById('mp3Wrap').style.display =
     fxShowSkin && currentSkin === 'mp3' ? 'flex' : 'none';
   document.getElementById('cdWrap').style.display =
     fxShowSkin && currentSkin === 'cd' ? 'flex' : 'none';
   document.getElementById('vinylWrap').style.display =
     fxShowSkin && currentSkin === 'vinyl' ? 'flex' : 'none';
+  // ext skins
+  Object.entries(EXT_SKIN_WRAPS).forEach(([skin, id]) => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = fxShowSkin && currentSkin === skin ? 'flex' : 'none';
+  });
 
   document.getElementById('app').classList.toggle('no-skin', !fxShowSkin);
 
@@ -1609,6 +2188,7 @@ function loadArt(input) {
   cdImg.src = artUrl; cdImg.style.display = 'block';
   document.getElementById('vinylLabel').innerHTML = `<img src="${artUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
   if (!bgUrl) document.getElementById('bgLayer').style.backgroundImage = `url(${artUrl})`;
+  updateExtSkinArt();
 }
  
 function loadBg(input) {
@@ -1723,8 +2303,35 @@ function refreshMeta(title, artist) {
   document.getElementById('cdTitle').textContent   = `${artist} — ${title}`;
   document.getElementById('ttTitle').textContent   = title;
   document.getElementById('ttArtist').textContent  = artist.toUpperCase();
+  // new skins
+  const pairs = [
+    ['vhsTitle',title],['vhsArtist',artist.toUpperCase()],
+    ['boomboxTitle',title.toUpperCase()],
+    ['ampTitle',title.toUpperCase()],
+    ['amTitle',title],['amArtist',artist],
+    ['spTitle',title],['spArtist',artist],
+    ['dawTitleBar',`${title.toUpperCase()} — LYRIC.STUDIO`],
+    ['filmTitle',title],['filmArtist',artist.toUpperCase()],
+    ['neonTitle',title.toUpperCase()],['neonArtist',artist.toUpperCase()],
+    ['ticketTitle',title.toUpperCase()],['ticketArtist',artist.toUpperCase()],
+    ['waveformTitle',title.toUpperCase()],
+    ['polaroidCaption',title.toUpperCase()],
+    ['jcardTitle',title.toUpperCase()],['jcardArtist',artist.toUpperCase()],
+  ];
+  pairs.forEach(([id, val]) => { const el = document.getElementById(id); if(el) el.textContent = val; });
+  // art updates
+  if (artUrl) updateExtSkinArt();
 }
- 
+
+function updateExtSkinArt() {
+  const imgHtml = `<img src="${artUrl}" style="width:100%;height:100%;object-fit:cover;">`;
+  [['amArtBox',imgHtml],['spArtBox',imgHtml],['polaroidPhoto',imgHtml],
+   ['ticketArt',imgHtml],['jcardArt',`<img src="${artUrl}" style="width:100%;height:100%;object-fit:cover;">`],
+   ['filmFrame1',`<img src="${artUrl}">`],['filmFrame2',`<img src="${artUrl}">`],
+   ['filmFrame3',`<img src="${artUrl}">`],['filmFrame4',`<img src="${artUrl}">`]
+  ].forEach(([id, html]) => { const el = document.getElementById(id); if(el) el.innerHTML = html; });
+}
+
 function renderTsList() {
   const list = document.getElementById('tsList');
   list.innerHTML = '';
@@ -1811,6 +2418,9 @@ function setPlayState(playing) {
   document.getElementById('cdDisc')?.classList.toggle('spinning', playing);
   document.getElementById('vinylDisc')?.classList.toggle('spinning', playing);
   document.getElementById('tonearm')?.classList.toggle('playing', playing);
+  document.getElementById('vhsReel1')?.classList.toggle('spinning', playing);
+  document.getElementById('vhsReel2')?.classList.toggle('spinning', playing);
+
   setStatus(playing ? 'Playing — Space to stamp' : 'Paused', playing);
 }
  
@@ -1857,9 +2467,48 @@ audio.addEventListener('timeupdate', () => {
  
 function updateLyrics(t) {
   const { prev, curr, next } = getLyricForTime(t);
-  setLyricGroup(['lcdPrev','cdPrev','ttPrev','overlayPrev'], prev);
-  setLyricGroup(['lcdCurr','cdCurr','ttCurr','overlayCurr'], curr);
-  setLyricGroup(['lcdNext','cdNext','ttNext','overlayNext'], next);
+  setLyricGroup(['lcdPrev','cdPrev','ttPrev','overlayPrev','vhsPrev','boomboxPrev','ampPrev','amPrev','spPrev','filmPrev','neonPrev','ticketPrev','polaroidPrev','jcardPrev'], prev);
+  setLyricGroup(['lcdCurr','cdCurr','ttCurr','overlayCurr','vhsCurr','boomboxCurr','ampCurr','amCurr','spCurr','dawCurr','filmCurr','neonCurr','ticketCurr','waveformCurr','polaroidCurr','jcardCurr'], curr);
+  setLyricGroup(['lcdNext','cdNext','ttNext','overlayNext','vhsNext','boomboxNext','ampNext','amNext','spNext','filmNext','neonNext','ticketNext','polaroidNext','jcardNext'], next);
+  // Progress bars for new skins
+  const pct = (t / (audio.duration || 1) * 100).toFixed(1) + '%';
+  ['amFill','spFill'].forEach(id => { const el = document.getElementById(id); if(el) el.style.width = pct; });
+  ['amTime','spTime','jcardTime'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = fmt(t); });
+  // DAW playhead
+  const ph = document.getElementById('dawPlayhead');
+  if (ph) ph.style.left = (t / (audio.duration||1) * 100).toFixed(1) + '%';
+  // VHS reels spin state
+  const playing = !audio.paused;
+  ['vhsReel1','vhsReel2'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('spinning', playing); });
+  // Waveform-only animated bars
+  updateWaveformBars();
+}
+
+function updateWaveformBars() {
+  if (currentSkin !== 'waveform') return;
+  const container = document.getElementById('waveformBars');
+  if (!container) return;
+  if (!container.children.length) {
+    for (let i = 0; i < 32; i++) {
+      const b = document.createElement('div');
+      b.className = 'wf-bar' + (i === 16 ? ' active' : '');
+      container.appendChild(b);
+    }
+  }
+  const bars = container.children;
+  if (analyserGlobal) {
+    const buf = new Uint8Array(analyserGlobal.frequencyBinCount);
+    analyserGlobal.getByteFrequencyData(buf);
+    const step = Math.floor(buf.length / bars.length);
+    for (let i = 0; i < bars.length; i++) {
+      const v = buf[i * step] / 255;
+      bars[i].style.height = Math.max(4, v * 60) + 'px';
+    }
+  } else {
+    for (let i = 0; i < bars.length; i++) {
+      bars[i].style.height = (4 + Math.sin(Date.now()/300 + i) * 10 + 10) + 'px';
+    }
+  }
 }
  
 function setLyricGroup(ids, text) {
@@ -2034,11 +2683,23 @@ function drawFrame(ctx, W, H, t) {
   const { prev, curr, next } = getLyricForTime(t);
   const progress = t / (audio.duration || 1);
  
-  // Player skin
+    // Player skin
   if (fxShowSkin) {
-    if      (currentSkin === 'mp3')   drawMp3(ctx,W,H,curr,prev,next,progress,t);
-    else if (currentSkin === 'cd')    drawCd(ctx,W,H,curr,prev,next,progress,t);
-    else                              drawVinyl(ctx,W,H,curr,prev,next,progress,t);
+    if      (currentSkin === 'mp3')        drawMp3(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'cd')         drawCd(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'vinyl')      drawVinyl(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'vhs')        drawVhs(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'boombox')    drawBoombox(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'amp')        drawAmp(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'applemusic') drawAppleMusic(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'spotify')    drawSpotify(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'daw')        drawDaw(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'filmreel')   drawFilmReel(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'neon')       drawNeon(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'ticket')     drawTicket(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'waveform')   drawWaveformOnly(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'polaroid')   drawPolaroid(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'jcard')      drawJCard(ctx,W,H,curr,prev,next,progress,t);
   }
 
   // Track info — TOP of frame
@@ -2274,6 +2935,372 @@ function drawVinyl(ctx,W,H,curr,prev,next,progress,t) {
   progBar(ctx,ix,iy+145*sc,lbw,2*sc,progress,'#2a2010','#e8a020');
 }
  
+// ─── NEW SKIN CANVAS RENDERERS ───────────
+
+function drawVhs(ctx,W,H,curr,prev,next,progress,t) {
+  const sc=Math.min(W,H)/700, pw=280*sc, ph=300*sc;
+  const px=(W-pw)/2, py=(H-ph)/2;
+  // shell
+  const sg=ctx.createLinearGradient(px,py,px,py+ph);
+  sg.addColorStop(0,'#1a1a2e'); sg.addColorStop(1,'#0f0f1a');
+  ctx.save(); ctx.fillStyle=sg; rr(ctx,px,py,pw,ph,8*sc); ctx.fill();
+  ctx.strokeStyle='#2a2a4a'; ctx.lineWidth=2*sc; rr(ctx,px,py,pw,ph,8*sc); ctx.stroke(); ctx.restore();
+  // label
+  const lg=ctx.createLinearGradient(px+10*sc,py+10*sc,px+pw-10*sc,py+10*sc);
+  lg.addColorStop(0,'#e8a020'); lg.addColorStop(1,'#c07010');
+  ctx.fillStyle=lg; rr(ctx,px+10*sc,py+10*sc,pw-20*sc,50*sc,4*sc); ctx.fill();
+  const title=(document.getElementById('songTitle').value||'UNTITLED').toUpperCase();
+  const artist=(document.getElementById('songArtist').value||'ARTIST').toUpperCase();
+  ctx.fillStyle='#000'; ctx.font=`${Math.round(14*sc)}px 'Bebas Neue',sans-serif`;
+  ctx.textAlign='center'; ctx.fillText(title,px+pw/2,py+34*sc);
+  ctx.font=`${Math.round(8*sc)}px 'Space Mono',monospace`; ctx.fillStyle='#4a2000';
+  ctx.fillText(artist,px+pw/2,py+50*sc);
+  // tape window
+  ctx.fillStyle='#000'; rr(ctx,px+10*sc,py+72*sc,pw-20*sc,90*sc,4*sc); ctx.fill();
+  // reels
+  [px+38*sc, px+pw-38*sc].forEach(cx => {
+    const cy=py+117*sc, cr=20*sc;
+    ctx.beginPath(); ctx.arc(cx,cy,cr,0,Math.PI*2);
+    ctx.strokeStyle='#3a3a5a'; ctx.lineWidth=3*sc; ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx,cy,8*sc,0,Math.PI*2);
+    ctx.fillStyle='#1a1a2e'; ctx.fill();
+  });
+  // lyrics
+  ctx.textAlign='center';
+  if (fxSkinLyrics) {
+    ctx.fillStyle='#3a3a6a'; ctx.font=`${Math.round(8*sc)}px 'Space Mono',monospace`; ctx.fillText(prev,px+pw/2,py+185*sc);
+    ctx.fillStyle='#9090ff'; ctx.font=`bold ${Math.round(10*sc)}px 'Space Mono',monospace`; ctx.fillText(curr,px+pw/2,py+205*sc);
+    ctx.fillStyle='#3a3a6a'; ctx.font=`${Math.round(8*sc)}px 'Space Mono',monospace`; ctx.fillText(next,px+pw/2,py+222*sc);
+  }
+  progBar(ctx,px+20*sc,py+245*sc,pw-40*sc,3*sc,progress,'#1a1a3a','#6060cc');
+  ctx.textAlign='left';
+}
+
+function drawBoombox(ctx,W,H,curr,prev,next,progress,t) {
+  const sc=Math.min(W,H)/700, pw=340*sc, ph=260*sc;
+  const px=(W-pw)/2, py=(H-ph)/2;
+  const bg=ctx.createLinearGradient(px,py,px,py+ph);
+  bg.addColorStop(0,'#2a1a0a'); bg.addColorStop(1,'#1a1008');
+  ctx.save(); ctx.fillStyle=bg; rr(ctx,px,py,pw,ph,10*sc); ctx.fill();
+  ctx.strokeStyle='#4a2a10'; ctx.lineWidth=2*sc; rr(ctx,px,py,pw,ph,10*sc); ctx.stroke(); ctx.restore();
+  // speakers
+  [px+50*sc, px+pw-50*sc].forEach(cx => {
+    const cy=py+ph/2-10*sc, cr=40*sc;
+    ctx.save(); ctx.beginPath(); ctx.arc(cx,cy,cr,0,Math.PI*2);
+    const sg=ctx.createRadialGradient(cx-10*sc,cy-10*sc,0,cx,cy,cr);
+    sg.addColorStop(0,'#3a2a1a'); sg.addColorStop(1,'#1a1008');
+    ctx.fillStyle=sg; ctx.fill();
+    ctx.strokeStyle='#4a3a20'; ctx.lineWidth=3*sc; ctx.stroke(); ctx.restore();
+    for(let r=8;r<cr-4;r+=6){ ctx.beginPath(); ctx.arc(cx,cy,r*sc,0,Math.PI*2); ctx.strokeStyle='#2a1a08'; ctx.lineWidth=sc; ctx.stroke(); }
+  });
+  // center LCD
+  const lx=px+pw/2-60*sc, ly=py+30*sc, lw=120*sc, lh=80*sc;
+  ctx.fillStyle='#0a1a08'; rr(ctx,lx,ly,lw,lh,6*sc); ctx.fill();
+  ctx.strokeStyle='#1a3a10'; ctx.lineWidth=sc; rr(ctx,lx,ly,lw,lh,6*sc); ctx.stroke();
+  const title=(document.getElementById('songTitle').value||'UNTITLED').toUpperCase();
+  ctx.textAlign='center'; ctx.fillStyle='#60ff60'; ctx.font=`bold ${Math.round(9*sc)}px Orbitron,monospace`;
+  ctx.fillText(title.substring(0,14),px+pw/2,ly+16*sc);
+  if (fxSkinLyrics) {
+    ctx.fillStyle='#2a5a2a'; ctx.font=`${Math.round(7*sc)}px 'Space Mono',monospace`; ctx.fillText(prev,px+pw/2,ly+32*sc);
+    ctx.fillStyle='#80ff80'; ctx.font=`bold ${Math.round(9*sc)}px 'Space Mono',monospace`; ctx.fillText(curr,px+pw/2,ly+48*sc);
+    ctx.fillStyle='#2a5a2a'; ctx.font=`${Math.round(7*sc)}px 'Space Mono',monospace`; ctx.fillText(next,px+pw/2,ly+62*sc);
+  }
+  progBar(ctx,lx+8*sc,ly+70*sc,lw-16*sc,3*sc,progress,'#0a2a0a','#40ff40');
+  ctx.textAlign='left';
+}
+
+function drawAmp(ctx,W,H,curr,prev,next,progress,t) {
+  const sc=Math.min(W,H)/700, pw=280*sc, ph=280*sc;
+  const px=(W-pw)/2, py=(H-ph)/2;
+  const bg=ctx.createLinearGradient(px,py,px,py+ph);
+  bg.addColorStop(0,'#1c1408'); bg.addColorStop(1,'#0d0d0a');
+  ctx.save(); ctx.fillStyle=bg; rr(ctx,px,py,pw,ph,6*sc); ctx.fill();
+  ctx.strokeStyle='#2a2010'; ctx.lineWidth=3*sc; rr(ctx,px,py,pw,ph,6*sc); ctx.stroke(); ctx.restore();
+  // grill
+  const gx=px+10*sc, gy=py+10*sc, gw=pw-20*sc, gh=120*sc;
+  for(let y=gy;y<gy+gh;y+=4*sc){ ctx.fillStyle=y%(8*sc)<4*sc?'#1a1208':'#2a2010'; ctx.fillRect(gx,y,gw,4*sc); }
+  rr(ctx,gx,gy,gw,gh,4*sc); ctx.strokeStyle='#3a3020'; ctx.lineWidth=sc; ctx.stroke();
+  // speaker circle
+  const cx=px+pw/2, cy=gy+gh/2, cr=gh*.38;
+  ctx.beginPath(); ctx.arc(cx,cy,cr,0,Math.PI*2);
+  ctx.strokeStyle='#4a4030'; ctx.lineWidth=2*sc; ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx,cy,cr*.55,0,Math.PI*2);
+  ctx.fillStyle='rgba(0,0,0,.5)'; ctx.fill();
+  // LCD
+  const lx=px+10*sc, ly=gy+gh+10*sc, lw=pw-20*sc, lh=80*sc;
+  ctx.fillStyle='#0a0f08'; rr(ctx,lx,ly,lw,lh,4*sc); ctx.fill();
+  const title=(document.getElementById('songTitle').value||'UNTITLED').toUpperCase();
+  ctx.textAlign='center'; ctx.fillStyle='#70b070'; ctx.font=`${Math.round(9*sc)}px Orbitron,monospace`;
+  ctx.fillText(title.substring(0,16),px+pw/2,ly+16*sc);
+  if (fxSkinLyrics) {
+    ctx.fillStyle='#2a4a2a'; ctx.font=`${Math.round(7*sc)}px 'Space Mono',monospace`; ctx.fillText(prev,px+pw/2,ly+32*sc);
+    ctx.fillStyle='#80ff60'; ctx.font=`bold ${Math.round(9*sc)}px 'Space Mono',monospace`; ctx.fillText(curr,px+pw/2,ly+48*sc);
+    ctx.fillStyle='#2a4a2a'; ctx.font=`${Math.round(7*sc)}px 'Space Mono',monospace`; ctx.fillText(next,px+pw/2,ly+62*sc);
+  }
+  progBar(ctx,lx+8*sc,ly+70*sc,lw-16*sc,3*sc,progress,'#0a1a0a','#60ff40');
+  // power LED
+  ctx.beginPath(); ctx.arc(px+pw-20*sc,ly+lh/2,5*sc,0,Math.PI*2);
+  ctx.fillStyle='#20ff00'; ctx.shadowColor='#40ff20'; ctx.shadowBlur=8*sc; ctx.fill(); ctx.shadowBlur=0;
+  ctx.textAlign='left';
+}
+
+function drawAppleMusic(ctx,W,H,curr,prev,next,progress,t) {
+  const sc=Math.min(W,H)/700, pw=240*sc, ph=320*sc;
+  const px=(W-pw)/2, py=(H-ph)/2;
+  ctx.save(); ctx.fillStyle='rgba(28,28,30,0.96)'; rr(ctx,px,py,pw,ph,18*sc); ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,0.08)'; ctx.lineWidth=sc; rr(ctx,px,py,pw,ph,18*sc); ctx.stroke(); ctx.restore();
+  // art
+  const as=pw-24*sc, ax=px+12*sc, ay=py+12*sc;
+  ctx.save(); rr(ctx,ax,ay,as,as,12*sc); ctx.clip();
+  if(artImg?.complete) ctx.drawImage(artImg,ax,ay,as,as);
+  else { ctx.fillStyle='#2c2c2e'; ctx.fillRect(ax,ay,as,as); }
+  ctx.restore();
+  // text
+  const title=document.getElementById('songTitle').value||'Track Title';
+  const artist=document.getElementById('songArtist').value||'Artist';
+  ctx.textAlign='left';
+  ctx.fillStyle='#fff'; ctx.font=`bold ${Math.round(15*sc)}px -apple-system,'Helvetica Neue',sans-serif`;
+  ctx.fillText(title.substring(0,22),ax,ay+as+22*sc);
+  ctx.fillStyle='#fe375f'; ctx.font=`${Math.round(12*sc)}px -apple-system,'Helvetica Neue',sans-serif`;
+  ctx.fillText(artist.substring(0,24),ax,ay+as+38*sc);
+  if (fxSkinLyrics) {
+    ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.font=`${Math.round(10*sc)}px -apple-system,sans-serif`; ctx.fillText(prev,ax,ay+as+56*sc);
+    ctx.fillStyle='rgba(255,255,255,0.9)'; ctx.font=`bold ${Math.round(12*sc)}px -apple-system,sans-serif`; ctx.fillText(curr,ax,ay+as+74*sc);
+    ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.font=`${Math.round(10*sc)}px -apple-system,sans-serif`; ctx.fillText(next,ax,ay+as+90*sc);
+  }
+  progBar(ctx,ax,py+ph-22*sc,as,3*sc,progress,'#3a3a3c','#fff');
+  ctx.textAlign='left';
+}
+
+function drawSpotify(ctx,W,H,curr,prev,next,progress,t) {
+  const sc=Math.min(W,H)/700, pw=240*sc, ph=320*sc;
+  const px=(W-pw)/2, py=(H-ph)/2;
+  ctx.save(); ctx.fillStyle='#121212'; rr(ctx,px,py,pw,ph,12*sc); ctx.fill();
+  ctx.strokeStyle='#282828'; ctx.lineWidth=sc; rr(ctx,px,py,pw,ph,12*sc); ctx.stroke(); ctx.restore();
+  const as=pw-20*sc, ax=px+10*sc, ay=py+10*sc;
+  ctx.save(); rr(ctx,ax,ay,as,as,6*sc); ctx.clip();
+  if(artImg?.complete) ctx.drawImage(artImg,ax,ay,as,as);
+  else { ctx.fillStyle='#282828'; ctx.fillRect(ax,ay,as,as); }
+  ctx.restore();
+  const title=document.getElementById('songTitle').value||'Track Title';
+  const artist=document.getElementById('songArtist').value||'Artist';
+  ctx.textAlign='left';
+  ctx.fillStyle='#fff'; ctx.font=`bold ${Math.round(14*sc)}px -apple-system,sans-serif`;
+  ctx.fillText(title.substring(0,22),ax,ay+as+20*sc);
+  ctx.fillStyle='#b3b3b3'; ctx.font=`${Math.round(11*sc)}px -apple-system,sans-serif`;
+  ctx.fillText(artist.substring(0,24),ax,ay+as+36*sc);
+  if (fxSkinLyrics) {
+    ctx.fillStyle='#535353'; ctx.font=`${Math.round(9*sc)}px -apple-system,sans-serif`; ctx.fillText(prev,ax,ay+as+54*sc);
+    ctx.fillStyle='#fff'; ctx.font=`bold ${Math.round(12*sc)}px -apple-system,sans-serif`; ctx.fillText(curr,ax,ay+as+72*sc);
+    ctx.fillStyle='#535353'; ctx.font=`${Math.round(9*sc)}px -apple-system,sans-serif`; ctx.fillText(next,ax,ay+as+88*sc);
+  }
+  progBar(ctx,ax,py+ph-22*sc,as,4*sc,progress,'#535353','#1db954');
+  ctx.textAlign='left';
+}
+
+function drawDaw(ctx,W,H,curr,prev,next,progress,t) {
+  const sc=Math.min(W,H)/700, pw=340*sc, ph=220*sc;
+  const px=(W-pw)/2, py=(H-ph)/2;
+  ctx.save(); ctx.fillStyle='#1a1a1a'; rr(ctx,px,py,pw,ph,4*sc); ctx.fill();
+  ctx.strokeStyle='#333'; ctx.lineWidth=sc; rr(ctx,px,py,pw,ph,4*sc); ctx.stroke(); ctx.restore();
+  // titlebar
+  ctx.fillStyle='#2a2a2a'; ctx.fillRect(px,py,pw,22*sc);
+  ctx.fillStyle='#ff5f57'; ctx.beginPath(); ctx.arc(px+12*sc,py+11*sc,5*sc,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#ffbd2e'; ctx.beginPath(); ctx.arc(px+26*sc,py+11*sc,5*sc,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#28c940'; ctx.beginPath(); ctx.arc(px+40*sc,py+11*sc,5*sc,0,Math.PI*2); ctx.fill();
+  const dawTitle=(document.getElementById('songTitle').value||'UNTITLED').toUpperCase();
+  ctx.textAlign='center'; ctx.fillStyle='#666'; ctx.font=`${Math.round(8*sc)}px 'Space Mono',monospace`;
+  ctx.fillText(dawTitle+' — LYRIC.STUDIO',px+pw/2,py+15*sc);
+  // tracks
+  const trackY=py+32*sc, trackH=22*sc;
+  ['LEAD','LYRIC','FX'].forEach((label,i) => {
+    const ty=trackY+i*(trackH+4*sc);
+    ctx.fillStyle='#0d0d0d'; ctx.fillRect(px+8*sc,ty,pw-16*sc,trackH);
+    ctx.fillStyle='#444'; ctx.font=`${Math.round(7*sc)}px 'Space Mono',monospace`; ctx.textAlign='left';
+    ctx.fillText(label,px+12*sc,ty+14*sc);
+    // waveform sketch
+    ctx.strokeStyle = i===1 ? '#e8a020' : '#333'; ctx.lineWidth=sc;
+    ctx.beginPath(); ctx.moveTo(px+50*sc,ty+trackH/2);
+    for(let x=0;x<pw-60*sc;x+=4*sc){
+      const v=(Math.sin(x*.3+t*2+i)*0.4+0.5)*trackH*.8;
+      ctx.lineTo(px+50*sc+x,ty+trackH/2-v/2+v*Math.random()*.3);
+    }
+    ctx.stroke();
+  });
+  // playhead
+  const phx=px+50*sc+(pw-60*sc)*progress;
+  ctx.strokeStyle=ctx.fillStyle='#e8a020'; ctx.lineWidth=2*sc;
+  ctx.beginPath(); ctx.moveTo(phx,trackY-2*sc); ctx.lineTo(phx,trackY+3*(trackH+4*sc)+2*sc); ctx.stroke();
+  // lyrics
+  const ly2=trackY+3*(trackH+4*sc)+10*sc;
+  ctx.textAlign='center';
+  if(fxSkinLyrics) {
+    ctx.fillStyle='#505050'; ctx.font=`${Math.round(8*sc)}px 'Space Mono',monospace`; ctx.fillText(prev,px+pw/2,ly2+12*sc);
+    ctx.fillStyle='#e8a020'; ctx.font=`bold ${Math.round(10*sc)}px 'Space Mono',monospace`; ctx.fillText(curr,px+pw/2,ly2+26*sc);
+    ctx.fillStyle='#505050'; ctx.font=`${Math.round(8*sc)}px 'Space Mono',monospace`; ctx.fillText(next,px+pw/2,ly2+40*sc);
+  }
+  ctx.textAlign='left';
+}
+
+function drawFilmReel(ctx,W,H,curr,prev,next,progress,t) {
+  const sc=Math.min(W,H)/700, pw=280*sc, ph=280*sc;
+  const px=(W-pw)/2, py=(H-ph)/2;
+  ctx.save(); ctx.fillStyle='#0a0a0a'; rr(ctx,px,py,pw,ph,8*sc); ctx.fill();
+  ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=2*sc; rr(ctx,px,py,pw,ph,8*sc); ctx.stroke(); ctx.restore();
+  // filmstrip
+  const fh=80*sc, fw=(pw-16*sc)/4, fy=py+10*sc;
+  for(let i=0;i<4;i++){
+    const fx2=px+8*sc+i*(fw+2*sc);
+    ctx.fillStyle='#111'; ctx.fillRect(fx2,fy,fw,fh);
+    if(artImg?.complete){ ctx.globalAlpha=.6; ctx.drawImage(artImg,fx2,fy,fw,fh); ctx.globalAlpha=1; }
+    ctx.fillStyle='#000';
+    ctx.fillRect(fx2,fy,fw,8*sc); ctx.fillRect(fx2,fy+fh-8*sc,fw,8*sc);
+    for(let s=0;s<4;s++){ ctx.fillStyle='#1a1a1a'; ctx.fillRect(fx2+s*(fw/4)+2*sc,fy+1*sc,fw/4-4*sc,6*sc); ctx.fillRect(fx2+s*(fw/4)+2*sc,fy+fh-7*sc,fw/4-4*sc,6*sc); }
+  }
+  const title=document.getElementById('songTitle').value||'Track Title';
+  const artist=(document.getElementById('songArtist').value||'ARTIST').toUpperCase();
+  ctx.textAlign='left';
+  ctx.fillStyle='#fff'; ctx.font=`${Math.round(18*sc)}px 'Bebas Neue',sans-serif`; ctx.letterSpacing='4px';
+  ctx.fillText(title,px+10*sc,fy+fh+26*sc);
+  ctx.fillStyle='#666'; ctx.font=`${Math.round(9*sc)}px 'Space Mono',monospace`;
+  ctx.fillText(artist,px+10*sc,fy+fh+40*sc);
+  if(fxSkinLyrics) {
+    ctx.fillStyle='#333'; ctx.font=`${Math.round(10*sc)}px 'Bebas Neue',sans-serif`; ctx.fillText(prev,px+10*sc,fy+fh+60*sc);
+    ctx.fillStyle='#e8a020'; ctx.font=`${Math.round(14*sc)}px 'Bebas Neue',sans-serif`; ctx.fillText(curr,px+10*sc,fy+fh+78*sc);
+    ctx.fillStyle='#333'; ctx.font=`${Math.round(10*sc)}px 'Bebas Neue',sans-serif`; ctx.fillText(next,px+10*sc,fy+fh+94*sc);
+  }
+  progBar(ctx,px+10*sc,py+ph-16*sc,pw-20*sc,3*sc,progress,'#1a1a1a','#e8a020');
+  ctx.textAlign='left';
+}
+
+function drawNeon(ctx,W,H,curr,prev,next,progress,t) {
+  const sc=Math.min(W,H)/700, pw=300*sc, ph=240*sc;
+  const px=(W-pw)/2, py=(H-ph)/2;
+  ctx.save(); ctx.fillStyle='#05080d'; rr(ctx,px,py,pw,ph,6*sc); ctx.fill(); ctx.restore();
+  const title=(document.getElementById('songTitle').value||'TITLE').toUpperCase();
+  const artist=(document.getElementById('songArtist').value||'ARTIST').toUpperCase();
+  ctx.textAlign='center';
+  ctx.fillStyle='#ff4080'; ctx.shadowColor='#ff4080'; ctx.shadowBlur=20*sc;
+  ctx.font=`${Math.round(30*sc)}px 'Bebas Neue',sans-serif`;
+  ctx.fillText(title,px+pw/2,py+48*sc); ctx.shadowBlur=0;
+  ctx.fillStyle='#40c0ff'; ctx.shadowColor='#40c0ff'; ctx.shadowBlur=12*sc;
+  ctx.font=`${Math.round(12*sc)}px 'Bebas Neue',sans-serif`;
+  ctx.fillText(artist,px+pw/2,py+68*sc); ctx.shadowBlur=0;
+  ctx.strokeStyle='#0a1a2a'; ctx.lineWidth=sc; ctx.beginPath(); ctx.moveTo(px+20*sc,py+82*sc); ctx.lineTo(px+pw-20*sc,py+82*sc); ctx.stroke();
+  if(fxSkinLyrics) {
+    ctx.fillStyle='#2a2a3a'; ctx.font=`${Math.round(12*sc)}px 'Bebas Neue',sans-serif`; ctx.fillText(prev,px+pw/2,py+110*sc);
+    ctx.fillStyle='#80ffb0'; ctx.shadowColor='#80ffb0'; ctx.shadowBlur=14*sc;
+    ctx.font=`${Math.round(18*sc)}px 'Bebas Neue',sans-serif`; ctx.fillText(curr,px+pw/2,py+140*sc); ctx.shadowBlur=0;
+    ctx.fillStyle='#2a2a3a'; ctx.font=`${Math.round(12*sc)}px 'Bebas Neue',sans-serif`; ctx.fillText(next,px+pw/2,py+162*sc);
+  }
+  progBar(ctx,px+20*sc,py+ph-16*sc,pw-40*sc,3*sc,progress,'#0a1a2a','#40c0ff');
+  ctx.textAlign='left';
+}
+
+function drawTicket(ctx,W,H,curr,prev,next,progress,t) {
+  const sc=Math.min(W,H)/700, pw=280*sc, ph=260*sc;
+  const px=(W-pw)/2, py=(H-ph)/2;
+  ctx.save(); ctx.fillStyle='#f0e8d0'; rr(ctx,px,py,pw,ph,6*sc); ctx.fill();
+  ctx.strokeStyle='#c8a870'; ctx.lineWidth=2*sc; rr(ctx,px,py,pw,ph,6*sc); ctx.stroke(); ctx.restore();
+  // notches
+  ctx.fillStyle='#080808';
+  ctx.beginPath(); ctx.arc(px,py+ph/2,8*sc,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(px+pw,py+ph/2,8*sc,0,Math.PI*2); ctx.fill();
+  // header
+  const title=(document.getElementById('songTitle').value||'TITLE').toUpperCase();
+  const artist=(document.getElementById('songArtist').value||'ARTIST').toUpperCase();
+  ctx.textAlign='left';
+  ctx.fillStyle='#1a0a00'; ctx.font=`${Math.round(22*sc)}px 'Bebas Neue',sans-serif`; ctx.fillText(title,px+14*sc,py+30*sc);
+  ctx.fillStyle='#6a4a20'; ctx.font=`${Math.round(11*sc)}px 'Bebas Neue',sans-serif`; ctx.fillText(artist,px+14*sc,py+46*sc);
+  ctx.strokeStyle='#c8a870'; ctx.lineWidth=sc; ctx.setLineDash([6*sc,4*sc]);
+  ctx.beginPath(); ctx.moveTo(px+10*sc,py+54*sc); ctx.lineTo(px+pw-10*sc,py+54*sc); ctx.stroke(); ctx.setLineDash([]);
+  if(artImg?.complete){ ctx.save(); rr(ctx,px+14*sc,py+62*sc,60*sc,60*sc,4*sc); ctx.clip(); ctx.drawImage(artImg,px+14*sc,py+62*sc,60*sc,60*sc); ctx.restore(); }
+  if(fxSkinLyrics) {
+    ctx.fillStyle='#9a8060'; ctx.font=`${Math.round(8*sc)}px 'Space Mono',monospace`; ctx.fillText(prev,px+84*sc,py+82*sc);
+    ctx.fillStyle='#1a0a00'; ctx.font=`bold ${Math.round(10*sc)}px 'Space Mono',monospace`; ctx.fillText(curr,px+84*sc,py+100*sc);
+    ctx.fillStyle='#9a8060'; ctx.font=`${Math.round(8*sc)}px 'Space Mono',monospace`; ctx.fillText(next,px+84*sc,py+116*sc);
+  }
+  progBar(ctx,px+14*sc,py+ph-20*sc,pw-28*sc,3*sc,progress,'#c8a870','#6a3a10');
+  ctx.fillStyle='#c8a870'; ctx.font=`${Math.round(7*sc)}px Orbitron,monospace`;
+  ctx.textAlign='right'; ctx.fillText('NO. 001',px+pw-12*sc,py+ph-6*sc); ctx.textAlign='left';
+}
+
+function drawWaveformOnly(ctx,W,H,curr,prev,next,progress,t) {
+  const sc=Math.min(W,H)/700;
+  ctx.textAlign='center';
+  // animated bars
+  const barCount=48, totalW=300*sc, barW=totalW/barCount-2*sc, bx=(W-totalW)/2, by=H*.38;
+  for(let i=0;i<barCount;i++){
+    const active=Math.abs(i-barCount*progress)<3;
+    const v=analyserGlobal ? 0 : (Math.sin(Date.now()/200+i*0.4)*0.4+0.5);
+    const bh=(20+v*60)*sc;
+    ctx.globalAlpha=active?1:0.4;
+    ctx.fillStyle=active?'#f0c040':'#e8a020';
+    ctx.fillRect(bx+i*(barW+2*sc),by-bh/2,barW,bh);
+  }
+  ctx.globalAlpha=1;
+  const title=(document.getElementById('songTitle').value||'TRACK TITLE').toUpperCase();
+  ctx.fillStyle='#fff'; ctx.font=`${Math.round(20*sc)}px 'Bebas Neue',sans-serif`;
+  ctx.fillText(title,W/2,by+60*sc);
+  if(fxSkinLyrics) {
+    ctx.fillStyle='rgba(255,255,255,0.25)'; ctx.font=`${Math.round(12*sc)}px 'Space Mono',monospace`; ctx.fillText(prev,W/2,by+82*sc);
+    ctx.fillStyle='var(--accent)'; ctx.fillStyle='#e8a020'; ctx.font=`${Math.round(14*sc)}px 'Space Mono',monospace`; ctx.fillText(curr,W/2,by+100*sc);
+    ctx.fillStyle='rgba(255,255,255,0.25)'; ctx.font=`${Math.round(12*sc)}px 'Space Mono',monospace`; ctx.fillText(next,W/2,by+118*sc);
+  }
+  ctx.textAlign='left';
+}
+
+function drawPolaroid(ctx,W,H,curr,prev,next,progress,t) {
+  const sc=Math.min(W,H)/700, pw=200*sc, ph=240*sc;
+  const px=(W-pw)/2, py=(H-ph)/2;
+  ctx.save(); ctx.fillStyle='#f0ede6'; rr(ctx,px,py,pw,ph,2*sc); ctx.fill();
+  ctx.strokeStyle='#d0cdc6'; ctx.lineWidth=sc; rr(ctx,px,py,pw,ph,2*sc); ctx.stroke();
+  ctx.shadowColor='rgba(0,0,0,.4)'; ctx.shadowBlur=20*sc; ctx.shadowOffsetY=8*sc;
+  ctx.fillStyle='#f0ede6'; ctx.fillRect(px,py,pw,ph); ctx.restore();
+  const as=pw-16*sc;
+  ctx.save(); ctx.fillRect(px+8*sc,py+8*sc,as,as);
+  if(artImg?.complete) ctx.drawImage(artImg,px+8*sc,py+8*sc,as,as);
+  else { ctx.fillStyle='#c8c5be'; ctx.fillRect(px+8*sc,py+8*sc,as,as); }
+  ctx.restore();
+  ctx.textAlign='center';
+  const title=document.getElementById('songTitle').value||'Title';
+  ctx.fillStyle='#3a3530'; ctx.font=`${Math.round(9*sc)}px 'Space Mono',monospace`;
+  ctx.fillText(title.toUpperCase().substring(0,20),px+pw/2,py+8*sc+as+18*sc);
+  if(fxSkinLyrics) {
+    ctx.fillStyle='#8a8580'; ctx.font=`${Math.round(7*sc)}px 'Space Mono',monospace`; ctx.fillText(prev,px+pw/2,py+8*sc+as+30*sc);
+    ctx.fillStyle='#3a3530'; ctx.font=`bold ${Math.round(9*sc)}px 'Space Mono',monospace`; ctx.fillText(curr,px+pw/2,py+8*sc+as+44*sc);
+    ctx.fillStyle='#8a8580'; ctx.font=`${Math.round(7*sc)}px 'Space Mono',monospace`; ctx.fillText(next,px+pw/2,py+8*sc+as+56*sc);
+  }
+  ctx.textAlign='left';
+}
+
+function drawJCard(ctx,W,H,curr,prev,next,progress,t) {
+  const sc=Math.min(W,H)/700, pw=280*sc, ph=260*sc;
+  const px=(W-pw)/2, py=(H-ph)/2;
+  ctx.save(); const jg=ctx.createLinearGradient(px,py,px,py+ph);
+  jg.addColorStop(0,'#f8f0e0'); jg.addColorStop(1,'#ede0c8');
+  ctx.fillStyle=jg; rr(ctx,px,py,pw,ph,3*sc); ctx.fill();
+  ctx.strokeStyle='#c8b890'; ctx.lineWidth=sc; rr(ctx,px,py,pw,ph,3*sc); ctx.stroke(); ctx.restore();
+  // spine
+  ctx.fillStyle='#1a0a00'; ctx.fillRect(px+8*sc,py+8*sc,pw-16*sc,8*sc);
+  const title=(document.getElementById('songTitle').value||'TITLE').toUpperCase();
+  const artist=(document.getElementById('songArtist').value||'ARTIST').toUpperCase();
+  ctx.textAlign='left';
+  ctx.fillStyle='#1a0a00'; ctx.font=`${Math.round(22*sc)}px 'Bebas Neue',sans-serif`; ctx.fillText(title,px+10*sc,py+38*sc);
+  ctx.fillStyle='#6a5040'; ctx.font=`${Math.round(9*sc)}px 'Space Mono',monospace`; ctx.fillText(artist,px+10*sc,py+52*sc);
+  if(artImg?.complete){ ctx.save(); rr(ctx,px+10*sc,py+60*sc,pw-20*sc,70*sc,2*sc); ctx.clip(); ctx.drawImage(artImg,px+10*sc,py+60*sc,pw-20*sc,70*sc); ctx.restore(); }
+  else { ctx.fillStyle='#c8a870'; rr(ctx,px+10*sc,py+60*sc,pw-20*sc,70*sc,2*sc); ctx.fill(); }
+  if(fxSkinLyrics) {
+    ctx.fillStyle='#9a8870'; ctx.font=`${Math.round(8*sc)}px 'Space Mono',monospace`; ctx.fillText(prev,px+10*sc,py+148*sc);
+    ctx.fillStyle='#1a0a00'; ctx.font=`bold ${Math.round(10*sc)}px 'Space Mono',monospace`; ctx.fillText(curr,px+10*sc,py+164*sc);
+    ctx.fillStyle='#9a8870'; ctx.font=`${Math.round(8*sc)}px 'Space Mono',monospace`; ctx.fillText(next,px+10*sc,py+180*sc);
+  }
+  ctx.fillStyle='#6a5040'; ctx.font=`${Math.round(9*sc)}px 'Bebas Neue',sans-serif`;
+  ctx.fillText('SIDE A',px+10*sc,py+ph-8*sc);
+  ctx.textAlign='right'; ctx.fillText(fmt(t),px+pw-10*sc,py+ph-8*sc); ctx.textAlign='left';
+  progBar(ctx,px+10*sc,py+ph-22*sc,pw-20*sc,2*sc,progress,'#c8a870','#6a3a10');
+}
+
 // ─── MODAL PREVIEW PLAYBACK ──────────────
 function togglePreviewPlay() {
   if (!audio.src) { alert('Load an audio file first!'); return; }
@@ -2567,13 +3594,22 @@ function analyzeSmartDefaults(lyricsRaw, beats, duration) {
   const hasBridge  = sections.some(s => s.includes('bridge'));
   const hasVerse   = sections.some(s => s.includes('verse'));
 
-  // ── Skin ──
-  // Vinyl = mellow, longer lines, fewer beats
-  // CD    = moderate energy
-  // MP3   = high energy, punchy, dense
+  // ── Skin — pick from all 15 ──
   let skin = 'mp3';
-  if (beatDensity < 1.2 && avgLineLen > 6) skin = 'vinyl';
-  else if (beatDensity < 2.0)              skin = 'cd';
+  if      (beatDensity < 0.8 && avgLineLen > 8)                        skin = 'vinyl';
+  else if (beatDensity < 0.8 && avgLineLen <= 8)                       skin = 'polaroid';
+  else if (beatDensity < 1.2 && avgLineLen > 6)                        skin = 'jcard';
+  else if (beatDensity < 1.2 && sectionCount >= 4)                     skin = 'applemusic';
+  else if (beatDensity < 1.5 && hasChorus && hasBridge)                skin = 'spotify';
+  else if (beatDensity >= 1.5 && beatDensity < 2.0 && avgLineLen > 6) skin = 'cd';
+  else if (beatDensity >= 1.5 && beatDensity < 2.0 && avgLineLen <= 5) skin = 'ticket';
+  else if (beatDensity >= 2.0 && beatDensity < 2.8 && hasChorus)       skin = 'neon';
+  else if (beatDensity >= 2.0 && beatDensity < 2.8)                    skin = 'boombox';
+  else if (beatDensity >= 2.8 && avgLineLen > 5)                       skin = 'filmreel';
+  else if (beatDensity >= 2.8 && avgLineLen <= 5)                      skin = 'amp';
+  else if (totalLines > 30 && sectionCount >= 5)                       skin = 'daw';
+  else if (totalLines <= 8)                                             skin = 'waveform';
+  else if (beatDensity >= 3.5)                                         skin = 'vhs';
 
   // ── Lyric style ──
   // playfair = long elegant lines, low density
@@ -2695,11 +3731,7 @@ async function runSmartProduce() {
 
     // Apply skin
     aiLog('Applying skin: ' + defaults.skin, 'active');
-    document.querySelectorAll('.skin-pill').forEach(b => {
-      if (b.textContent.toLowerCase().includes(defaults.skin)) {
-        setSkin(defaults.skin, b); b.classList.add('active');
-      } else { b.classList.remove('active'); }
-    });
+    setSkin(defaults.skin);
 
     // Apply lyric style
     aiLog('Applying lyric style: ' + defaults.lyricStyle, 'active');
