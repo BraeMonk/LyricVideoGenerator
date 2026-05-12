@@ -797,6 +797,165 @@ header {
     font-size: clamp(9px, 2vw, 14px) !important;
   }
 }
+
+/* ══ AI PRODUCER ══ */
+.btn-ai-producer {
+  background: rgba(168,85,247,0.12);
+  border: 1px solid rgba(168,85,247,0.35);
+  color: #a855f7;
+  padding: 0 12px; height: 30px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 13px; letter-spacing: 2px;
+  cursor: pointer; border-radius: 3px;
+  transition: background .15s, box-shadow .2s;
+  white-space: nowrap; flex-shrink: 0;
+  display: flex; align-items: center; gap: 5px;
+}
+.btn-ai-producer:hover {
+  background: rgba(168,85,247,0.22);
+  border-color: #a855f7;
+  box-shadow: 0 0 12px rgba(168,85,247,0.3);
+}
+.btn-ai-producer .ai-spark {
+  animation: sparkle 2.5s ease-in-out infinite;
+  display: inline-block;
+}
+@keyframes sparkle {
+  0%,100% { transform: scale(1) rotate(0deg); }
+  50%      { transform: scale(1.3) rotate(20deg); opacity:0.7; }
+}
+
+/* AI Producer Modal */
+.ai-modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.94);
+  z-index: 200; display: flex; align-items: center; justify-content: center;
+  padding: 16px; backdrop-filter: blur(8px);
+  opacity: 0; pointer-events: none; transition: opacity .2s;
+}
+.ai-modal-overlay.open { opacity: 1; pointer-events: all; }
+.ai-modal {
+  background: #0e0e0e; border: 1px solid rgba(168,85,247,0.3);
+  border-radius: 12px; width: 100%; max-width: 560px;
+  max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 0 60px rgba(168,85,247,0.15);
+  transform: translateY(16px); transition: transform .2s;
+}
+.ai-modal-overlay.open .ai-modal { transform: translateY(0); }
+.ai-modal-hdr {
+  padding: 18px 20px; border-bottom: 1px solid #1a1a1a;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.ai-modal-title {
+  font-family: 'Bebas Neue', sans-serif; font-size: 20px;
+  letter-spacing: 4px; color: #a855f7;
+}
+.ai-modal-subtitle {
+  font-size: 9px; letter-spacing: 2px; color: #505050;
+  margin-top: 2px; text-transform: uppercase;
+}
+.ai-modal-close {
+  background: none; border: none; color: #505050;
+  cursor: pointer; font-size: 18px; width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 2px; transition: color .12s;
+}
+.ai-modal-close:hover { color: #f0f0f0; }
+.ai-modal-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+
+.ai-field-label {
+  font-size: 9px; letter-spacing: 2px; color: #a855f7;
+  text-transform: uppercase; margin-bottom: 6px; display: block;
+}
+.ai-key-row { display: flex; gap: 8px; align-items: center; }
+.ai-key-input {
+  flex: 1; background: #141414; border: 1px solid #2a2a2a;
+  border-radius: 4px; color: #f0f0f0;
+  font-family: 'Space Mono', monospace; font-size: 11px;
+  padding: 9px 12px; transition: border-color .15s;
+}
+.ai-key-input:focus { outline: none; border-color: #a855f7; }
+.ai-key-input::placeholder { color: #404040; }
+.ai-key-save {
+  background: rgba(168,85,247,0.15); border: 1px solid rgba(168,85,247,0.4);
+  color: #a855f7; padding: 0 14px; height: 36px;
+  font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 2px;
+  cursor: pointer; border-radius: 4px; white-space: nowrap; transition: background .15s;
+}
+.ai-key-save:hover { background: rgba(168,85,247,0.28); }
+.ai-key-status { font-size: 9px; letter-spacing: 1px; color: #505050; margin-top: 4px; }
+.ai-key-status.ok { color: #27ae60; }
+.ai-key-status.err { color: #c0392b; }
+
+.ai-prompt-input {
+  width: 100%; background: #141414; border: 1px solid #2a2a2a;
+  border-radius: 4px; color: #b0b0b0;
+  font-family: 'Space Mono', monospace; font-size: 11px;
+  padding: 10px 12px; resize: vertical; min-height: 72px;
+  line-height: 1.7; transition: border-color .15s;
+}
+.ai-prompt-input:focus { outline: none; border-color: #a855f7; }
+
+.ai-checklist { display: flex; flex-direction: column; gap: 6px; }
+.ai-check-item {
+  display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+  border: 1px solid #1e1e1e; border-radius: 4px; background: #141414;
+  font-size: 10px; color: #b0b0b0; letter-spacing: 1px;
+}
+.ai-check-item .check-icon { font-size: 14px; flex-shrink: 0; }
+.ai-check-item.ready { border-color: rgba(39,174,96,0.3); color: #27ae60; }
+.ai-check-item.missing { border-color: rgba(192,57,43,0.3); color: #c0392b; }
+.ai-check-item.optional { border-color: #282828; color: #505050; }
+
+.btn-produce {
+  background: linear-gradient(135deg, rgba(168,85,247,0.25), rgba(168,85,247,0.12));
+  border: 1px solid rgba(168,85,247,0.5);
+  color: #a855f7; padding: 14px;
+  font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 4px;
+  cursor: pointer; border-radius: 6px; width: 100%;
+  transition: background .15s, box-shadow .2s; position: relative; overflow: hidden;
+}
+.btn-produce:hover {
+  background: linear-gradient(135deg, rgba(168,85,247,0.38), rgba(168,85,247,0.2));
+  box-shadow: 0 0 30px rgba(168,85,247,0.25);
+}
+.btn-produce:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+
+/* AI progress log */
+.ai-log {
+  background: #0a0a0a; border: 1px solid #1e1e1e; border-radius: 4px;
+  padding: 12px; font-size: 10px; line-height: 2;
+  font-family: 'Space Mono', monospace; color: #505050;
+  max-height: 200px; overflow-y: auto; display: none;
+}
+.ai-log.vis { display: block; }
+.ai-log .log-line { display: flex; gap: 8px; }
+.ai-log .log-line.done { color: #27ae60; }
+.ai-log .log-line.active { color: #a855f7; }
+.ai-log .log-line.info { color: #b0b0b0; }
+.ai-log .log-line.err { color: #c0392b; }
+.ai-log .log-ts { color: #2a2a2a; flex-shrink: 0; }
+
+/* Typing cursor */
+.ai-typing::after {
+  content: '▋'; animation: blink-cursor .7s step-end infinite;
+}
+@keyframes blink-cursor { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* AI result card */
+.ai-result-card {
+  background: rgba(168,85,247,0.06); border: 1px solid rgba(168,85,247,0.2);
+  border-radius: 6px; padding: 14px; display: none;
+}
+.ai-result-card.vis { display: block; }
+.ai-result-title { font-size: 9px; letter-spacing: 2px; color: #a855f7; margin-bottom: 10px; }
+.ai-result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.ai-result-item { font-size: 10px; color: #b0b0b0; }
+.ai-result-item strong { color: #f0f0f0; display: block; margin-bottom: 2px; font-size: 9px; letter-spacing: 1px; }
+.ai-result-reasoning {
+  margin-top: 10px; font-size: 10px; color: #505050;
+  line-height: 1.7; border-top: 1px solid #1e1e1e; padding-top: 10px;
+}
+
 </style>
 </head>
 <body>
@@ -821,6 +980,9 @@ header {
       <button class="pill-btn skin-pill" onclick="setSkin('cd',this)">💿 CD</button>
       <button class="pill-btn skin-pill" onclick="setSkin('vinyl',this)">🎵 VINYL</button>
     </div>
+    <button class="btn-ai-producer" onclick="openAiProducer()">
+      <span class="ai-spark">✦</span> AI PRODUCE
+    </button>
     <button class="btn-export-open" onclick="openExportModal()">⬇ EXPORT</button>
   </div>
 </header>
@@ -1182,6 +1344,71 @@ header {
         </div>
       </div>
  
+    </div>
+  </div>
+</div>
+<!-- ════════ AI PRODUCER MODAL ════════ -->
+<div class="ai-modal-overlay" id="aiModal">
+  <div class="ai-modal">
+    <div class="ai-modal-hdr">
+      <div>
+        <div class="ai-modal-title">✦ AI PRODUCER</div>
+        <div class="ai-modal-subtitle">Claude analyzes your uploads & crafts the full production</div>
+      </div>
+      <button class="ai-modal-close" onclick="closeAiProducer()">✕</button>
+    </div>
+    <div class="ai-modal-body">
+
+      <div>
+        <span class="ai-field-label">Anthropic API Key</span>
+        <div class="ai-key-row">
+          <input type="password" class="ai-key-input" id="aiKeyInput"
+            placeholder="sk-ant-api03-…" oninput="aiKeyChanged()">
+          <button class="ai-key-save" onclick="saveAiKey()">SAVE</button>
+        </div>
+        <div class="ai-key-status" id="aiKeyStatus">Key stored in localStorage only — never sent anywhere except Anthropic.</div>
+      </div>
+
+      <div>
+        <span class="ai-field-label">Creative Direction (optional)</span>
+        <textarea class="ai-prompt-input" id="aiDirectionInput"
+          placeholder="e.g. dark and cinematic, feels like a noir film… / upbeat retro 80s energy / melancholy, lots of space…"></textarea>
+      </div>
+
+      <div>
+        <span class="ai-field-label">Production Inputs</span>
+        <div class="ai-checklist" id="aiChecklist">
+          <div class="ai-check-item" id="chk-audio"><span class="check-icon">🎵</span> Audio file</div>
+          <div class="ai-check-item" id="chk-lyrics"><span class="check-icon">📝</span> Lyrics</div>
+          <div class="ai-check-item" id="chk-art"><span class="check-icon">🖼</span> Cover art (optional)</div>
+          <div class="ai-check-item" id="chk-meta"><span class="check-icon">🏷</span> Song title & artist</div>
+        </div>
+      </div>
+
+      <div style="background:#0d0d0d;border:1px solid #1e1e1e;border-radius:6px;padding:12px;">
+        <div style="font-size:9px;letter-spacing:2px;color:#505050;margin-bottom:8px;text-transform:uppercase;">What the AI Producer does</div>
+        <div style="font-size:10px;color:#505050;line-height:2;">
+          ✦ Chooses the best <strong style="color:#b0b0b0">player skin</strong> for the vibe<br>
+          ✦ Picks a matching <strong style="color:#b0b0b0">lyric style</strong><br>
+          ✦ Selects <strong style="color:#b0b0b0">aspect ratio</strong> for the intended platform<br>
+          ✦ Configures all <strong style="color:#b0b0b0">visual FX</strong> toggles<br>
+          ✦ Auto-generates <strong style="color:#b0b0b0">timestamps</strong> from lyric structure<br>
+          ✦ Writes a <strong style="color:#b0b0b0">director's note</strong> explaining creative choices
+        </div>
+      </div>
+
+      <div class="ai-log" id="aiLog"></div>
+
+      <div class="ai-result-card" id="aiResultCard">
+        <div class="ai-result-title">PRODUCTION DECISIONS</div>
+        <div class="ai-result-grid" id="aiResultGrid"></div>
+        <div class="ai-result-reasoning" id="aiResultReasoning"></div>
+      </div>
+
+      <button class="btn-produce" id="btnProduce" onclick="runAiProduction()">
+        ✦ PRODUCE MY VIDEO
+      </button>
+
     </div>
   </div>
 </div>
@@ -2219,7 +2446,267 @@ async function startExport() {
   document.getElementById('statusDot').className = 'status-dot';
   audioCtxGlobal = null; sourceGlobal = null; analyserGlobal = null;
 }
- 
+
+// ─── AI PRODUCER ─────────────────────────────────────────────────────────────
+
+function openAiProducer() {
+  document.getElementById('aiModal').classList.add('open');
+  refreshAiChecklist();
+  const saved = localStorage.getItem('lyricstudio_apikey');
+  if (saved) {
+    document.getElementById('aiKeyInput').value = saved;
+    setAiKeyStatus('ok', '✓ Key loaded from storage');
+  }
+}
+
+function closeAiProducer() {
+  document.getElementById('aiModal').classList.remove('open');
+}
+
+function saveAiKey() {
+  const key = document.getElementById('aiKeyInput').value.trim();
+  if (!key.startsWith('sk-ant-')) {
+    setAiKeyStatus('err', '✕ Doesn\'t look like an Anthropic key (should start with sk-ant-)');
+    return;
+  }
+  localStorage.setItem('lyricstudio_apikey', key);
+  setAiKeyStatus('ok', '✓ Saved to localStorage');
+}
+
+function aiKeyChanged() {
+  setAiKeyStatus('', 'Key stored in localStorage only — never sent anywhere except Anthropic.');
+}
+
+function setAiKeyStatus(type, msg) {
+  const el = document.getElementById('aiKeyStatus');
+  el.textContent = msg;
+  el.className = 'ai-key-status' + (type ? ' ' + type : '');
+}
+
+function refreshAiChecklist() {
+  const hasAudio  = !!audio.src && audio.src !== window.location.href;
+  const hasLyrics = !!document.getElementById('lyricsInput').value.trim();
+  const hasArt    = !!artUrl;
+  const hasMeta   = !!(document.getElementById('songTitle').value.trim() || document.getElementById('songArtist').value.trim());
+  setChk('chk-audio',  hasAudio,  true,  '🎵', 'Audio file');
+  setChk('chk-lyrics', hasLyrics, true,  '📝', 'Lyrics');
+  setChk('chk-art',    hasArt,    false, '🖼',  'Cover art (optional)');
+  setChk('chk-meta',   hasMeta,   false, '🏷',  'Song title & artist');
+}
+
+function setChk(id, has, required, icon, label) {
+  const el = document.getElementById(id);
+  if (has) {
+    el.className = 'ai-check-item ready';
+    el.innerHTML = `<span class="check-icon">✓</span> ${label}`;
+  } else if (required) {
+    el.className = 'ai-check-item missing';
+    el.innerHTML = `<span class="check-icon">✕</span> ${label} — needed`;
+  } else {
+    el.className = 'ai-check-item optional';
+    el.innerHTML = `<span class="check-icon">${icon}</span> ${label}`;
+  }
+}
+
+function aiLog(msg, type = 'info') {
+  const log = document.getElementById('aiLog');
+  log.classList.add('vis');
+  const ts = new Date().toLocaleTimeString('en-US', { hour12:false, hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  const line = document.createElement('div');
+  line.className = `log-line ${type}`;
+  line.innerHTML = `<span class="log-ts">${ts}</span><span>${msg}</span>`;
+  log.appendChild(line);
+  log.scrollTop = log.scrollHeight;
+}
+
+async function runAiProduction() {
+  const key = localStorage.getItem('lyricstudio_apikey') || document.getElementById('aiKeyInput').value.trim();
+  if (!key || !key.startsWith('sk-ant-')) {
+    setAiKeyStatus('err', '✕ Enter and save a valid Anthropic API key first');
+    return;
+  }
+
+  const hasAudio  = !!audio.src && audio.src !== window.location.href;
+  const lyricsRaw = document.getElementById('lyricsInput').value.trim();
+  if (!hasAudio)  { aiLog('✕ Load an audio file first', 'err'); return; }
+  if (!lyricsRaw) { aiLog('✕ Paste your lyrics in Setup first', 'err'); return; }
+
+  const btn = document.getElementById('btnProduce');
+  btn.disabled = true;
+  btn.textContent = '✦ PRODUCING…';
+  document.getElementById('aiLog').innerHTML = '';
+  document.getElementById('aiLog').classList.add('vis');
+  document.getElementById('aiResultCard').classList.remove('vis');
+
+  const direction = document.getElementById('aiDirectionInput').value.trim();
+  const title     = document.getElementById('songTitle').value.trim()  || '(untitled)';
+  const artist    = document.getElementById('songArtist').value.trim() || '(unknown artist)';
+  const duration  = isFinite(audio.duration) ? `${Math.round(audio.duration)}s` : 'unknown';
+
+  aiLog('Analyzing lyrics and song structure…', 'active');
+
+  const systemPrompt = `You are an expert lyric video director and creative producer.
+You make precise, opinionated decisions that maximize the emotional impact of music videos.
+Respond with valid JSON only — no markdown, no explanation outside the JSON.`;
+
+  const userPrompt = `Produce a complete lyric video setup for this song.
+
+SONG INFO:
+- Title: ${title}
+- Artist: ${artist}
+- Duration: ${duration}
+- Has cover art: ${!!artUrl}
+- Creative direction: ${direction || 'none — use full creative judgment'}
+
+LYRICS:
+${lyricsRaw}
+
+AVAILABLE OPTIONS:
+- skin: "mp3" | "cd" | "vinyl"
+- lyricStyle: "cinematic" | "centered" | "karaoke" | "playfair"
+- orientation: "landscape" | "portrait" | "square"
+- fx: booleans for waveform, vignette, particles, overlayLyrics, skinLyrics, showSkin, showTrackInfo
+
+For timestamps: analyze the lyrics, estimate timing across the duration.
+Distribute lines realistically — choruses are punchier/faster, verses breathe more, bridges have space.
+
+Respond with exactly this JSON:
+{
+  "skin": "...",
+  "lyricStyle": "...",
+  "orientation": "...",
+  "fx": { "waveform": true, "vignette": true, "particles": true, "overlayLyrics": true, "skinLyrics": true, "showSkin": true, "showTrackInfo": true },
+  "timestamps": [ { "text": "exact lyric line", "ts": 4.5 } ],
+  "productionNote": "2-3 sentences on your creative choices.",
+  "decisions": { "skin": "why", "lyricStyle": "why", "orientation": "why" }
+}`;
+
+  try {
+    aiLog('Sending to Claude API…', 'active');
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userPrompt }]
+      })
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err?.error?.message || `API error ${response.status}`);
+    }
+
+    aiLog('Response received — parsing decisions…', 'active');
+
+    const data = await response.json();
+    const raw  = data.content?.[0]?.text || '';
+    let plan;
+    try {
+      plan = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    } catch(e) {
+      throw new Error('Could not parse AI response. Raw: ' + raw.substring(0, 200));
+    }
+
+    // Apply skin
+    aiLog('Applying skin: ' + plan.skin, 'done');
+    document.querySelectorAll('.skin-pill').forEach(b => {
+      if (b.textContent.toLowerCase().includes(plan.skin)) {
+        setSkin(plan.skin, b);
+        b.classList.add('active');
+      } else {
+        b.classList.remove('active');
+      }
+    });
+
+    // Apply lyric style
+    aiLog('Applying lyric style: ' + plan.lyricStyle, 'done');
+    document.querySelectorAll('.style-card').forEach(c => {
+      const name = c.querySelector('.sc-name')?.textContent?.toLowerCase();
+      const match = name === plan.lyricStyle || (name === 'elegant' && plan.lyricStyle === 'playfair');
+      if (match) setLyrStyle(plan.lyricStyle, c);
+    });
+
+    // Apply orientation
+    aiLog('Setting orientation: ' + plan.orientation, 'done');
+    document.querySelectorAll('.pill-group:first-of-type .pill-btn').forEach(b => {
+      if (b.getAttribute('onclick')?.includes(plan.orientation)) setOrient(plan.orientation, b);
+      b.classList.toggle('active', !!b.getAttribute('onclick')?.includes(plan.orientation));
+    });
+
+    // Apply FX
+    aiLog('Configuring visual FX…', 'done');
+    if (plan.fx) {
+      const fxMap = {
+        waveform:'fxWaveform', vignette:'fxVignette', particles:'fxParticles',
+        overlayLyrics:'fxOverlayLyrics', skinLyrics:'fxSkinLyrics',
+        showSkin:'fxShowSkin', showTrackInfo:'fxShowTrackInfo'
+      };
+      Object.entries(fxMap).forEach(([key, id]) => {
+        const el = document.getElementById(id);
+        if (el && plan.fx[key] !== undefined) el.checked = plan.fx[key];
+      });
+      toggleFx();
+    }
+
+    // Apply timestamps
+    if (plan.timestamps?.length > 0) {
+      aiLog(`Stamping ${plan.timestamps.length} lyric lines…`, 'active');
+      lines     = parseLyrics(lyricsRaw);
+      lineItems = lines.filter(l => l.type === 'line');
+      plan.timestamps.forEach(stamp => {
+        const match = lineItems.find(li =>
+          li.text.toLowerCase().trim() === stamp.text.toLowerCase().trim()
+        );
+        if (match) match.ts = stamp.ts;
+      });
+      renderTsList();
+      updateCounts();
+      aiLog(`✓ ${lineItems.filter(l => l.ts !== null).length} lines stamped`, 'done');
+    }
+
+    aiLog('✓ Production complete!', 'done');
+
+    // Show result card
+    document.getElementById('aiResultCard').classList.add('vis');
+    document.getElementById('aiResultGrid').innerHTML = `
+      <div class="ai-result-item"><strong>SKIN</strong>${plan.skin?.toUpperCase()}</div>
+      <div class="ai-result-item"><strong>LYRIC STYLE</strong>${plan.lyricStyle?.toUpperCase()}</div>
+      <div class="ai-result-item"><strong>FORMAT</strong>${plan.orientation?.toUpperCase()}</div>
+      <div class="ai-result-item"><strong>LINES STAMPED</strong>${lineItems.filter(l=>l.ts!==null).length} / ${lineItems.length}</div>
+    `;
+    document.getElementById('aiResultReasoning').innerHTML = `
+      <strong style="color:#a855f7;font-size:9px;letter-spacing:1px">DIRECTOR'S NOTE</strong><br><br>
+      <span style="color:#b0b0b0">${plan.productionNote || ''}</span><br><br>
+      <span style="color:#505050">
+        <strong style="color:#707070">Skin:</strong> ${plan.decisions?.skin || ''}<br>
+        <strong style="color:#707070">Style:</strong> ${plan.decisions?.lyricStyle || ''}<br>
+        <strong style="color:#707070">Format:</strong> ${plan.decisions?.orientation || ''}
+      </span>`;
+
+    btn.textContent = '✦ RE-PRODUCE';
+    btn.disabled = false;
+    switchCtrlTab('timestamps');
+    closeAiProducer();
+
+  } catch(err) {
+    aiLog('✕ Error: ' + err.message, 'err');
+    btn.textContent = '✦ PRODUCE MY VIDEO';
+    btn.disabled = false;
+    if (err.message.includes('401') || err.message.includes('auth')) {
+      setAiKeyStatus('err', '✕ Invalid API key — check it in the Anthropic console');
+    }
+  }
+}
+
 // ─── INIT ────────────────────────────────
 fitFrame();
 spawnParticles();
