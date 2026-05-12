@@ -935,6 +935,23 @@ header {
             <div class="fx-toggle-dot"></div>
             Particles
           </label>
+          <label class="fx-toggle">
+            <input type="checkbox" id="fxOverlayLyrics" checked onchange="toggleFx()">
+            <div class="fx-toggle-dot"></div>
+            Overlay Lyrics
+          </label>
+         
+          <label class="fx-toggle">
+            <input type="checkbox" id="fxSkinLyrics" checked onchange="toggleFx()">
+            <div class="fx-toggle-dot"></div>
+            Skin Lyrics
+          </label>
+         
+          <label class="fx-toggle">
+            <input type="checkbox" id="fxShowSkin" checked onchange="toggleFx()">
+            <div class="fx-toggle-dot"></div>
+            Show Skin
+          </label>
         </div>
  
         <div class="lyrics-area-wrap">
@@ -1064,6 +1081,9 @@ let currentLyrStyle = 'cinematic';
 let fxWaveform  = true;
 let fxVignette  = true;
 let fxParticles = true;
+let fxOverlayLyrics = true;
+let fxSkinLyrics    = true;
+let fxShowSkin      = true;
  
 // Particles
 let particles = [];
@@ -1159,8 +1179,8 @@ setTimeout(fitFrame, 400);
 function setSkin(skin, btn) {
   currentSkin = skin;
   const app = document.getElementById('app');
-  // preserve lyr-style class
   app.className = 'layout skin-' + skin + ' lyr-style-' + currentLyrStyle;
+  toggleFx();
   document.querySelectorAll('.skin-pill').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 }
@@ -1176,12 +1196,62 @@ function setLyrStyle(style, card) {
  
 // ─── FX TOGGLES ──────────────────────────
 function toggleFx() {
-  fxWaveform  = document.getElementById('fxWaveform').checked;
-  fxVignette  = document.getElementById('fxVignette').checked;
-  fxParticles = document.getElementById('fxParticles').checked;
-  document.getElementById('waveCanvas').style.display = fxWaveform ? '' : 'none';
+  fxWaveform      = document.getElementById('fxWaveform').checked;
+  fxVignette      = document.getElementById('fxVignette').checked;
+  fxParticles     = document.getElementById('fxParticles').checked;
+
+  fxOverlayLyrics = document.getElementById('fxOverlayLyrics').checked;
+  fxSkinLyrics    = document.getElementById('fxSkinLyrics').checked;
+  fxShowSkin      = document.getElementById('fxShowSkin').checked;
+
+  // waveform
+  document.getElementById('waveCanvas').style.display =
+    fxWaveform ? '' : 'none';
+
+  // cinematic overlay lyrics
+  document.querySelector('.lyric-overlay').style.display =
+    fxOverlayLyrics ? 'flex' : 'none';
+
+  // MP3 skin lyrics
+  document.getElementById('lcdPrev').style.display =
+    fxSkinLyrics ? '' : 'none';
+
+  document.getElementById('lcdCurr').style.display =
+    fxSkinLyrics ? '' : 'none';
+
+  document.getElementById('lcdNext').style.display =
+    fxSkinLyrics ? '' : 'none';
+
+  // CD skin lyrics
+  document.getElementById('cdPrev').style.display =
+    fxSkinLyrics ? '' : 'none';
+
+  document.getElementById('cdCurr').style.display =
+    fxSkinLyrics ? '' : 'none';
+
+  document.getElementById('cdNext').style.display =
+    fxSkinLyrics ? '' : 'none';
+
+  // Vinyl skin lyrics
+  document.getElementById('ttPrev').style.display =
+    fxSkinLyrics ? '' : 'none';
+
+  document.getElementById('ttCurr').style.display =
+    fxSkinLyrics ? '' : 'none';
+
+  document.getElementById('ttNext').style.display =
+    fxSkinLyrics ? '' : 'none';
+
+  // full skin visibility
+  document.getElementById('mp3Wrap').style.display =
+    fxShowSkin && currentSkin === 'mp3' ? 'flex' : 'none';
+
+  document.getElementById('cdWrap').style.display =
+    fxShowSkin && currentSkin === 'cd' ? 'flex' : 'none';
+
+  document.getElementById('vinylWrap').style.display =
+    fxShowSkin && currentSkin === 'vinyl' ? 'flex' : 'none';
 }
- 
 // ─── CTRL TABS ───────────────────────────
 function switchCtrlTab(tab) {
   document.getElementById('pane-setup').style.display      = tab === 'setup'      ? '' : 'none';
