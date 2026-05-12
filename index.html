@@ -113,7 +113,6 @@ header {
   flex: 1 1 auto;
   min-height: 340px;
   height: 42vh;
-
   background:#000;
   display:flex;
   align-items:center;
@@ -164,110 +163,123 @@ header {
 .skin-vinyl .mp3-wrap,
 .skin-vinyl .cd-wrap        { display:none; }
 
-/* ── TRACK INFO OVERLAY ── */
+/* ══════════════════════════════════════════
+   TRACK INFO — pinned to TOP
+══════════════════════════════════════════ */
 .track-overlay {
-  position:absolute;
-  top:0;
-  left:0;
-  right:0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 4;
+  pointer-events: none;
 
-  z-index:4;
-  pointer-events:none;
+  /* top gradient for legibility */
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.55) 0%,
+    rgba(0,0,0,0.25) 60%,
+    transparent 100%
+  );
 
-  display:flex;
-  justify-content:center;
-  align-items:flex-start;
-
-  padding-top:6vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: clamp(10px, 3.5vh, 36px);
+  padding-bottom: clamp(16px, 4vh, 48px);
 }
 
 .track-overlay-inner {
-  text-align:center;
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-  max-width:85%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
 .track-artist {
-  font-family:'Space Mono', monospace;
-  font-size:clamp(10px,1.4vw,18px);
-  letter-spacing:4px;
-  text-transform:uppercase;
-  color:rgba(255,255,255,.65);
-  text-shadow:0 2px 10px rgba(0,0,0,.8);
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(9px, 1.2vw, 16px);
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  text-shadow: 0 1px 8px rgba(0,0,0,0.9);
 }
 
 .track-title {
-  font-family:'Bebas Neue', sans-serif;
-  font-size:clamp(22px,4vw,60px);
-  letter-spacing:6px;
-  color:#fff;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(20px, 3.8vw, 58px);
+  letter-spacing: 6px;
+  color: #fff;
   text-shadow:
-    0 0 40px rgba(232,160,32,.5),
-    0 2px 20px rgba(0,0,0,.95);
+    0 0 40px rgba(232,160,32,0.45),
+    0 2px 16px rgba(0,0,0,0.95);
 }
-/* ── CINEMATIC LYRIC OVERLAY ── */
-/* ── LYRIC OVERLAY ── */
+
+/* ══════════════════════════════════════════
+   LYRIC OVERLAY — pinned to BOTTOM
+══════════════════════════════════════════ */
 .lyric-overlay {
-  position:absolute;
-  left:0;
-  right:0;
-  bottom:0;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  pointer-events: none;
 
-  z-index:3;
-  pointer-events:none;
+  /* bottom gradient for legibility */
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,0.70) 0%,
+    rgba(0,0,0,0.35) 55%,
+    transparent 100%
+  );
 
-  display:flex;
-  justify-content:center;
-  align-items:flex-end;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
 
-  padding:
-    0 5%
-    clamp(40px, 8vh, 90px);
+  /* enough height to hold 3 lines + gradient */
+  padding-bottom: clamp(18px, 5vh, 60px);
+  padding-top: clamp(40px, 10vh, 100px);
+  padding-left: 5%;
+  padding-right: 5%;
 }
 
-/* stack */
+/* stack of 3 lyric lines */
 .lyric-lines-stack {
-  position:relative;
-  z-index:1;
+  position: relative;
+  z-index: 1;
 
-  display:flex;
-  flex-direction:column;
-  align-items:center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-  gap:clamp(4px, 1vh, 14px);
-
-  width:min(92%, 1100px);
+  gap: clamp(4px, 1vh, 12px);
+  width: min(92%, 1100px);
 }
 
 /* current line */
 .lyric-curr-line {
-  font-size:clamp(18px, 3vw, 44px);
-  line-height:1.15;
-
-  max-width:100%;
-
-  word-break:break-word;
-  overflow-wrap:break-word;
-
-  text-align:center;
+  font-size: clamp(18px, 3vw, 44px);
+  line-height: 1.15;
+  max-width: 100%;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  text-align: center;
 }
 
-/* prev/next */
+/* prev / next */
 .lyric-prev-line,
 .lyric-next-line {
-  font-size:clamp(10px, 1.2vw, 18px);
-
-  max-width:90%;
-
-  word-break:break-word;
-  overflow-wrap:break-word;
-
-  text-align:center;
+  font-size: clamp(10px, 1.2vw, 18px);
+  max-width: 90%;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  text-align: center;
 }
 
-/* Cinematic style */
+/* ── Style: Cinematic ── */
 .lyr-style-cinematic .lyric-curr-line {
   font-family:'Anton',sans-serif;
   font-size:clamp(18px,3.2vw,42px);
@@ -277,9 +289,10 @@ header {
 .lyr-style-cinematic .lyric-prev-line,
 .lyr-style-cinematic .lyric-next-line {
   font-family:'Anton',sans-serif; font-size:clamp(12px,2vw,22px);
-  letter-spacing:4px; color:rgba(255,255,255,.15);
+  letter-spacing:4px; color:rgba(255,255,255,.18);
 }
-/* Centered style */
+
+/* ── Style: Centered ── */
 .lyr-style-centered .lyric-curr-line {
   font-family:'Raleway',sans-serif; font-weight:200;
   font-size:clamp(18px,3.5vw,48px);
@@ -290,9 +303,10 @@ header {
 .lyr-style-centered .lyric-prev-line,
 .lyr-style-centered .lyric-next-line {
   font-family:'Raleway',sans-serif; font-weight:100;
-  letter-spacing:8px; color:rgba(255,255,255,.15);
+  letter-spacing:8px; color:rgba(255,255,255,.18);
 }
-/* Karaoke style */
+
+/* ── Style: Karaoke ── */
 .lyr-style-karaoke .lyric-curr-line {
   font-family:'Orbitron',sans-serif; font-weight:900;
   font-size:clamp(16px,3vw,38px);
@@ -303,9 +317,10 @@ header {
 .lyr-style-karaoke .lyric-prev-line,
 .lyr-style-karaoke .lyric-next-line {
   font-family:'Orbitron',sans-serif; font-size:clamp(10px,1.5vw,16px);
-  letter-spacing:1px; color:rgba(232,160,32,.25);
+  letter-spacing:1px; color:rgba(232,160,32,.28);
 }
-/* Playfair style */
+
+/* ── Style: Playfair ── */
 .lyr-style-playfair .lyric-curr-line {
   font-family:'Playfair Display',serif; font-style:italic; font-weight:700;
   font-size:clamp(20px,4vw,54px);
@@ -315,18 +330,8 @@ header {
 .lyr-style-playfair .lyric-prev-line,
 .lyr-style-playfair .lyric-next-line {
   font-family:'Playfair Display',serif; font-style:italic;
-  color:rgba(240,200,120,.2);
+  color:rgba(240,200,120,.22);
 }
- 
-/* gradient underlay for legibility */
-.lyric-overlay::before {
-  content:''; position:absolute; inset:0; pointer-events:none;
-  background:linear-gradient(transparent 50%, rgba(0,0,0,.6) 100%);
-}
-.lyr-style-centered .lyric-overlay::before {
-  background:radial-gradient(ellipse at center, rgba(0,0,0,.45) 0%, transparent 70%);
-}
-.lyric-lines-stack { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; gap:6px; width:100%; }
  
 /* ── WAVEFORM CANVAS overlay ── */
 #waveCanvas {
@@ -774,50 +779,23 @@ header {
   }
 }
 
+/* ══ MOBILE ══ */
 @media (max-width: 768px) {
-
-  .track-overlay {
-
-    padding-top:10vh;
-
-  }
-
   .track-title {
-
-    font-size:clamp(20px, 7vw, 42px);
-
-    letter-spacing:3px;
-
+    font-size: clamp(18px, 6vw, 40px);
+    letter-spacing: 3px;
   }
-
   .track-artist {
-
-    font-size:clamp(9px, 2vw, 14px);
-
-    letter-spacing:2px;
-
+    font-size: clamp(8px, 2vw, 13px);
+    letter-spacing: 3px;
   }
-
   .lyric-curr-line {
-
-    font-size:clamp(16px, 5vw, 32px) !important;
-
+    font-size: clamp(15px, 4.5vw, 30px) !important;
   }
-
   .lyric-prev-line,
-
   .lyric-next-line {
-
-    font-size:clamp(10px, 2.5vw, 16px) !important;
-
+    font-size: clamp(9px, 2vw, 14px) !important;
   }
-
-  .no-skin .lyric-overlay {
-
-    padding-top:28vh;
-
-  }
-
 }
 </style>
 </head>
@@ -857,6 +835,14 @@ header {
  
       <!-- Waveform canvas -->
       <canvas id="waveCanvas"></canvas>
+
+      <!-- ── TRACK INFO — top of frame ── -->
+      <div class="track-overlay" id="trackOverlay" style="display:none">
+        <div class="track-overlay-inner">
+          <div class="track-artist" id="overlayArtist"></div>
+          <div class="track-title"  id="overlayTitle"></div>
+        </div>
+      </div>
  
       <!-- MP3 -->
       <div class="mp3-wrap" id="mp3Wrap">
@@ -952,15 +938,7 @@ header {
         </div>
       </div>
 
-      <!-- Track Info Overlay -->
-      <div class="track-overlay" id="trackOverlay">
-        <div class="track-overlay-inner">
-          <div class="track-artist" id="overlayArtist"></div>
-          <div class="track-title" id="overlayTitle"></div>
-        </div>
-      </div>
-       
-      <!-- Lyric overlay -->
+      <!-- ── LYRIC OVERLAY — bottom of frame ── -->
       <div class="lyric-overlay" aria-live="polite">
         <div class="lyric-lines-stack">
           <div class="lyric-prev-line" id="overlayPrev"></div>
@@ -1080,17 +1058,20 @@ header {
             <div class="fx-toggle-dot"></div>
             Overlay Lyrics
           </label>
-         
           <label class="fx-toggle">
             <input type="checkbox" id="fxSkinLyrics" checked onchange="toggleFx()">
             <div class="fx-toggle-dot"></div>
             Skin Lyrics
           </label>
-         
           <label class="fx-toggle">
             <input type="checkbox" id="fxShowSkin" checked onchange="toggleFx()">
             <div class="fx-toggle-dot"></div>
             Show Skin
+          </label>
+          <label class="fx-toggle">
+            <input type="checkbox" id="fxShowTrackInfo" checked onchange="toggleFx()">
+            <div class="fx-toggle-dot"></div>
+            Track Info
           </label>
         </div>
  
@@ -1218,12 +1199,13 @@ let currentOrient = 'landscape';
 let exportFormat  = 'landscape';
 let exportQuality = 'standard';
 let currentLyrStyle = 'cinematic';
-let fxWaveform  = true;
-let fxVignette  = true;
-let fxParticles = true;
+let fxWaveform      = true;
+let fxVignette      = true;
+let fxParticles     = true;
 let fxOverlayLyrics = true;
 let fxSkinLyrics    = true;
 let fxShowSkin      = true;
+let fxShowTrackInfo = true;
  
 // Particles
 let particles = [];
@@ -1245,7 +1227,6 @@ let detectedMime = '';
 let detectedExt  = '';
  
 function detectCodec() {
-  // Try MP4/H.264 first (Chrome 94+, some browsers)
   const candidates = [
     { mime:'video/mp4;codecs=avc1.42E01E,mp4a.40.2', ext:'mp4', label:'MP4 / H.264 + AAC' },
     { mime:'video/mp4;codecs=avc1,mp4a.40.2',         ext:'mp4', label:'MP4 / H.264' },
@@ -1305,13 +1286,11 @@ function fitFrame() {
   frame.style.width  = fw + 'px';
   frame.style.height = fh + 'px';
  
-  // Sync waveCanvas size
   const wc = document.getElementById('waveCanvas');
   wc.width  = Math.round(fw);
   wc.height = 60;
 
   document.getElementById('canvasFrame').style.display = 'none';
-
   requestAnimationFrame(() => {
     document.getElementById('canvasFrame').style.display = 'block';
   });
@@ -1344,82 +1323,47 @@ function toggleFx() {
   fxWaveform      = document.getElementById('fxWaveform').checked;
   fxVignette      = document.getElementById('fxVignette').checked;
   fxParticles     = document.getElementById('fxParticles').checked;
-
   fxOverlayLyrics = document.getElementById('fxOverlayLyrics').checked;
   fxSkinLyrics    = document.getElementById('fxSkinLyrics').checked;
   fxShowSkin      = document.getElementById('fxShowSkin').checked;
+  fxShowTrackInfo = document.getElementById('fxShowTrackInfo').checked;
 
-  // waveform
-  document.getElementById('waveCanvas').style.display =
-    fxWaveform ? '' : 'none';
+  // Waveform
+  document.getElementById('waveCanvas').style.display = fxWaveform ? '' : 'none';
 
-  // cinematic overlay lyrics
-  document.querySelector('.lyric-overlay').style.display =
-    fxOverlayLyrics ? 'flex' : 'none';
+  // Overlay lyrics (bottom)
+  document.querySelector('.lyric-overlay').style.display = fxOverlayLyrics ? 'flex' : 'none';
 
-  // MP3 skin lyrics
-  document.getElementById('lcdPrev').style.display =
-    fxSkinLyrics ? '' : 'none';
+  // Skin lyrics
+  ['lcdPrev','lcdCurr','lcdNext','cdPrev','cdCurr','cdNext','ttPrev','ttCurr','ttNext'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = fxSkinLyrics ? '' : 'none';
+  });
 
-  document.getElementById('lcdCurr').style.display =
-    fxSkinLyrics ? '' : 'none';
-
-  document.getElementById('lcdNext').style.display =
-    fxSkinLyrics ? '' : 'none';
-
-  // CD skin lyrics
-  document.getElementById('cdPrev').style.display =
-    fxSkinLyrics ? '' : 'none';
-
-  document.getElementById('cdCurr').style.display =
-    fxSkinLyrics ? '' : 'none';
-
-  document.getElementById('cdNext').style.display =
-    fxSkinLyrics ? '' : 'none';
-
-  // Vinyl skin lyrics
-  document.getElementById('ttPrev').style.display =
-    fxSkinLyrics ? '' : 'none';
-
-  document.getElementById('ttCurr').style.display =
-    fxSkinLyrics ? '' : 'none';
-
-  document.getElementById('ttNext').style.display =
-    fxSkinLyrics ? '' : 'none';
-
-  // skin visibility
+  // Skin visibility
   document.getElementById('mp3Wrap').style.display =
     fxShowSkin && currentSkin === 'mp3' ? 'flex' : 'none';
-
   document.getElementById('cdWrap').style.display =
     fxShowSkin && currentSkin === 'cd' ? 'flex' : 'none';
-
   document.getElementById('vinylWrap').style.display =
     fxShowSkin && currentSkin === 'vinyl' ? 'flex' : 'none';
 
-  // add/remove no-skin class
-  document.getElementById('app')
-    .classList.toggle('no-skin', !fxShowSkin);
+  document.getElementById('app').classList.toggle('no-skin', !fxShowSkin);
 
-  // standalone title overlay
-  const title =
-    document.getElementById('songTitle').value.trim();
-
-  const artist =
-    document.getElementById('songArtist').value.trim();
-
-  const shouldShowTrackOverlay =
-    !fxShowSkin && (title || artist);
-
-  document.getElementById('trackOverlay').style.display =
-    shouldShowTrackOverlay ? 'flex' : 'none';
-
-  document.getElementById('overlayTitle').textContent =
-    title;
-
-  document.getElementById('overlayArtist').textContent =
-    artist;
+  // Track info overlay (top) — always show when there's a title or artist
+  updateTrackOverlay();
 }
+
+function updateTrackOverlay() {
+  const title  = document.getElementById('songTitle').value.trim();
+  const artist = document.getElementById('songArtist').value.trim();
+  const show   = fxShowTrackInfo && (title || artist);
+
+  document.getElementById('trackOverlay').style.display = show ? 'flex' : 'none';
+  document.getElementById('overlayTitle').textContent  = title;
+  document.getElementById('overlayArtist').textContent = artist;
+}
+
 // ─── CTRL TABS ───────────────────────────
 function switchCtrlTab(tab) {
   document.getElementById('pane-setup').style.display      = tab === 'setup'      ? '' : 'none';
@@ -1467,7 +1411,7 @@ function markLoaded(cardId, subId, name) {
  
 // ─── WAVEFORM ANALYSER ───────────────────
 function initAnalyser() {
-  if (audioCtxGlobal) return; // already set up
+  if (audioCtxGlobal) return;
   try {
     audioCtxGlobal = new AudioContext();
     analyserGlobal = audioCtxGlobal.createAnalyser();
@@ -1509,15 +1453,12 @@ function drawWave() {
 // ─── PARTICLES ───────────────────────────
 function spawnParticles() {
   particles = [];
-  for (let i = 0; i < MAX_PARTICLES; i++) {
-    particles.push(makeParticle());
-  }
+  for (let i = 0; i < MAX_PARTICLES; i++) particles.push(makeParticle());
 }
  
 function makeParticle() {
   return {
-    x: Math.random(),
-    y: Math.random(),
+    x: Math.random(), y: Math.random(),
     vx: (Math.random() - 0.5) * 0.0003,
     vy: -Math.random() * 0.0005 - 0.0001,
     size: Math.random() * 2 + 0.5,
@@ -1529,8 +1470,7 @@ function makeParticle() {
 function tickParticles() {
   for (let i = 0; i < particles.length; i++) {
     const p = particles[i];
-    p.x += p.vx; p.y += p.vy;
-    p.life -= 0.003;
+    p.x += p.vx; p.y += p.vy; p.life -= 0.003;
     if (p.life <= 0 || p.y < -0.05 || p.x < -0.05 || p.x > 1.05) {
       particles[i] = makeParticle();
       particles[i].y = 1.05;
@@ -1739,19 +1679,22 @@ document.addEventListener('keydown', e => {
   if (e.code === 'ArrowDown'){ e.preventDefault(); if (currentIdx < lineItems.length - 1) setActive(currentIdx + 1); }
 });
  
-document.getElementById('songTitle').addEventListener('input', e => {
-  const v = e.target.value || 'UNTITLED';
+document.getElementById('songTitle').addEventListener('input', () => {
+  const v = document.getElementById('songTitle').value || 'UNTITLED';
   const a = document.getElementById('songArtist').value || 'ARTIST';
   document.getElementById('lcdTitle').textContent = v.toUpperCase();
   document.getElementById('ttTitle').textContent  = v;
   document.getElementById('cdTitle').textContent  = `${a} — ${v}`;
+  updateTrackOverlay();
 });
-document.getElementById('songArtist').addEventListener('input', e => {
-  const v = e.target.value || 'ARTIST';
+
+document.getElementById('songArtist').addEventListener('input', () => {
+  const v = document.getElementById('songArtist').value || 'ARTIST';
   const t = document.getElementById('songTitle').value || 'UNTITLED';
   document.getElementById('lcdTrack').textContent  = v.toUpperCase();
   document.getElementById('ttArtist').textContent  = v.toUpperCase();
   document.getElementById('cdTitle').textContent   = `${v} — ${t}`;
+  updateTrackOverlay();
 });
 
  
@@ -1802,55 +1745,43 @@ function initPreviewCanvas() {
   updatePreviewTime();
 }
  
-// ─── FRAME RENDERER ──────────────────────
-// Lyric style configs for canvas rendering
+// ─── LYRIC STYLE CONFIGS FOR CANVAS ──────
 const LYRIC_STYLES = {
   cinematic: {
-    currFont: (sc) => `900 ${Math.round(56*sc)}px Anton, sans-serif`,
-    dimFont:  (sc) => `${Math.round(22*sc)}px 'Bebas Neue', sans-serif`,
+    currFont:  (sc) => `900 ${Math.round(56*sc)}px Anton, sans-serif`,
+    dimFont:   (sc) => `${Math.round(22*sc)}px 'Bebas Neue', sans-serif`,
     currColor: '#ffffff',
     dimColor:  'rgba(255,255,255,0.15)',
-    currShadow: 'rgba(232,160,32,0.9)',
-    currBlur: 50,
-    letterSpacing: 6,
-    align: 'center',
-    yOffset: 0.82, // fraction of H
+    currShadow:'rgba(232,160,32,0.9)',
+    currBlur:  50,
   },
   centered: {
-    currFont: (sc) => `200 ${Math.round(48*sc)}px Raleway, sans-serif`,
-    dimFont:  (sc) => `100 ${Math.round(20*sc)}px Raleway, sans-serif`,
+    currFont:  (sc) => `200 ${Math.round(48*sc)}px Raleway, sans-serif`,
+    dimFont:   (sc) => `100 ${Math.round(20*sc)}px Raleway, sans-serif`,
     currColor: '#ffffff',
     dimColor:  'rgba(255,255,255,0.12)',
-    currShadow: 'rgba(255,255,255,0.5)',
-    currBlur: 40,
-    letterSpacing: 12,
-    align: 'center',
-    yOffset: 0.5,
+    currShadow:'rgba(255,255,255,0.5)',
+    currBlur:  40,
   },
   karaoke: {
-    currFont: (sc) => `900 ${Math.round(44*sc)}px Orbitron, monospace`,
-    dimFont:  (sc) => `${Math.round(18*sc)}px Orbitron, monospace`,
+    currFont:  (sc) => `900 ${Math.round(44*sc)}px Orbitron, monospace`,
+    dimFont:   (sc) => `${Math.round(18*sc)}px Orbitron, monospace`,
     currColor: '#e8a020',
     dimColor:  'rgba(232,160,32,0.2)',
-    currShadow: 'rgba(232,160,32,1)',
-    currBlur: 40,
-    letterSpacing: 3,
-    align: 'center',
-    yOffset: 0.82,
+    currShadow:'rgba(232,160,32,1)',
+    currBlur:  40,
   },
   playfair: {
-    currFont: (sc) => `bold italic ${Math.round(52*sc)}px 'Playfair Display', serif`,
-    dimFont:  (sc) => `italic ${Math.round(22*sc)}px 'Playfair Display', serif`,
+    currFont:  (sc) => `bold italic ${Math.round(52*sc)}px 'Playfair Display', serif`,
+    dimFont:   (sc) => `italic ${Math.round(22*sc)}px 'Playfair Display', serif`,
     currColor: '#f5e6c8',
     dimColor:  'rgba(240,200,120,0.18)',
-    currShadow: 'rgba(240,192,64,0.7)',
-    currBlur: 50,
-    letterSpacing: 2,
-    align: 'center',
-    yOffset: 0.8,
+    currShadow:'rgba(240,192,64,0.7)',
+    currBlur:  50,
   },
 };
- 
+
+// ─── FRAME RENDERER ──────────────────────
 function drawFrame(ctx, W, H, t) {
   // Background
   if (bgImg && bgImg.complete) {
@@ -1889,12 +1820,105 @@ function drawFrame(ctx, W, H, t) {
   const progress = t / (audio.duration || 1);
  
   // Player skin
-  if      (currentSkin === 'mp3')   drawMp3(ctx,W,H,curr,prev,next,progress,t);
-  else if (currentSkin === 'cd')    drawCd(ctx,W,H,curr,prev,next,progress,t);
-  else                              drawVinyl(ctx,W,H,curr,prev,next,progress,t);
- 
-  // Cinematic lyric overlay
-  drawLyricOverlay(ctx,W,H,prev,curr,next);
+  if (fxShowSkin) {
+    if      (currentSkin === 'mp3')   drawMp3(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'cd')    drawCd(ctx,W,H,curr,prev,next,progress,t);
+    else                              drawVinyl(ctx,W,H,curr,prev,next,progress,t);
+  }
+
+  // Track info — TOP of frame
+  if (fxShowTrackInfo) drawTrackInfoOverlay(ctx, W, H);
+
+  // Lyric overlay — BOTTOM of frame
+  if (fxOverlayLyrics) drawLyricOverlay(ctx, W, H, prev, curr, next);
+}
+
+// ─── TRACK INFO ON CANVAS (top) ──────────
+function drawTrackInfoOverlay(ctx, W, H) {
+  const title  = document.getElementById('songTitle').value.trim();
+  const artist = document.getElementById('songArtist').value.trim();
+  if (!title && !artist) return;
+
+  const sc = Math.min(W, H) / 900;
+
+  // Top gradient
+  const gradH = H * 0.28;
+  const g = ctx.createLinearGradient(0, 0, 0, gradH);
+  g.addColorStop(0, 'rgba(0,0,0,0.60)');
+  g.addColorStop(1, 'transparent');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, gradH);
+
+  ctx.textAlign = 'center';
+
+  let y = H * 0.045 + 28 * sc;
+
+  if (artist) {
+    ctx.font      = `${Math.round(14*sc)}px 'Space Mono', monospace`;
+    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.shadowBlur = 0;
+    ctx.fillText(artist.toUpperCase(), W/2, y);
+    y += Math.round(14*sc) * 1.5;
+  }
+
+  if (title) {
+    ctx.font        = `${Math.round(52*sc)}px 'Bebas Neue', sans-serif`;
+    ctx.fillStyle   = '#ffffff';
+    ctx.shadowColor = 'rgba(232,160,32,0.5)';
+    ctx.shadowBlur  = 30 * sc;
+    ctx.fillText(title, W/2, y + Math.round(52*sc) * 0.85);
+    ctx.shadowBlur  = 0;
+  }
+
+  ctx.textAlign = 'left';
+}
+
+// ─── LYRIC OVERLAY ON CANVAS (bottom) ────
+function drawLyricOverlay(ctx, W, H, prev, curr, next) {
+  if (!curr && !prev && !next) return;
+
+  const style  = LYRIC_STYLES[currentLyrStyle] || LYRIC_STYLES.cinematic;
+  const sc     = Math.min(W, H) / 900;
+  const currFs = sc * 56;
+  const dimFs  = sc * 22;
+
+  // Bottom gradient
+  const gradH = H * 0.38;
+  const g = ctx.createLinearGradient(0, H - gradH, 0, H);
+  g.addColorStop(0, 'transparent');
+  g.addColorStop(1, 'rgba(0,0,0,0.72)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, H - gradH, W, gradH);
+
+  // Pin lyrics to bottom: anchor at ~88% of height
+  const bottomAnchor = H * 0.88;
+
+  ctx.textAlign = 'center';
+
+  // Next line (below current)
+  if (next) {
+    ctx.font      = style.dimFont(sc);
+    ctx.fillStyle = style.dimColor;
+    ctx.shadowBlur = 0;
+    ctx.fillText(next.toUpperCase(), W/2, bottomAnchor + currFs * 0.72);
+  }
+
+  // Current line
+  ctx.font        = style.currFont(sc);
+  ctx.fillStyle   = style.currColor;
+  ctx.shadowColor = style.currShadow;
+  ctx.shadowBlur  = style.currBlur * sc * 1.5;
+  ctx.fillText(curr.toUpperCase(), W/2, bottomAnchor);
+  ctx.shadowBlur  = 0;
+
+  // Previous line (above current)
+  if (prev) {
+    ctx.font      = style.dimFont(sc);
+    ctx.fillStyle = style.dimColor;
+    ctx.fillText(prev.toUpperCase(), W/2, bottomAnchor - currFs * 0.85);
+  }
+
+  ctx.textAlign = 'left';
 }
  
 function fillFit(ctx, img, W, H) {
@@ -1916,54 +1940,6 @@ function progBar(ctx,x,y,w,h,p,bg,fg) {
   ctx.fillStyle = fg; rr(ctx,x,y,Math.max(h,w*p),h,h/2); ctx.fill();
 }
  
-function drawLyricOverlay(ctx, W, H, prev, curr, next) {
-  if (!curr && !prev && !next) return;
-  const style = LYRIC_STYLES[currentLyrStyle] || LYRIC_STYLES.cinematic;
-  const sc = Math.min(W, H) / 900;
-  const cy = H * style.yOffset;
- 
-  // Gradient underlay
-  if (currentLyrStyle !== 'centered') {
-    const gradH = H * 0.35;
-    const g = ctx.createLinearGradient(0, H - gradH, 0, H);
-    g.addColorStop(0, 'transparent'); g.addColorStop(1, 'rgba(0,0,0,.65)');
-    ctx.fillStyle = g; ctx.fillRect(0, H - gradH, W, gradH);
-  } else {
-    const g = ctx.createRadialGradient(W/2, H/2, H*0.1, W/2, H/2, H*0.55);
-    g.addColorStop(0, 'rgba(0,0,0,.5)'); g.addColorStop(1, 'transparent');
-    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-  }
- 
-  ctx.textAlign = 'center';
-  const dimFs  = sc * 22;
-  const currFs = sc * 52;
- 
-  // Previous line
-  if (prev) {
-    ctx.font = style.dimFont(sc);
-    ctx.fillStyle = style.dimColor;
-    ctx.shadowBlur = 0;
-    ctx.fillText(prev.toUpperCase(), W/2, cy - currFs * 0.85);
-  }
- 
-  // Current line
-  ctx.font = style.currFont(sc);
-  ctx.fillStyle = style.currColor;
-  ctx.shadowColor = style.currShadow;
-  ctx.shadowBlur  = style.currBlur * sc * 1.5;
-  ctx.fillText(curr.toUpperCase(), W/2, cy);
-  ctx.shadowBlur = 0;
- 
-  // Next line
-  if (next) {
-    ctx.font = style.dimFont(sc);
-    ctx.fillStyle = style.dimColor;
-    ctx.fillText(next.toUpperCase(), W/2, cy + currFs * 0.75);
-  }
- 
-  ctx.textAlign = 'left';
-}
- 
 // Waveform on canvas (for export)
 function drawExportWave(ctx, W, H, freqData) {
   if (!fxWaveform || !freqData) return;
@@ -1974,8 +1950,7 @@ function drawExportWave(ctx, W, H, freqData) {
     const v = freqData[i] / 255;
     const bh = v * barH;
     const x = i * bw;
-    const alpha = (0.25 + v * 0.4);
-    ctx.globalAlpha = alpha;
+    ctx.globalAlpha = 0.25 + v * 0.4;
     ctx.fillStyle = '#e8a020';
     ctx.fillRect(x + 1, H - bh, bw - 2, bh);
   }
@@ -2003,9 +1978,11 @@ function drawMp3(ctx,W,H,curr,prev,next,progress,t) {
   ctx.textAlign='left';
   ctx.fillStyle='#2a6a30'; ctx.font=`${9*sc}px Orbitron,monospace`; ctx.fillText(artist,lx+8*sc,ly+14*sc);
   ctx.fillStyle='#7aff8a'; ctx.font=`bold ${11*sc}px Orbitron,monospace`; ctx.fillText(title,lx+8*sc,ly+26*sc);
-  ctx.fillStyle='#2a6a30'; ctx.font=`${8*sc}px 'Space Mono',monospace`; ctx.fillText(prev,lx+8*sc,ly+42*sc);
-  ctx.fillStyle='#7aff8a'; ctx.font=`bold ${10*sc}px 'Space Mono',monospace`; ctx.fillText(curr,lx+8*sc,ly+55*sc);
-  ctx.fillStyle='#2a6a30'; ctx.font=`${8*sc}px 'Space Mono',monospace`; ctx.fillText(next,lx+8*sc,ly+67*sc);
+  if (fxSkinLyrics) {
+    ctx.fillStyle='#2a6a30'; ctx.font=`${8*sc}px 'Space Mono',monospace`; ctx.fillText(prev,lx+8*sc,ly+42*sc);
+    ctx.fillStyle='#7aff8a'; ctx.font=`bold ${10*sc}px 'Space Mono',monospace`; ctx.fillText(curr,lx+8*sc,ly+55*sc);
+    ctx.fillStyle='#2a6a30'; ctx.font=`${8*sc}px 'Space Mono',monospace`; ctx.fillText(next,lx+8*sc,ly+67*sc);
+  }
   progBar(ctx,lx+8*sc,ly+82*sc,lw-50*sc,3*sc,progress,'#0d3010','#4aff60');
   ctx.fillStyle='#4aff60'; ctx.font=`${7*sc}px Orbitron,monospace`;
   ctx.textAlign='right'; ctx.fillText(fmt(t),lx+lw-8*sc,ly+85*sc); ctx.textAlign='left';
@@ -2036,9 +2013,11 @@ function drawCd(ctx,W,H,curr,prev,next,progress,t) {
   ctx.textAlign='left';
   ctx.fillStyle='#50ff50'; ctx.font=`${9*sc}px Orbitron,monospace`;
   ctx.fillText(`${artist} — ${title}`.toUpperCase().substring(0,28),dlx+8*sc,dly+16*sc);
-  ctx.fillStyle='#2a5a2a'; ctx.font=`${8*sc}px 'Space Mono',monospace`; ctx.fillText(prev,dlx+8*sc,dly+32*sc);
-  ctx.fillStyle='#80ff80'; ctx.font=`${10*sc}px 'Space Mono',monospace`; ctx.fillText(curr,dlx+8*sc,dly+48*sc);
-  ctx.fillStyle='#2a5a2a'; ctx.font=`${8*sc}px 'Space Mono',monospace`; ctx.fillText(next,dlx+8*sc,dly+62*sc);
+  if (fxSkinLyrics) {
+    ctx.fillStyle='#2a5a2a'; ctx.font=`${8*sc}px 'Space Mono',monospace`; ctx.fillText(prev,dlx+8*sc,dly+32*sc);
+    ctx.fillStyle='#80ff80'; ctx.font=`${10*sc}px 'Space Mono',monospace`; ctx.fillText(curr,dlx+8*sc,dly+48*sc);
+    ctx.fillStyle='#2a5a2a'; ctx.font=`${8*sc}px 'Space Mono',monospace`; ctx.fillText(next,dlx+8*sc,dly+62*sc);
+  }
   progBar(ctx,dlx+8*sc,dly+78*sc,dlw-50*sc,3*sc,progress,'#0a2a0a','#50ff50');
   ctx.fillStyle='#50ff50'; ctx.font=`${7*sc}px Orbitron,monospace`;
   ctx.textAlign='right'; ctx.fillText(fmt(t),dlx+dlw-6*sc,dly+81*sc); ctx.textAlign='left';
@@ -2072,9 +2051,11 @@ function drawVinyl(ctx,W,H,curr,prev,next,progress,t) {
   const lbx=ix,lby=iy+56*sc,lbw=pw-200*sc,lbh=80*sc;
   ctx.fillStyle='rgba(0,0,0,.4)'; rr(ctx,lbx,lby,lbw,lbh,4*sc); ctx.fill();
   ctx.strokeStyle='#2a2010'; ctx.lineWidth=sc; rr(ctx,lbx,lby,lbw,lbh,4*sc); ctx.stroke();
-  ctx.fillStyle='#3a3020'; ctx.font=`italic ${8*sc}px 'Playfair Display',serif`; ctx.fillText(prev,lbx+8*sc,lby+18*sc);
-  ctx.fillStyle='#e8a020'; ctx.font=`bold italic ${12*sc}px 'Playfair Display',serif`; ctx.fillText(curr,lbx+8*sc,lby+38*sc);
-  ctx.fillStyle='#3a3020'; ctx.font=`italic ${8*sc}px 'Playfair Display',serif`; ctx.fillText(next,lbx+8*sc,lby+54*sc);
+  if (fxSkinLyrics) {
+    ctx.fillStyle='#3a3020'; ctx.font=`italic ${8*sc}px 'Playfair Display',serif`; ctx.fillText(prev,lbx+8*sc,lby+18*sc);
+    ctx.fillStyle='#e8a020'; ctx.font=`bold italic ${12*sc}px 'Playfair Display',serif`; ctx.fillText(curr,lbx+8*sc,lby+38*sc);
+    ctx.fillStyle='#3a3020'; ctx.font=`italic ${8*sc}px 'Playfair Display',serif`; ctx.fillText(next,lbx+8*sc,lby+54*sc);
+  }
   progBar(ctx,ix,iy+145*sc,lbw,2*sc,progress,'#2a2010','#e8a020');
 }
  
@@ -2143,22 +2124,16 @@ async function startExport() {
   offCanvas.width  = w; offCanvas.height = h;
   const offCtx = offCanvas.getContext('2d');
  
-  // ── Audio routing for export ──
   let expAudioCtx = null, dest = null;
   try {
-    // If we already have an analyser, we need a fresh AudioContext for export
-    // (can't create two MediaElementSource nodes on same element)
     expAudioCtx = new AudioContext();
     dest = expAudioCtx.createMediaStreamDestination();
-    // Clone audio element to avoid double-source conflict
     const src = expAudioCtx.createMediaElementSource(audio);
     src.connect(dest);
     src.connect(expAudioCtx.destination);
-    // Reset the global analyser since we consumed the source
     audioCtxGlobal = expAudioCtx;
     sourceGlobal   = src;
   } catch(e) {
-    // May fail if source already created — try without
     expAudioCtx = null;
   }
  
@@ -2167,8 +2142,7 @@ async function startExport() {
   if (expAudioCtx && dest) dest.stream.getAudioTracks().forEach(t => tracks.push(t));
   const combined = new MediaStream(tracks);
  
-  // ── Codec selection ──
-  detectCodec(); // refresh
+  detectCodec();
   let mimeType = detectedMime || 'video/webm';
   let fileExt  = detectedExt  || 'webm';
  
@@ -2176,9 +2150,7 @@ async function startExport() {
   try {
     recorder = new MediaRecorder(combined, { mimeType, videoBitsPerSecond: bitrate });
   } catch(e) {
-    // Fallback
-    mimeType = 'video/webm';
-    fileExt  = 'webm';
+    mimeType = 'video/webm'; fileExt = 'webm';
     recorder = new MediaRecorder(combined, { mimeType, videoBitsPerSecond: bitrate });
   }
  
@@ -2195,9 +2167,7 @@ async function startExport() {
   audio.play();
   if (expAudioCtx && expAudioCtx.state === 'suspended') expAudioCtx.resume();
  
-  // Get frequency data for waveform on export frames
-  let exportAnalyser = null;
-  let exportFreqBuf  = null;
+  let exportAnalyser = null, exportFreqBuf = null;
   if (expAudioCtx) {
     try {
       exportAnalyser = expAudioCtx.createAnalyser();
@@ -2213,7 +2183,6 @@ async function startExport() {
       const t   = audio.currentTime;
       const pct = duration > 0 ? t / duration : 0;
       drawFrame(offCtx, w, h, t);
-      // Waveform on export
       if (exportAnalyser && exportFreqBuf) {
         exportAnalyser.getByteFrequencyData(exportFreqBuf);
         drawExportWave(offCtx, w, h, exportFreqBuf);
@@ -2248,7 +2217,6 @@ async function startExport() {
   btn.disabled = false; btn.textContent = '⬇ EXPORT VIDEO';
   pl.textContent = `✓ Saved: ${fname}`;
   document.getElementById('statusDot').className = 'status-dot';
-  // Reinit analyser
   audioCtxGlobal = null; sourceGlobal = null; analyserGlobal = null;
 }
  
@@ -2256,24 +2224,9 @@ async function startExport() {
 fitFrame();
 spawnParticles();
 
-document.getElementById('songTitle')
-  .addEventListener('input', toggleFx);
-
-document.getElementById('songArtist')
-  .addEventListener('input', toggleFx);
-
-window.addEventListener('load', () => {
-  fitFrame();
-});
-
-window.addEventListener('resize', () => {
-  fitFrame();
-});
-
-window.addEventListener('orientationchange', () => {
-  setTimeout(fitFrame, 250);
-});
-   
+window.addEventListener('load', fitFrame);
+window.addEventListener('resize', fitFrame);
+window.addEventListener('orientationchange', () => setTimeout(fitFrame, 250));
 </script>
 </body>
 </html>
