@@ -124,14 +124,14 @@ header {
 }
 .preview-zone {
   flex: 1 1 auto;
-  min-height: 340px;
-  height: 42vh;
-  background:#000;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  position:relative;
-  overflow:hidden;
+  min-height: 0;
+  min-width: 0;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
 }
 
 @media (max-width: 768px) {
@@ -141,14 +141,24 @@ header {
   }
 }
    
+/* REPLACE WITH: */
 .canvas-frame {
-  position:relative; flex-shrink:0;
-  box-shadow:0 0 0 1px #1a1a1a, 0 12px 60px rgba(0,0,0,.9);
-  transition:width .3s ease,height .3s ease;
+  position: relative;
+  flex-shrink: 0;
+  box-shadow: 0 8px 40px rgba(0,0,0,.95);
+  overflow: hidden;
 }
-.canvas-frame.landscape { aspect-ratio:16/9; }
-.canvas-frame.portrait  { aspect-ratio:9/16; }
-.canvas-frame.square    { aspect-ratio:1/1; }
+.canvas-frame.landscape { aspect-ratio: 16/9; }
+.canvas-frame.portrait  { aspect-ratio: 9/16; }
+.canvas-frame.square    { aspect-ratio: 1/1; }
+
+#liveCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
  
 .bg-layer {
   position:absolute; inset:0;
@@ -2368,8 +2378,8 @@ function fitFrame() {
   const ratio = currentOrient === 'landscape' ? 16/9
               : currentOrient === 'portrait'  ? 9/16 : 1;
 
-  const avW = zone.offsetWidth  - 8;
-  const avH = zone.offsetHeight - 8;
+  const avW = zone.offsetWidth;
+  const avH = zone.offsetHeight;
   if (avW <= 0 || avH <= 0) { requestAnimationFrame(fitFrame); return; }
 
   let fw, fh;
@@ -3068,11 +3078,15 @@ function drawFrame(ctx, W, H, t) {
  
   // Player skin — rendered at 28% scale, pinned bottom-left
   if (fxShowSkin) {
-    const skinScale = 0.28;
+    const skinScale = 0.26;
+    const sw = W / skinScale;
+    const sh = H / skinScale;
     ctx.save();
-    ctx.translate(W * 0.02, H * 0.98);
+    // Pin bottom-left: skin draws centered in its virtual canvas,
+    // so offset so the bottom-center of the skin lands at bottom-left of frame
+    ctx.translate(W * 0.14, H);
     ctx.scale(skinScale, skinScale);
-    ctx.translate(0, -H);
+    ctx.translate(-sw / 2, -sh);
     const sw = W / skinScale, sh = H / skinScale;
     if      (currentSkin === 'mp3')        drawMp3(ctx,sw,sh,curr,prev,next,progress,t);
     else if (currentSkin === 'cd')         drawCd(ctx,sw,sh,curr,prev,next,progress,t);
@@ -3124,23 +3138,24 @@ function drawTrackInfoOverlay(ctx, W, H) {
 
   ctx.textAlign = 'center';
 
-  const topPad = H * 0.038;
+  const artistFs = Math.round(12 * sc);
+  const titleFs  = Math.round((isPortrait ? 54 : 48) * sc);
+  const topPad   = H * 0.042;
+
+  ctx.shadowBlur = 0;
 
   if (artist) {
-    ctx.font      = `${Math.round((isPortrait ? 13 : 12) * sc)}px 'Space Mono', monospace`;
-    ctx.fillStyle = 'rgba(255,255,255,0.45)';
-    ctx.letterSpacing = '6px';
-    ctx.shadowBlur = 0;
-    ctx.fillText(artist.toUpperCase(), W / 2, topPad + Math.round(13 * sc));
+    ctx.font      = `${artistFs}px 'Space Mono', monospace`;
+    ctx.fillStyle = 'rgba(255,255,255,0.42)';
+    ctx.fillText(artist.toUpperCase(), W / 2, topPad);
   }
 
   if (title) {
-    const titleFs = Math.round((isPortrait ? 58 : 52) * sc);
     ctx.font        = `${titleFs}px 'Bebas Neue', sans-serif`;
     ctx.fillStyle   = '#ffffff';
-    ctx.shadowColor = 'rgba(232,160,32,0.55)';
-    ctx.shadowBlur  = 28 * sc;
-    ctx.fillText(title, W / 2, topPad + Math.round(13 * sc) + titleFs * 1.1);
+    ctx.shadowColor = 'rgba(232,160,32,0.5)';
+    ctx.shadowBlur  = 24 * sc;
+    ctx.fillText(title, W / 2, topPad + artistFs * 1.4 + titleFs * 0.9);
     ctx.shadowBlur  = 0;
   }
 
