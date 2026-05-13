@@ -3701,8 +3701,6 @@ function drawFrame(ctx, W, H, t) {
     // Margin as fraction of canvas dims (tighter on portrait/square)
     const isPortrait = H > W;
     const isSquare   = H === W;
-    const marginX    = isPortrait || isSquare ? W * 0.08 : W * 0.14;
-    const marginY    = H * 0.08;
 
     const marginX = W * 0.05;
     const marginY = H * 0.05;
