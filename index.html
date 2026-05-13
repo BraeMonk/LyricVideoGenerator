@@ -2122,6 +2122,31 @@ header {
             <div class="fx-toggle-dot"></div>
             Track Info
           </label>
+          <label class="fx-toggle">
+             <input type="checkbox" id="fxPulse" checked onchange="toggleFx()">
+             <div class="fx-toggle-dot"></div>
+             Beat Pulse
+          </label>
+          <label class="fx-toggle">
+             <input type="checkbox" id="fxScanlines" onchange="toggleFx()">
+             <div class="fx-toggle-dot"></div>
+             Scanlines
+          </label>
+          <label class="fx-toggle">
+            <input type="checkbox" id="fxGlitch" onchange="toggleFx()">
+            <div class="fx-toggle-dot"></div>
+            Glitch
+          </label>
+          <label class="fx-toggle">
+            <input type="checkbox" id="fxZoom" checked onchange="toggleFx()">
+            <div class="fx-toggle-dot"></div>
+            Slow Zoom
+          </label>
+          <label class="fx-toggle">
+            <input type="checkbox" id="fxColorShift" onchange="toggleFx()">
+            <div class="fx-toggle-dot"></div>
+            Color Shift
+          </label>
         </div>
  
         <div class="lyrics-area-wrap">
@@ -2307,6 +2332,17 @@ let fxOverlayLyrics = true;
 let fxSkinLyrics    = true;
 let fxShowSkin      = true;
 let fxShowTrackInfo = true;
+let bgVideoEl = null;
+let bgIsVideo = false;
+
+// FX animation state
+let fxPulsePhase = 0;
+let fxScanlineY = 0;
+let fxGlitchTimer = 0;
+let fxGlitchActive = false;
+let fxGlitchFrames = 0;
+let fxZoomPhase = 0;
+let fxColorShiftPhase = 0;
  
 // Particles
 let particles = [];
@@ -2477,6 +2513,13 @@ function toggleFx() {
 
   // Track info overlay (top) — always show when there's a title or artist
   updateTrackOverlay();
+  // read new fx flags into state
+  window.fxPulse      = document.getElementById('fxPulse')?.checked ?? true;
+  window.fxScanlines  = document.getElementById('fxScanlines')?.checked ?? false;
+  window.fxGlitch     = document.getElementById('fxGlitch')?.checked ?? false;
+  window.fxZoom       = document.getElementById('fxZoom')?.checked ?? true;
+  window.fxColorShift = document.getElementById('fxColorShift')?.checked ?? false;
+
 }
 
 function updateTrackOverlay() {
@@ -2524,10 +2567,28 @@ function loadArt(input) {
  
 function loadBg(input) {
   const f = input.files[0]; if (!f) return;
+  const isVideo = f.type.startsWith('video/');
   bgUrl = URL.createObjectURL(f);
-  bgImg = new Image(); bgImg.src = bgUrl;
-  markLoaded('bgCard', 'bgSub', f.name);
-  document.getElementById('bgLayer').style.backgroundImage = `url(${bgUrl})`;
+
+  if (isVideo) {
+    bgIsVideo = true;
+    bgImg = null;
+    if (bgVideoEl) { bgVideoEl.pause(); bgVideoEl.src = ''; }
+    bgVideoEl = document.createElement('video');
+    bgVideoEl.src = bgUrl;
+    bgVideoEl.loop = true;
+    bgVideoEl.muted = true;
+    bgVideoEl.playsInline = true;
+    bgVideoEl.autoplay = true;
+    bgVideoEl.play().catch(() => {});
+    markLoaded('bgCard', 'bgSub', '🎬 ' + f.name);
+  } else {
+    bgIsVideo = false;
+    if (bgVideoEl) { bgVideoEl.pause(); bgVideoEl.src = ''; bgVideoEl = null; }
+    bgImg = new Image(); bgImg.src = bgUrl;
+    document.getElementById('bgLayer') && (document.getElementById('bgLayer').style.backgroundImage = `url(${bgUrl})`);
+    markLoaded('bgCard', 'bgSub', f.name);
+  }
 }
  
 function markLoaded(cardId, subId, name) {
@@ -2741,6 +2802,10 @@ function togglePlay() {
 }
  
 function setPlayState(playing) {
+  if (bgIsVideo && bgVideoEl) {
+    playing ? bgVideoEl.play().catch(() => {}) : bgVideoEl.pause();
+  }
+
   const icon = playing ? '⏸' : '▶';
   ['mp3Play','cdPlay','ttPlay','mainPlay'].forEach(id => {
     const el = document.getElementById(id);
@@ -3010,28 +3075,51 @@ const LYRIC_STYLES = {
    
 // ─── FRAME RENDERER ──────────────────────
 function drawFrame(ctx, W, H, t) {
-  // Background
-  if (bgImg && bgImg.complete) {
-    // BG image: full bleed, moderate darken
+    // Background
+  const elapsed = audio.currentTime || (Date.now() / 1000);
+
+  // Slow zoom factor
+  fxZoomPhase = elapsed * 0.018;
+  const zoomScale = (window.fxZoom !== false) ? 1 + 0.06 * (0.5 + 0.5 * Math.sin(fxZoomPhase)) : 1;
+
+  // Beat pulse — scale spike on transient energy
+  let pulseScale = 1;
+  if (window.fxPulse !== false && analyserGlobal) {
+    const pBuf = new Uint8Array(analyserGlobal.frequencyBinCount);
+    analyserGlobal.getByteFrequencyData(pBuf);
+    const avg = pBuf.slice(0, 8).reduce((s, v) => s + v, 0) / 8 / 255;
+    pulseScale = 1 + avg * 0.04;
+  }
+
+  const combinedScale = zoomScale * pulseScale;
+
+  ctx.save();
+  if (bgIsVideo && bgVideoEl && bgVideoEl.readyState >= 2) {
+    ctx.filter = 'brightness(0.42) saturate(1.05)';
+    const vs = Math.max(W / bgVideoEl.videoWidth, H / bgVideoEl.videoHeight) * combinedScale;
+    const vw = bgVideoEl.videoWidth  * vs;
+    const vh = bgVideoEl.videoHeight * vs;
+    ctx.drawImage(bgVideoEl, (W - vw) / 2, (H - vh) / 2, vw, vh);
+    ctx.filter = 'none';
+  } else if (bgImg && bgImg.complete) {
     ctx.filter = 'brightness(0.42) saturate(1.1)';
-    fillFit(ctx, bgImg, W, H);
+    const s = Math.max(W / bgImg.width, H / bgImg.height) * combinedScale;
+    const iw = bgImg.width  * s;
+    const ih = bgImg.height * s;
+    ctx.drawImage(bgImg, (W - iw) / 2, (H - ih) / 2, iw, ih);
     ctx.filter = 'none';
   } else if (artImg && artImg.complete) {
-    // Art as BG: scale up and blur for bokeh feel
-    ctx.save();
     ctx.filter = 'blur(48px) brightness(0.22) saturate(1.4)';
-    const over = 1.18;
+    const over = 1.18 * combinedScale;
     const iw = W * over, ih = H * over;
     ctx.drawImage(artImg, (W - iw) / 2, (H - ih) / 2, iw, ih);
     ctx.filter = 'none';
-    ctx.restore();
-    // Subtle color tint overlay matching art dominant tone
+    ctx.restore(); ctx.save();
     ctx.globalAlpha = 0.08;
     ctx.fillStyle = '#e8a020';
     ctx.fillRect(0, 0, W, H);
     ctx.globalAlpha = 1;
   } else {
-    // No assets: rich dark gradient, not flat black
     const bg = ctx.createLinearGradient(0, 0, W, H);
     bg.addColorStop(0, '#0a0a12');
     bg.addColorStop(0.5, '#080808');
@@ -3039,18 +3127,47 @@ function drawFrame(ctx, W, H, t) {
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, W, H);
   }
- 
-   // Empty state — no audio loaded
-  if (!audio.src || audio.src === window.location.href) {
-    ctx.textAlign = 'center';
-    ctx.fillStyle = 'rgba(255,255,255,0.08)';
-    ctx.font = `${Math.round(Math.min(W,H)*0.06)}px 'Bebas Neue', sans-serif`;
-    ctx.fillText('UPLOAD AUDIO TO BEGIN', W/2, H/2 + Math.min(W,H)*0.03);
-    ctx.font = `${Math.round(Math.min(W,H)*0.09)}px 'Bebas Neue', sans-serif`;
-    ctx.fillStyle = 'rgba(255,255,255,0.04)';
-    ctx.fillText('🎬', W/2, H/2 - Math.min(W,H)*0.04);
-    ctx.textAlign = 'left';
-    return;
+  ctx.restore();
+
+  // Color shift overlay
+  if (window.fxColorShift) {
+    fxColorShiftPhase = elapsed * 0.4;
+    const hue = (fxColorShiftPhase * 30) % 360;
+    ctx.globalAlpha = 0.07;
+    ctx.fillStyle = `hsl(${hue}, 80%, 50%)`;
+    ctx.fillRect(0, 0, W, H);
+    ctx.globalAlpha = 1;
+  }
+
+  // Glitch effect
+  if (window.fxGlitch) {
+    fxGlitchTimer++;
+    if (!fxGlitchActive && fxGlitchTimer > 90 + Math.random() * 120) {
+      fxGlitchActive = true;
+      fxGlitchFrames = 3 + Math.floor(Math.random() * 5);
+      fxGlitchTimer = 0;
+    }
+    if (fxGlitchActive) {
+      fxGlitchFrames--;
+      if (fxGlitchFrames <= 0) fxGlitchActive = false;
+      // Horizontal slice displacement
+      const slices = 4 + Math.floor(Math.random() * 6);
+      for (let i = 0; i < slices; i++) {
+        const sy     = Math.random() * H;
+        const sh     = 2 + Math.random() * (H * 0.04);
+        const offset = (Math.random() - 0.5) * W * 0.04;
+        ctx.save();
+        ctx.drawImage(ctx.canvas, 0, sy, W, sh, offset, sy, W, sh);
+        ctx.restore();
+        // Color channel ghost
+        ctx.save();
+        ctx.globalAlpha = 0.15;
+        ctx.globalCompositeOperation = 'screen';
+        ctx.fillStyle = Math.random() > 0.5 ? 'rgba(255,0,80,0.4)' : 'rgba(0,200,255,0.4)';
+        ctx.fillRect(offset * 2, sy, W, sh);
+        ctx.restore();
+      }
+    }
   }
 
   // Vignette
@@ -3075,7 +3192,20 @@ function drawFrame(ctx, W, H, t) {
  
   const { prev, curr, next } = getLyricForTime(t);
   const progress = t / (audio.duration || 1);
- 
+
+    // Scanlines
+  if (window.fxScanlines) {
+    fxScanlineY = (fxScanlineY + 1.2) % 4;
+    ctx.save();
+    ctx.globalAlpha = 0.08;
+    for (let y = fxScanlineY; y < H; y += 4) {
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, y, W, 1.5);
+    }
+    ctx.globalAlpha = 1;
+    ctx.restore();
+  }
+
   // Player skin — rendered at 28% scale, pinned bottom-left
   if (fxShowSkin) {
     const skinScale = 0.26;
@@ -4570,6 +4700,12 @@ function startLiveLoop() {
 fitFrame();
 spawnParticles();
 startLiveLoop();
+
+window.fxPulse      = true;
+window.fxScanlines  = false;
+window.fxGlitch     = false;
+window.fxZoom       = true;
+window.fxColorShift = false;
 
 // Wire file inputs (avoids onchange timing issues)
 document.querySelector('#audioCard input').addEventListener('change', function(){ loadAudio(this); });
