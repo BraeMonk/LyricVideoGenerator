@@ -1587,7 +1587,7 @@ header {
 .skin-pos-grid {
   display: grid;
   grid-template-columns: repeat(3, 28px);
-  grid-template-rows: repeat(2, 22px);
+  grid-template-rows: repeat(3, 22px);
   gap: 3px;
 }
 .skin-pos-btn {
@@ -1625,13 +1625,13 @@ header {
 }
 .skin-pos-btn.active::after { opacity: 1; }
 
-/* dot positions per grid cell */
-.skin-pos-btn:nth-child(1)::after { top: 3px;  left:  3px; }
-.skin-pos-btn:nth-child(2)::after { top: 3px;  left: 50%; transform: translateX(-50%); }
-.skin-pos-btn:nth-child(3)::after { top: 3px;  right: 3px; left: auto; }
-.skin-pos-btn:nth-child(4)::after { bottom: 3px; left: 3px; top: auto; }
-.skin-pos-btn:nth-child(5)::after { bottom: 3px; left: 50%; transform: translateX(-50%); top: auto; }
-.skin-pos-btn:nth-child(6)::after { bottom: 3px; right: 3px; left: auto; top: auto; }
+.skin-pos-btn:nth-child(4)::after { top: 50%; left: 3px;  transform: translateY(-50%); }
+.skin-pos-btn:nth-child(5)::after { top: 50%; left: 50%;  transform: translate(-50%, -50%); }
+.skin-pos-btn:nth-child(6)::after { top: 50%; right: 3px; left: auto; transform: translateY(-50%); }
+/* shift old bottom row from 4/5/6 to 7/8/9 */
+.skin-pos-btn:nth-child(7)::after { bottom: 3px; left: 3px;  top: auto; }
+.skin-pos-btn:nth-child(8)::after { bottom: 3px; left: 50%;  transform: translateX(-50%); top: auto; }
+.skin-pos-btn:nth-child(9)::after { bottom: 3px; right: 3px; left: auto; top: auto; }
 
 /* ══ SCROLLBAR ══ */
 ::-webkit-scrollbar { width:4px; height:4px; }
@@ -2412,10 +2412,13 @@ header {
           <span class="field-label" style="margin-bottom:0;flex-shrink:0">Skin Position</span>
           <div class="skin-pos-grid" id="skinPosGrid">
             <!-- top-left, top-centre, top-right, bottom-left, bottom-centre, bottom-right -->
-            <button class="skin-pos-btn" title="Top Left"     onclick="setSkinPos('top','left',this)"   style="border-radius:3px 1px 1px 1px;"></button>
-            <button class="skin-pos-btn" title="Top Centre"   onclick="setSkinPos('top','centre',this)" style="border-radius:1px;"></button>
-            <button class="skin-pos-btn" title="Top Right"    onclick="setSkinPos('top','right',this)"  style="border-radius:1px 3px 1px 1px;"></button>
-            <button class="skin-pos-btn active" title="Bottom Left"   onclick="setSkinPos('bottom','left',this)"   style="border-radius:1px 1px 1px 3px;"></button>
+            <button class="skin-pos-btn" title="Top Left"      onclick="setSkinPos('top','left',this)"      style="border-radius:3px 1px 1px 1px;"></button>
+            <button class="skin-pos-btn" title="Top Centre"    onclick="setSkinPos('top','centre',this)"    style="border-radius:1px;"></button>
+            <button class="skin-pos-btn" title="Top Right"     onclick="setSkinPos('top','right',this)"     style="border-radius:1px 3px 1px 1px;"></button>
+            <button class="skin-pos-btn" title="Middle Left"   onclick="setSkinPos('middle','left',this)"   style="border-radius:1px;"></button>
+            <button class="skin-pos-btn active" title="Middle Centre" onclick="setSkinPos('middle','centre',this)" style="border-radius:1px;"></button>
+            <button class="skin-pos-btn" title="Middle Right"  onclick="setSkinPos('middle','right',this)"  style="border-radius:1px;"></button>
+            <button class="skin-pos-btn" title="Bottom Left"   onclick="setSkinPos('bottom','left',this)"   style="border-radius:1px 1px 1px 3px;"></button>
             <button class="skin-pos-btn" title="Bottom Centre" onclick="setSkinPos('bottom','centre',this)" style="border-radius:1px;"></button>
             <button class="skin-pos-btn" title="Bottom Right"  onclick="setSkinPos('bottom','right',this)"  style="border-radius:1px 1px 3px 1px;"></button>
           </div>
@@ -3701,26 +3704,30 @@ function drawFrame(ctx, W, H, t) {
     const marginX    = isPortrait || isSquare ? W * 0.08 : W * 0.14;
     const marginY    = H * 0.08;
 
-    // Horizontal anchor: left edge / centre / right edge of skin
+    const marginX = W * 0.05;
+    const marginY = H * 0.05;
+
+    // tx = the canvas X where the skin's anchor corner lands
     let tx;
     if      (skinPosH === 'left')   tx = marginX;
     else if (skinPosH === 'right')  tx = W - marginX;
-    else                             tx = W / 2; // centre
+    else                             tx = W / 2;
 
-    // Vertical anchor: top / bottom of skin
     let ty;
-    if (skinPosV === 'top') ty = marginY;
-    else                     ty = H - marginY;
+    if      (skinPosV === 'top')    ty = marginY;
+    else if (skinPosV === 'middle') ty = H / 2;
+    else                             ty = H - marginY;
 
-    // Pivot offsets in scaled space so the skin corner/edge sits at tx,ty
+    // pivotX/Y shift the skin in *unscaled* space so the right corner/edge aligns
     let pivotX;
-    if      (skinPosH === 'left')   pivotX = 0;
-    else if (skinPosH === 'right')  pivotX = -sw;
-    else                             pivotX = -sw / 2;
+    if      (skinPosH === 'right')  pivotX = -sw;   // right edge of skin at tx
+    else if (skinPosH === 'centre') pivotX = -sw / 2;
+    else                             pivotX = 0;      // left edge of skin at tx
 
     let pivotY;
-    if (skinPosV === 'top') pivotY = 0;
-    else                     pivotY = -sh;
+    if      (skinPosV === 'bottom') pivotY = -sh;
+    else if (skinPosV === 'middle') pivotY = -sh / 2;
+    else                             pivotY = 0;
 
     ctx.save();
     ctx.translate(tx, ty);
