@@ -2300,7 +2300,6 @@ let currentOrient = 'landscape';
 let exportFormat  = 'landscape';
 let exportQuality = 'standard';
 let currentLyrStyle = 'cinematic';
-let lockedLyricFs   = null;
 let fxWaveform      = true;
 let fxVignette      = true;
 let fxParticles     = true;
@@ -2366,7 +2365,6 @@ function updateCodecUI() {
 // ─── ORIENTATION ─────────────────────────
 function setOrient(o, btn) {
   currentOrient = o;
-  computeLockedFontSize():
   document.querySelectorAll('.pill-group:first-child .pill-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   const frame = document.getElementById('canvasFrame');
@@ -2435,7 +2433,6 @@ function setSkinFromSelect(sel) {
 // ─── LYRIC STYLE ─────────────────────────
 function setLyrStyle(style, card) {
   currentLyrStyle = style;
-  computeLockedFontSize();
   const app = document.getElementById('app');
   app.className = 'layout skin-' + currentSkin + ' lyr-style-' + style;
   document.querySelectorAll('.style-card').forEach(c => c.classList.remove('sel'));
@@ -2623,43 +2620,12 @@ function buildTimestamps() {
   if (!raw) { alert('Paste your lyrics first!'); return; }
   lines     = parseLyrics(raw);
   lineItems = lines.filter(l => l.type === 'line');
-  computeLockedFontSize();
   const title  = document.getElementById('songTitle').value  || 'UNTITLED';
   const artist = document.getElementById('songArtist').value || 'ARTIST';
   refreshMeta(title, artist);
   renderTsList();
   switchCtrlTab('timestamps');
   setStatus('Play audio · Space to stamp each line', false);
-}
-
-function computeLockedFontSize() {
-  if (!lineItems.length) { lockedLyricFs = null; return; }
-
-  const tmp  = document.createElement('canvas');
-  const tctx = tmp.getContext('2d');
-  const { w, h } = DIMS[currentOrient];
-  const sc       = Math.min(w, h) / 900;
-  const isPortrait = h > w;
-  const maxW     = w * 0.88;
-  const style    = LYRIC_STYLES[currentLyrStyle] || LYRIC_STYLES.cinematic;
-  const minFs    = sc * 18;
-  const step     = sc * 4;
-
-  let fs = sc * 58 * (isPortrait ? 1.25 : 1.0);
-
-  // Find the widest line text
-  const texts = lineItems.map(l => l.text.toUpperCase());
-
-  // Binary search would be faster but step-down is fine for <100 lines
-  let done = false;
-  while (!done && fs > minFs) {
-    tctx.font = style.currFont(fs / sc);
-    const fits = texts.every(t => tctx.measureText(t).width <= maxW);
-    if (fits) done = true;
-    else fs = Math.max(minFs, fs - step);
-  }
-
-  lockedLyricFs = fs / sc;
 }
    
 function refreshMeta(title, artist) {
@@ -3197,10 +3163,12 @@ function drawTrackInfoOverlay(ctx, W, H) {
 function drawLyricOverlay(ctx, W, H, prev, curr, next) {
   if (!curr && !prev && !next) return;
 
-  const style  = LYRIC_STYLES[currentLyrStyle] || LYRIC_STYLES.cinematic;
-  const sc     = Math.min(W, H) / 900;
+  const style    = LYRIC_STYLES[currentLyrStyle] || LYRIC_STYLES.cinematic;
+  const sc       = Math.min(W, H) / 900;
+  const isPortrait = H > W;
+  const maxW     = W * 0.88;
 
-  // Bottom gradient — deeper, more cinematic
+  // Bottom gradient
   const gradH = H * 0.55;
   const g = ctx.createLinearGradient(0, H - gradH, 0, H);
   g.addColorStop(0, 'transparent');
@@ -3209,83 +3177,75 @@ function drawLyricOverlay(ctx, W, H, prev, curr, next) {
   ctx.fillStyle = g;
   ctx.fillRect(0, H - gradH, W, gradH);
 
-  const isPortrait = H > W;
-  const currFs = isPortrait ? sc * 72 : sc * 58;
-  const dimFs  = isPortrait ? sc * 26 : sc * 22;
-  const lineGap = isPortrait ? currFs * 1.1 : currFs * 1.05;
-
-  // Anchor: current line sits at 78% height
-  const anchor = H * 0.80;
-
-  ctx.textAlign = 'center';
-  ctx.shadowBlur = 0;
-
-  // — PREVIOUS LINE —
-  if (prev) {
-    ctx.save();
-    ctx.globalAlpha = 0.28;
-    ctx.font      = style.dimFont(sc * (isPortrait ? 1.2 : 1));
-    ctx.fillStyle = style.dimColor.replace(/[\d.]+\)$/, '1)');
-    ctx.fillText(clipText(prev, W * 0.85, ctx), W / 2, anchor - lineGap);
-    ctx.restore();
-  }
-
-  ctx.save();
-  ctx.fillStyle   = style.currColor;
-  ctx.shadowColor = style.currShadow;
-
-  const maxW = W * 0.88;
-  const text = curr.toUpperCase();
-
-  // Use pre-computed locked size if available, else fall back to fit-to-current
-  let fs;
-  if (lockedLyricFs !== null) {
-    fs = lockedLyricFs * sc;
-  } else {
-    fs = sc * 58 * (isPortrait ? 1.25 : 1.0);
-    ctx.font = style.currFont(fs / sc);
-    const minFs = sc * 18;
-    const step  = sc * 4;
-    while (ctx.measureText(text).width > maxW && fs > minFs) {
-      fs = Math.max(minFs, fs - step);
-      ctx.font = style.currFont(fs / sc);
-    }
-  }
+  // ── fit-to-width for current line ──
+  const maxFs = sc * 72 * (isPortrait ? 1.3 : 1.0);
+  const minFs = sc * 16;
+  const step  = sc * 3;
+  const text  = curr.toUpperCase();
+  let fs      = maxFs;
 
   ctx.font = style.currFont(fs / sc);
+  while (ctx.measureText(text).width > maxW && fs > minFs) {
+    fs = Math.max(minFs, fs - step);
+    ctx.font = style.currFont(fs / sc);
+  }
 
-  // Ellipsis safety net regardless
+  // ellipsis if still overflowing at minFs
   let displayText = text;
   if (ctx.measureText(displayText).width > maxW) {
-    while (ctx.measureText(displayText + '…').width > maxW && displayText.length > 1) {
+    while (ctx.measureText(displayText + '…').width > maxW && displayText.length > 1)
       displayText = displayText.slice(0, -1);
-    }
     displayText = displayText.trim() + '…';
   }
 
-  ctx.shadowBlur = style.currBlur * sc * 2;
+  // dim font size — fixed fraction of current, never its own independent size
+  const dimFs = Math.max(sc * 13, fs * 0.36);
+
+  // anchor — current line sits at 80% height
+  const anchor = H * 0.80;
+
+  ctx.textAlign = 'center';
+
+  // — PREVIOUS —
+  if (prev) {
+    ctx.save();
+    ctx.globalAlpha = 0.25;
+    ctx.font        = style.dimFont(dimFs / sc);
+    ctx.fillStyle   = style.dimColor.replace(/[\d.]+\)$/, '1)');
+    const prevText  = clipText(prev.toUpperCase(), W * 0.80, ctx);
+    ctx.fillText(prevText, W / 2, anchor - fs * 1.18);
+    ctx.restore();
+  }
+
+  // — CURRENT —
+  ctx.save();
+  ctx.font        = style.currFont(fs / sc);
+  ctx.fillStyle   = style.currColor;
+  ctx.shadowColor = style.currShadow;
+  ctx.shadowBlur  = style.currBlur * sc * 2;
   ctx.fillText(displayText, W / 2, anchor);
-  ctx.shadowBlur = 0;
+  ctx.shadowBlur  = 0;
   ctx.restore();
 
-  // — NEXT LINE —
+  // — NEXT —
   if (next) {
     ctx.save();
     ctx.globalAlpha = 0.22;
-    ctx.font      = style.dimFont(sc * (isPortrait ? 1.2 : 1));
-    ctx.fillStyle = style.dimColor.replace(/[\d.]+\)$/, '1)');
-    ctx.fillText(clipText(next, W * 0.85, ctx), W / 2, anchor + lineGap * 0.9);
+    ctx.font        = style.dimFont(dimFs / sc);
+    ctx.fillStyle   = style.dimColor.replace(/[\d.]+\)$/, '1)');
+    const nextText  = clipText(next.toUpperCase(), W * 0.80, ctx);
+    ctx.fillText(nextText, W / 2, anchor + fs * 1.12);
     ctx.restore();
   }
 
   ctx.textAlign = 'left';
 }
 
-// Helper — clip text to fit a pixel width
 function clipText(text, maxPx, ctx) {
-  let t = text.toUpperCase();
-  while (ctx.measureText(t).width > maxPx && t.length > 4) t = t.slice(0, -1);
-  return t === text.toUpperCase() ? t : t.trim() + '…';
+  if (ctx.measureText(text).width <= maxPx) return text;
+  while (ctx.measureText(text + '…').width > maxPx && text.length > 1)
+    text = text.slice(0, -1);
+  return text.trim() + '…';
 }
  
 function fillFit(ctx, img, W, H) {
