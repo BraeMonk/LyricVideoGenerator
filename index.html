@@ -2466,7 +2466,7 @@ function toggleFx() {
 function updateTrackOverlay() {
   const title  = document.getElementById('songTitle').value.trim();
   const artist = document.getElementById('songArtist').value.trim();
-  const show   = fxShowTrackInfo && !fxShowSkin && (title || artist);
+  const show   = fxShowTrackInfo && (title || artist);
 
   document.getElementById('trackOverlay').style.display = show ? 'flex' : 'none';
   document.getElementById('overlayTitle').textContent  = title;
@@ -2915,7 +2915,12 @@ function initPreviewCanvas() {
   const scale = Math.min(maxW / w, maxH / h);
   canvas.style.width  = (w * scale) + 'px';
   canvas.style.height = (h * scale) + 'px';
-  drawFrame(previewCtx, w, h, audio.currentTime);
+  if (audio.src && audio.src !== window.location.href) {
+    drawFrame(previewCtx, w, h, audio.currentTime);
+  } else {
+    previewCtx.fillStyle = '#080808';
+    previewCtx.fillRect(0, 0, w, h);
+  }
   updatePreviewTime();
 }
  
@@ -3044,8 +3049,14 @@ function drawFrame(ctx, W, H, t) {
     else if (currentSkin === 'jcard')      drawJCard(ctx,W,H,curr,prev,next,progress,t);
   }
 
-  // Track info — TOP of frame
-  if (fxShowTrackInfo) drawTrackInfoOverlay(ctx, W, H);
+  // Waveform overlay
+  if (fxWaveform && analyserGlobal) {
+    const buf = new Uint8Array(analyserGlobal.frequencyBinCount);
+    analyserGlobal.getByteFrequencyData(buf);
+    drawExportWave(ctx, W, H, buf);
+  }
+   
+  if (fxShowTrackInfo && (document.getElementById('songTitle').value.trim() || document.getElementById('songArtist').value.trim())) drawTrackInfoOverlay(ctx, W, H);
 
   // Lyric overlay — BOTTOM of frame
   if (fxOverlayLyrics) drawLyricOverlay(ctx, W, H, prev, curr, next);
@@ -3965,7 +3976,7 @@ function startPreviewPlay() {
   const canvas = document.getElementById('previewCanvas');
   const tick = () => {
     if (!previewPlaying) return;
-    if (previewCtx && canvas.width === w) drawFrame(previewCtx, w, h, audio.currentTime);
+    if (previewCtx) drawFrame(previewCtx, w, h, audio.currentTime);
     updatePreviewTime();
     previewAnim = requestAnimationFrame(tick);
   };
@@ -4054,20 +4065,13 @@ async function startExport() {
   audio.play();
   if (audioCtxGlobal && audioCtxGlobal.state === 'suspended') audioCtxGlobal.resume();
  
-  // reuse existing analyser for waveform during export
-  const exportAnalyser = analyserGlobal;
-  let exportFreqBuf = exportAnalyser ? new Uint8Array(exportAnalyser.frequencyBinCount) : null;
- 
   await new Promise((resolve) => {
     let raf;
     const frame = () => {
       const t   = audio.currentTime;
       const pct = duration > 0 ? t / duration : 0;
       drawFrame(offCtx, w, h, t);
-      if (exportAnalyser && exportFreqBuf) {
-        exportAnalyser.getByteFrequencyData(exportFreqBuf);
-        drawExportWave(offCtx, w, h, exportFreqBuf);
-      }
+      
       pb.style.width = (pct * 100) + '%';
       pl.textContent = `Recording ${Math.round(pct*100)}% — ${fmt(t)} / ${fmt(duration)}`;
       if (audio.ended || t >= duration - 0.1) { cancelAnimationFrame(raf); resolve(); }
