@@ -3707,50 +3707,38 @@ function drawFrame(ctx, W, H, t) {
     const sw = W * skinScale;
     const sh = H * skinScale;
 
-    const marginX =
-      isPortrait ? W * 0.0025 :
-      isSquare   ? W * 0.002 :
-                   W * 0.0007;
-
-    const marginY =
-      isPortrait ? H * 0.0025 :
-      isSquare   ? H * 0.002 :
-                   H * 0.0007;
-
-    let x;
-    switch (skinPosH) {
-
-      case 'left':
-        x = marginX;
-        break;
-
-      case 'right':
-        x = W - sw - marginX;
-        break;
-
-      default:
-        x = (W - sw) * 0.5;
-    }
-
-    let y;
-    switch (skinPosV) {
-
-      case 'top':
-        y = marginY;
-        break;
-
-      case 'bottom':
-        y = H - sh - marginY;
-        break;
-
-      default:
-        y = (H - sh) * 0.5;
-    }
-
+    // TRUE screen-anchor positioning
+    const anchorX =
+      skinPosH === 'left'   ? W * 0.01 :
+      skinPosH === 'right'  ? W * 0.99 :
+                              W * 0.50;
+   
+    const anchorY =
+      skinPosV === 'top'    ? H * 0.01 :
+      skinPosV === 'bottom' ? H * 0.99 :
+                              H * 0.50;
+   
+    // Alignment offsets based on skin size
+    let offsetX = 0;
+   
+    if (skinPosH === 'centre')
+      offsetX = -sw * 0.5;
+   
+    else if (skinPosH === 'right')
+      offsetX = -sw;
+   
+    let offsetY = 0;
+   
+    if (skinPosV === 'middle')
+      offsetY = -sh * 0.5;
+   
+    else if (skinPosV === 'bottom')
+      offsetY = -sh;
+   
     ctx.save();
-
-    // Move into final position ONLY
-    ctx.translate(x, y);
+   
+    // TRUE edge anchoring
+    ctx.translate(anchorX + offsetX, anchorY + offsetY);
 
     // Draw skins in their intended local size
     if      (currentSkin === 'mp3')        drawMp3(ctx,sw,sh,curr,prev,next,progress,t);
