@@ -3695,88 +3695,82 @@ function drawFrame(ctx, W, H, t) {
   // Player skin — rendered at responsive scale
   if (fxShowSkin) {
 
-    // Slightly larger skins on portrait
     const isPortrait = H > W;
-    const isSquare   = Math.abs(W - H) < 10;
+    const isSquare = Math.abs(W - H) < 10;
 
-    let skinScale =
-      isPortrait ? 0.30 :
-      isSquare   ? 0.28 :
-                   0.26;
+    // Actual visual size of skin
+    const skinW =
+      isPortrait ? W * 0.34 :
+      isSquare   ? W * 0.30 :
+                   W * 0.26;
 
-    const sw = W / skinScale;
-    const sh = H / skinScale;
+    const skinH = skinW;
 
-    // Stronger visual margins
+    // Proper margins from edges
     const marginX =
-      isPortrait ? W * 0.08 :
-      isSquare   ? W * 0.07 :
-                   W * 0.065;
+      isPortrait ? W * 0.06 :
+      isSquare   ? W * 0.055 :
+                   W * 0.05;
 
     const marginY =
-      isPortrait ? H * 0.08 :
-      isSquare   ? H * 0.07 :
-                   H * 0.065;
+      isPortrait ? H * 0.06 :
+      isSquare   ? H * 0.055 :
+                   H * 0.05;
 
-    // Final anchor positions
-    let tx;
+    let x;
     switch (skinPosH) {
+
       case 'left':
-        tx = marginX;
+        x = marginX;
         break;
 
       case 'right':
-        tx = W - marginX;
+        x = W - skinW - marginX;
         break;
 
       default:
-        tx = W * 0.5;
+        x = (W - skinW) * 0.5;
     }
 
-    let ty;
+    let y;
     switch (skinPosV) {
+
       case 'top':
-        ty = marginY;
+        y = marginY;
         break;
 
       case 'bottom':
-        ty = H - marginY;
+        y = H - skinH - marginY;
         break;
 
       default:
-        ty = H * 0.5;
+        y = (H - skinH) * 0.5;
     }
-
-    // Proper edge anchoring
-    let pivotX = 0;
-    if (skinPosH === 'centre') pivotX = -sw * 0.5;
-    if (skinPosH === 'right')  pivotX = -sw;
-
-    let pivotY = 0;
-    if (skinPosV === 'middle') pivotY = -sh * 0.5;
-    if (skinPosV === 'bottom') pivotY = -sh;
 
     ctx.save();
 
-    ctx.translate(tx, ty);
-    ctx.scale(skinScale, skinScale);
-    ctx.translate(pivotX, pivotY);
+    // Draw directly in final position
+    ctx.translate(x, y);
 
-    if      (currentSkin === 'mp3')        drawMp3(ctx,sw,sh,curr,prev,next,progress,t);
-    else if (currentSkin === 'cd')         drawCd(ctx,sw,sh,curr,prev,next,progress,t);
-    else if (currentSkin === 'vinyl')      drawVinyl(ctx,sw,sh,curr,prev,next,progress,t);
-    else if (currentSkin === 'vhs')        drawVhs(ctx,sw,sh,curr,prev,next,progress,t);
-    else if (currentSkin === 'boombox')    drawBoombox(ctx,sw,sh,curr,prev,next,progress,t);
-    else if (currentSkin === 'amp')        drawAmp(ctx,sw,sh,curr,prev,next,progress,t);
-    else if (currentSkin === 'applemusic') drawAppleMusic(ctx,sw,sh,curr,prev,next,progress,t);
-    else if (currentSkin === 'spotify')    drawSpotify(ctx,sw,sh,curr,prev,next,progress,t);
-    else if (currentSkin === 'daw')        drawDaw(ctx,sw,sh,curr,prev,next,progress,t);
-    else if (currentSkin === 'filmreel')   drawFilmReel(ctx,sw,sh,curr,prev,next,progress,t);
-    else if (currentSkin === 'neon')       drawNeon(ctx,sw,sh,curr,prev,next,progress,t);
-    else if (currentSkin === 'ticket')     drawTicket(ctx,sw,sh,curr,prev,next,progress,t);
-    else if (currentSkin === 'waveform')   drawWaveform(ctx,sw,sh,curr,prev,next,progress,t);
-    else if (currentSkin === 'polaroid')   drawPolaroid(ctx,sw,sh,curr,prev,next,progress,t);
-    else if (currentSkin === 'jcard')      drawJCard(ctx,sw,sh,curr,prev,next,progress,t);
+    // Convert your existing skin drawing system
+    // into local 0→skinW coordinates
+    ctx.scale(skinW / W, skinH / H);
+
+    if      (currentSkin === 'mp3')        drawMp3(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'cd')         drawCd(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'vinyl')      drawVinyl(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'vhs')        drawVhs(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'boombox')    drawBoombox(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'amp')        drawAmp(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'applemusic') drawAppleMusic(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'spotify')    drawSpotify(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'daw')        drawDaw(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'filmreel')   drawFilmReel(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'neon')       drawNeon(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'ticket')     drawTicket(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'waveform')   drawWaveform(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'polaroid')   drawPolaroid(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'jcard')      drawJCard(ctx,W,H,curr,prev,next,progress,t);
 
     ctx.restore();
   }
