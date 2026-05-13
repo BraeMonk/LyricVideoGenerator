@@ -3694,33 +3694,67 @@ function drawFrame(ctx, W, H, t) {
 
   // Player skin — rendered at responsive scale
   if (fxShowSkin) {
-    const isPortrait = H > W;
-    const isSquare   = Math.abs(W - H) < 10;
 
-    const skinScale = isPortrait ? 0.42 : isSquare ? 0.36 : 0.32;
-    const skinW = W * skinScale;
-    const skinH = H * skinScale;
-    const marginX = W * 0.022;
-    const marginY = H * 0.022;
+    // Each draw fn places the shell at px=(W-pw)/2, py=(H-ph)/2 in unscaled space.
+    // sc = min(W,H)/700, shell pw ≈ 280*sc, ph ≈ varies per skin but ~300-340*sc
+    // skinScale controls how large the shell appears on screen.
+    // Shell screen size: pw * skinScale ≈ 280 * (min(W,H)/700) * skinScale
 
-    // Where we want the skin's top-left corner in screen space
-    let anchorX, anchorY;
+    const sc = Math.min(W, H) / 700;
+
+    // Approximate shell sizes per skin (matching each draw fn's pw/ph)
+    const SHELL_DIMS = {
+      mp3:        { pw: 280*sc, ph: 340*sc },
+      cd:         { pw: 280*sc, ph: 320*sc },
+      vinyl:      { pw: 380*sc, ph: 280*sc },
+      vhs:        { pw: 280*sc, ph: 300*sc },
+      boombox:    { pw: 340*sc, ph: 260*sc },
+      amp:        { pw: 300*sc, ph: 280*sc },
+      applemusic: { pw: 240*sc, ph: 320*sc },
+      spotify:    { pw: 240*sc, ph: 320*sc },
+      daw:        { pw: 360*sc, ph: 220*sc },
+      filmreel:   { pw: 290*sc, ph: 290*sc },
+      neon:       { pw: 310*sc, ph: 250*sc },
+      ticket:     { pw: 290*sc, ph: 265*sc },
+      waveform:   { pw: 340*sc, ph: 200*sc },
+      polaroid:   { pw: 205*sc, ph: 248*sc },
+      jcard:      { pw: 290*sc, ph: 265*sc },
+    };
+
+    const dims = SHELL_DIMS[currentSkin] || { pw: 280*sc, ph: 300*sc };
+
+    // The draw fn self-centers: shell top-left is at ((W-pw)/2, (H-ph)/2) in unscaled space
+    // On screen (after no extra transform) the shell appears at that position.
+    // We want the shell to appear at (targetX, targetY) on screen.
+    // So we need ctx.translate(targetX - (W-pw)/2, targetY - (H-ph)/2) BEFORE drawing.
+
+    const margin = Math.min(W, H) * 0.03;
+
+    // Shell screen-space dimensions (no extra scaling — draw fns already scale via sc)
+    const shellW = dims.pw;
+    const shellH = dims.ph;
+
+    // Self-center offset in screen space (what draw fn naturally produces)
+    const selfCX = (W - shellW) / 2;
+    const selfCY = (H - shellH) / 2;
+
+    // Target top-left of shell on screen
+    let targetX, targetY;
+
     switch (skinPosH) {
-      case 'left':  anchorX = marginX;             break;
-      case 'right': anchorX = W - marginX - skinW; break;
-      default:      anchorX = (W - skinW) / 2;     break;
+      case 'left':   targetX = margin;              break;
+      case 'right':  targetX = W - margin - shellW; break;
+      default:       targetX = selfCX;              break; // centre = no shift needed
     }
     switch (skinPosV) {
-      case 'top':    anchorY = marginY;             break;
-      case 'bottom': anchorY = H - marginY - skinH; break;
-      default:       anchorY = (H - skinH) / 2;     break;
+      case 'top':    targetY = margin;              break;
+      case 'bottom': targetY = H - margin - shellH; break;
+      default:       targetY = selfCY;              break; // middle = no shift needed
     }
 
+    // Translate by the delta between where draw fn naturally places it vs where we want it
     ctx.save();
-    ctx.translate(anchorX, anchorY);
-    ctx.scale(skinScale, skinScale);
-    // Cancel the self-centering the draw fns apply
-    ctx.translate(-W * (1 - skinScale) / 2, -H * (1 - skinScale) / 2);
+    ctx.translate(targetX - selfCX, targetY - selfCY);
 
     if      (currentSkin === 'mp3')        drawMp3(ctx,W,H,curr,prev,next,progress,t);
     else if (currentSkin === 'cd')         drawCd(ctx,W,H,curr,prev,next,progress,t);
@@ -3734,12 +3768,13 @@ function drawFrame(ctx, W, H, t) {
     else if (currentSkin === 'filmreel')   drawFilmReel(ctx,W,H,curr,prev,next,progress,t);
     else if (currentSkin === 'neon')       drawNeon(ctx,W,H,curr,prev,next,progress,t);
     else if (currentSkin === 'ticket')     drawTicket(ctx,W,H,curr,prev,next,progress,t);
-    else if (currentSkin === 'waveform')   drawWaveform(ctx,W,H,curr,prev,next,progress,t);
+    else if (currentSkin === 'waveform')   drawWaveformOnly(ctx,W,H,curr,prev,next,progress,t);
     else if (currentSkin === 'polaroid')   drawPolaroid(ctx,W,H,curr,prev,next,progress,t);
     else if (currentSkin === 'jcard')      drawJCard(ctx,W,H,curr,prev,next,progress,t);
 
     ctx.restore();
   }
+   
   // Waveform overlay
   if (fxWaveform && analyserGlobal) {
     const buf = new Uint8Array(analyserGlobal.frequencyBinCount);
