@@ -1,4 +1,4 @@
-const CACHE = 'lyric-studio-v11';
+const CACHE = 'lyric-studio-v12';
 const ASSETS = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', e => {
