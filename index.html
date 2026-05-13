@@ -3698,15 +3698,15 @@ function drawFrame(ctx, W, H, t) {
     const isPortrait = H > W;
     const isSquare = Math.abs(W - H) < 10;
 
-    // Actual visual size of skin
-    const skinW =
-      isPortrait ? W * 0.34 :
-      isSquare   ? W * 0.30 :
-                   W * 0.26;
+    const skinScale =
+      isPortrait ? 0.34 :
+      isSquare   ? 0.30 :
+                   0.26;
 
-    const skinH = skinW;
+    // REAL rendered dimensions
+    const sw = W * skinScale;
+    const sh = H * skinScale;
 
-    // Proper margins from edges
     const marginX =
       isPortrait ? W * 0.06 :
       isSquare   ? W * 0.055 :
@@ -3725,11 +3725,11 @@ function drawFrame(ctx, W, H, t) {
         break;
 
       case 'right':
-        x = W - skinW - marginX;
+        x = W - sw - marginX;
         break;
 
       default:
-        x = (W - skinW) * 0.5;
+        x = (W - sw) * 0.5;
     }
 
     let y;
@@ -3740,37 +3740,34 @@ function drawFrame(ctx, W, H, t) {
         break;
 
       case 'bottom':
-        y = H - skinH - marginY;
+        y = H - sh - marginY;
         break;
 
       default:
-        y = (H - skinH) * 0.5;
+        y = (H - sh) * 0.5;
     }
 
     ctx.save();
 
-    // Draw directly in final position
+    // Move into final position ONLY
     ctx.translate(x, y);
 
-    // Convert your existing skin drawing system
-    // into local 0→skinW coordinates
-    ctx.scale(skinW / W, skinH / H);
-
-    if      (currentSkin === 'mp3')        drawMp3(ctx,W,H,curr,prev,next,progress,t);
-    else if (currentSkin === 'cd')         drawCd(ctx,W,H,curr,prev,next,progress,t);
-    else if (currentSkin === 'vinyl')      drawVinyl(ctx,W,H,curr,prev,next,progress,t);
-    else if (currentSkin === 'vhs')        drawVhs(ctx,W,H,curr,prev,next,progress,t);
-    else if (currentSkin === 'boombox')    drawBoombox(ctx,W,H,curr,prev,next,progress,t);
-    else if (currentSkin === 'amp')        drawAmp(ctx,W,H,curr,prev,next,progress,t);
-    else if (currentSkin === 'applemusic') drawAppleMusic(ctx,W,H,curr,prev,next,progress,t);
-    else if (currentSkin === 'spotify')    drawSpotify(ctx,W,H,curr,prev,next,progress,t);
-    else if (currentSkin === 'daw')        drawDaw(ctx,W,H,curr,prev,next,progress,t);
-    else if (currentSkin === 'filmreel')   drawFilmReel(ctx,W,H,curr,prev,next,progress,t);
-    else if (currentSkin === 'neon')       drawNeon(ctx,W,H,curr,prev,next,progress,t);
-    else if (currentSkin === 'ticket')     drawTicket(ctx,W,H,curr,prev,next,progress,t);
-    else if (currentSkin === 'waveform')   drawWaveform(ctx,W,H,curr,prev,next,progress,t);
-    else if (currentSkin === 'polaroid')   drawPolaroid(ctx,W,H,curr,prev,next,progress,t);
-    else if (currentSkin === 'jcard')      drawJCard(ctx,W,H,curr,prev,next,progress,t);
+    // Draw skins in their intended local size
+    if      (currentSkin === 'mp3')        drawMp3(ctx,sw,sh,curr,prev,next,progress,t);
+    else if (currentSkin === 'cd')         drawCd(ctx,sw,sh,curr,prev,next,progress,t);
+    else if (currentSkin === 'vinyl')      drawVinyl(ctx,sw,sh,curr,prev,next,progress,t);
+    else if (currentSkin === 'vhs')        drawVhs(ctx,sw,sh,curr,prev,next,progress,t);
+    else if (currentSkin === 'boombox')    drawBoombox(ctx,sw,sh,curr,prev,next,progress,t);
+    else if (currentSkin === 'amp')        drawAmp(ctx,sw,sh,curr,prev,next,progress,t);
+    else if (currentSkin === 'applemusic') drawAppleMusic(ctx,sw,sh,curr,prev,next,progress,t);
+    else if (currentSkin === 'spotify')    drawSpotify(ctx,sw,sh,curr,prev,next,progress,t);
+    else if (currentSkin === 'daw')        drawDaw(ctx,sw,sh,curr,prev,next,progress,t);
+    else if (currentSkin === 'filmreel')   drawFilmReel(ctx,sw,sh,curr,prev,next,progress,t);
+    else if (currentSkin === 'neon')       drawNeon(ctx,sw,sh,curr,prev,next,progress,t);
+    else if (currentSkin === 'ticket')     drawTicket(ctx,sw,sh,curr,prev,next,progress,t);
+    else if (currentSkin === 'waveform')   drawWaveform(ctx,sw,sh,curr,prev,next,progress,t);
+    else if (currentSkin === 'polaroid')   drawPolaroid(ctx,sw,sh,curr,prev,next,progress,t);
+    else if (currentSkin === 'jcard')      drawJCard(ctx,sw,sh,curr,prev,next,progress,t);
 
     ctx.restore();
   }
