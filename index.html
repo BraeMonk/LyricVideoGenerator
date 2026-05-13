@@ -3178,17 +3178,23 @@ function drawLyricOverlay(ctx, W, H, prev, curr, next) {
   ctx.fillRect(0, H - gradH, W, gradH);
 
   // ── fit-to-width for current line ──
-  const maxFs = sc * 72 * (isPortrait ? 1.3 : 1.0);
-  const minFs = sc * 16;
-  const step  = sc * 3;
+  const maxFs = sc * 52;
+  const minFs = sc * 14;
   const text  = curr.toUpperCase();
-  let fs      = maxFs;
 
-  ctx.font = style.currFont(fs / sc);
-  while (ctx.measureText(text).width > maxW && fs > minFs) {
-    fs = Math.max(minFs, fs - step);
-    ctx.font = style.currFont(fs / sc);
+  // Binary search — fast, accurate, no step-size guessing
+  let lo = minFs, hi = maxFs, fs = maxFs;
+  ctx.font = style.currFont(hi / sc);
+  if (ctx.measureText(text).width > maxW) {
+    while (hi - lo > sc * 0.5) {
+      const mid = (lo + hi) / 2;
+      ctx.font = style.currFont(mid / sc);
+      if (ctx.measureText(text).width <= maxW) lo = mid;
+      else hi = mid;
+    }
+    fs = lo;
   }
+  ctx.font = style.currFont(fs / sc);
 
   // ellipsis if still overflowing at minFs
   let displayText = text;
