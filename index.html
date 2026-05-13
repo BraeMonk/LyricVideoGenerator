@@ -2021,19 +2021,19 @@ header {
  
         <div class="setup-grid">
           <label class="upload-card" id="audioCard">
-            <input type="file" accept="audio/*" onchange="loadAudio(this)">
+            <input type="file" accept="audio/*">
             <div class="uc-icon">🎵</div>
             <div class="uc-label">Audio</div>
             <div class="uc-sub" id="audioSub">MP3 · WAV · FLAC</div>
           </label>
           <label class="upload-card" id="artCard">
-            <input type="file" accept="image/*" onchange="loadArt(this)">
+            <input type="file" accept="image/*">
             <div class="uc-icon">🖼</div>
             <div class="uc-label">Cover Art</div>
             <div class="uc-sub" id="artSub">JPG · PNG · WEBP</div>
           </label>
           <label class="upload-card" id="bgCard">
-            <input type="file" accept="image/*" onchange="loadBg(this)">
+            <input type="file" accept="image/*">
             <div class="uc-icon">🌌</div>
             <div class="uc-label">Background</div>
             <div class="uc-sub" id="bgSub">Optional</div>
@@ -3082,12 +3082,9 @@ function drawFrame(ctx, W, H, t) {
     const sw = W / skinScale;
     const sh = H / skinScale;
     ctx.save();
-    // Pin bottom-left: skin draws centered in its virtual canvas,
-    // so offset so the bottom-center of the skin lands at bottom-left of frame
     ctx.translate(W * 0.14, H);
     ctx.scale(skinScale, skinScale);
     ctx.translate(-sw / 2, -sh);
-    const sw = W / skinScale, sh = H / skinScale;
     if      (currentSkin === 'mp3')        drawMp3(ctx,sw,sh,curr,prev,next,progress,t);
     else if (currentSkin === 'cd')         drawCd(ctx,sw,sh,curr,prev,next,progress,t);
     else if (currentSkin === 'vinyl')      drawVinyl(ctx,sw,sh,curr,prev,next,progress,t);
@@ -4562,6 +4559,10 @@ fitFrame();
 spawnParticles();
 startLiveLoop();
 
+// Wire file inputs (avoids onchange timing issues)
+document.querySelector('#audioCard input').addEventListener('change', function(){ loadAudio(this); });
+document.querySelector('#artCard input').addEventListener('change',  function(){ loadArt(this); });
+document.querySelector('#bgCard input').addEventListener('change',   function(){ loadBg(this); });
 window.addEventListener('load', fitFrame);
 window.addEventListener('resize', fitFrame);
 window.addEventListener('orientationchange', () => setTimeout(fitFrame, 250));
