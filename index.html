@@ -2218,7 +2218,7 @@ function toggleFx() {
 function updateTrackOverlay() {
   const title  = document.getElementById('songTitle').value.trim();
   const artist = document.getElementById('songArtist').value.trim();
-  const show   = fxShowTrackInfo && (title || artist);
+  const show   = fxShowTrackInfo && !fxShowSkin && (title || artist);
 
   document.getElementById('trackOverlay').style.display = show ? 'flex' : 'none';
   document.getElementById('overlayTitle').textContent  = title;
@@ -2613,22 +2613,17 @@ document.addEventListener('keydown', e => {
 document.getElementById('songTitle').addEventListener('input', () => {
   const v = document.getElementById('songTitle').value || 'UNTITLED';
   const a = document.getElementById('songArtist').value || 'ARTIST';
-  document.getElementById('lcdTitle').textContent = v.toUpperCase();
-  document.getElementById('ttTitle').textContent  = v;
-  document.getElementById('cdTitle').textContent  = `${a} — ${v}`;
+  refreshMeta(v, a);
   updateTrackOverlay();
 });
 
 document.getElementById('songArtist').addEventListener('input', () => {
   const v = document.getElementById('songArtist').value || 'ARTIST';
   const t = document.getElementById('songTitle').value || 'UNTITLED';
-  document.getElementById('lcdTrack').textContent  = v.toUpperCase();
-  document.getElementById('ttArtist').textContent  = v.toUpperCase();
-  document.getElementById('cdTitle').textContent   = `${v} — ${t}`;
+  refreshMeta(t, v);
   updateTrackOverlay();
 });
 
- 
 function setStatus(msg, active) {
   document.getElementById('statusDot').className = 'status-dot' + (active ? ' active' : '');
 }
