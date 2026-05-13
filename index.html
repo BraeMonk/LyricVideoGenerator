@@ -1575,6 +1575,64 @@ header {
 }
 .btn-do-export.secondary:hover { background:var(--border2); }
  
+/* ══ SKIN POSITION PICKER ══ */
+.skin-pos-row {
+  padding: 8px 14px 10px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.skin-pos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 28px);
+  grid-template-rows: repeat(2, 22px);
+  gap: 3px;
+}
+.skin-pos-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 2px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 7px;
+  color: var(--muted);
+  transition: background .12s, border-color .12s, color .12s;
+  padding: 0;
+  position: relative;
+}
+.skin-pos-btn::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: currentColor;
+  border-radius: 1px;
+  opacity: 0.5;
+}
+.skin-pos-btn:hover {
+  background: rgba(255,255,255,0.05);
+  border-color: var(--muted2);
+  color: var(--text);
+}
+.skin-pos-btn.active {
+  background: var(--accentDim);
+  border-color: rgba(232,160,32,.5);
+  color: var(--accent);
+}
+.skin-pos-btn.active::after { opacity: 1; }
+
+/* dot positions per grid cell */
+.skin-pos-btn:nth-child(1)::after { top: 3px;  left:  3px; }
+.skin-pos-btn:nth-child(2)::after { top: 3px;  left: 50%; transform: translateX(-50%); }
+.skin-pos-btn:nth-child(3)::after { top: 3px;  right: 3px; left: auto; }
+.skin-pos-btn:nth-child(4)::after { bottom: 3px; left: 3px; top: auto; }
+.skin-pos-btn:nth-child(5)::after { bottom: 3px; left: 50%; transform: translateX(-50%); top: auto; }
+.skin-pos-btn:nth-child(6)::after { bottom: 3px; right: 3px; left: auto; top: auto; }
+
 /* ══ SCROLLBAR ══ */
 ::-webkit-scrollbar { width:4px; height:4px; }
 ::-webkit-scrollbar-track { background:transparent; }
@@ -2349,6 +2407,21 @@ header {
           </label>
         </div>
  
+        <!-- Skin Position Picker -->
+        <div class="skin-pos-row" id="skinPosRow">
+          <span class="field-label" style="margin-bottom:0;flex-shrink:0">Skin Position</span>
+          <div class="skin-pos-grid" id="skinPosGrid">
+            <!-- top-left, top-centre, top-right, bottom-left, bottom-centre, bottom-right -->
+            <button class="skin-pos-btn" title="Top Left"     onclick="setSkinPos('top','left',this)"   style="border-radius:3px 1px 1px 1px;"></button>
+            <button class="skin-pos-btn" title="Top Centre"   onclick="setSkinPos('top','centre',this)" style="border-radius:1px;"></button>
+            <button class="skin-pos-btn" title="Top Right"    onclick="setSkinPos('top','right',this)"  style="border-radius:1px 3px 1px 1px;"></button>
+            <button class="skin-pos-btn active" title="Bottom Left"   onclick="setSkinPos('bottom','left',this)"   style="border-radius:1px 1px 1px 3px;"></button>
+            <button class="skin-pos-btn" title="Bottom Centre" onclick="setSkinPos('bottom','centre',this)" style="border-radius:1px;"></button>
+            <button class="skin-pos-btn" title="Bottom Right"  onclick="setSkinPos('bottom','right',this)"  style="border-radius:1px 1px 3px 1px;"></button>
+          </div>
+          <span style="font-size:9px;color:var(--muted);letter-spacing:1px" id="skinPosLabel">BOTTOM · LEFT</span>
+        </div>
+
         <div class="lyrics-area-wrap">
           <span class="field-label">Lyrics</span>
           <p style="font-size:9px;color:var(--muted);margin-bottom:6px;line-height:1.6">
@@ -2554,6 +2627,8 @@ let currentOrient = 'landscape';
 let exportFormat  = 'landscape';
 let exportQuality = 'standard';
 let currentLyrStyle = 'cinematic';
+let skinPosV = 'bottom'; // 'top' | 'bottom'
+let skinPosH = 'left';   // 'left' | 'centre' | 'right'
 let fxWaveform      = true;
 let fxVignette      = true;
 let fxParticles     = true;
@@ -2637,7 +2712,16 @@ function setOrient(o, btn) {
   fitFrame();
 }
  
-function fitFrame() {
+function setSkinPos(v, h, btn) {
+  skinPosV = v;
+  skinPosH = h;
+  document.querySelectorAll('.skin-pos-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const label = document.getElementById('skinPosLabel');
+  if (label) label.textContent = v.toUpperCase() + ' · ' + h.toUpperCase();
+}
+
+
   const zone  = document.getElementById('previewZone');
   const frame = document.getElementById('canvasFrame');
   const ratio = currentOrient === 'landscape' ? 16/9
@@ -3605,15 +3689,43 @@ function drawFrame(ctx, W, H, t) {
     ctx.restore();
   }
 
-  // Player skin — rendered at 28% scale, pinned bottom-left
+  // Player skin — rendered at 26% scale, position controlled by skinPosV/skinPosH
   if (fxShowSkin) {
     const skinScale = 0.26;
     const sw = W / skinScale;
     const sh = H / skinScale;
+
+    // Margin as fraction of canvas dims (tighter on portrait/square)
+    const isPortrait = H > W;
+    const isSquare   = H === W;
+    const marginX    = isPortrait || isSquare ? W * 0.08 : W * 0.14;
+    const marginY    = H * 0.08;
+
+    // Horizontal anchor: left edge / centre / right edge of skin
+    let tx;
+    if      (skinPosH === 'left')   tx = marginX;
+    else if (skinPosH === 'right')  tx = W - marginX;
+    else                             tx = W / 2; // centre
+
+    // Vertical anchor: top / bottom of skin
+    let ty;
+    if (skinPosV === 'top') ty = marginY;
+    else                     ty = H - marginY;
+
+    // Pivot offsets in scaled space so the skin corner/edge sits at tx,ty
+    let pivotX;
+    if      (skinPosH === 'left')   pivotX = 0;
+    else if (skinPosH === 'right')  pivotX = -sw;
+    else                             pivotX = -sw / 2;
+
+    let pivotY;
+    if (skinPosV === 'top') pivotY = 0;
+    else                     pivotY = -sh;
+
     ctx.save();
-    ctx.translate(W * 0.14, H);
+    ctx.translate(tx, ty);
     ctx.scale(skinScale, skinScale);
-    ctx.translate(-sw / 2, -sh);
+    ctx.translate(pivotX, pivotY);
     if      (currentSkin === 'mp3')        drawMp3(ctx,sw,sh,curr,prev,next,progress,t);
     else if (currentSkin === 'cd')         drawCd(ctx,sw,sh,curr,prev,next,progress,t);
     else if (currentSkin === 'vinyl')      drawVinyl(ctx,sw,sh,curr,prev,next,progress,t);
