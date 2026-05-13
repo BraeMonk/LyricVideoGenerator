@@ -36,6 +36,8 @@
   --sar: env(safe-area-inset-right,  0px);
   --sab: env(safe-area-inset-bottom, 0px);
   --sal: env(safe-area-inset-left,   0px);
+  --lyric-color-override: #ffffff;
+  --lyric-size-scale: 1;
 }
  
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -284,12 +286,14 @@ header {
 
 /* current line */
 .lyric-curr-line {
-  font-size: clamp(18px, 3vw, 44px);
+  font-size: calc(clamp(18px, 3vw, 44px) * var(--lyric-size-scale, 1));
   line-height: 1.15;
   max-width: 100%;
   word-break: break-word;
   overflow-wrap: break-word;
   text-align: center;
+  color: var(--lyric-color-override, #fff);
+  animation: lyricIn 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* prev / next */
@@ -300,7 +304,48 @@ header {
   word-break: break-word;
   overflow-wrap: break-word;
   text-align: center;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
+
+@keyframes lyricIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.97); filter: blur(3px); }
+  to   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+/* Cinematic style gets an upward sweep */
+.lyr-style-cinematic .lyric-curr-line {
+  animation: lyricSweepIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes lyricSweepIn {
+  from { opacity: 0; transform: translateY(18px); letter-spacing: 2px; filter: blur(4px); }
+  to   { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+/* Karaoke gets a pop */
+.lyr-style-karaoke .lyric-curr-line {
+  animation: lyricPop 0.18s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes lyricPop {
+  from { opacity: 0; transform: scale(0.88); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Centered gets a fade+expand */
+.lyr-style-centered .lyric-curr-line {
+  animation: lyricExpand 0.35s ease both;
+}
+@keyframes lyricExpand {
+  from { opacity: 0; letter-spacing: 2px; }
+  to   { opacity: 1; }
+}
+
+/* Snap indicator flash */
+@keyframes snapFlash {
+  0%   { box-shadow: 0 0 0 0 rgba(39,174,96,0.7); }
+  70%  { box-shadow: 0 0 0 8px rgba(39,174,96,0); }
+  100% { box-shadow: 0 0 0 0 rgba(39,174,96,0); }
+}
+.snap-flash { animation: snapFlash 0.4s ease forwards; }
 
 /* ── Style: Cinematic ── */
 .lyr-style-cinematic .lyric-curr-line {
@@ -440,12 +485,33 @@ header {
  
 .progress-wrap { flex:1; min-width:80px; display:flex; flex-direction:column; gap:3px; }
 .progress-bar {
-  width:100%; height:4px; background:var(--border2); border-radius:2px;
+  width:100%; height:6px; background:var(--border2); border-radius:3px;
   cursor:pointer; position:relative;
+  transition: height 0.12s ease;
 }
+.progress-bar:hover { height: 8px; }
 .progress-fill {
-  height:100%; background:var(--accent); border-radius:2px;
-  width:0%; transition:width .1s linear; pointer-events:none;
+  height:100%; background:var(--accent); border-radius:3px;
+  width:0%; pointer-events:none; transition: width .1s linear;
+}
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  left: var(--prog-pct, 0%);
+  top: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: 12px; height: 12px;
+  background: var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(232,160,32,0.6);
+  transition: transform 0.12s ease;
+  pointer-events: none;
+}
+.progress-bar:hover::after { transform: translate(-50%, -50%) scale(1); }
+.progress-loop-region {
+  position: absolute; top: 0; height: 100%;
+  background: rgba(39,174,96,0.25); border-radius: 3px;
+  pointer-events: none;
 }
 .progress-time { font-family:'Orbitron',monospace; font-size:9px; color:var(--muted); letter-spacing:1px; }
  
@@ -605,6 +671,116 @@ header {
 }
 .ts-row.stamped .clear-ts-btn { color:var(--muted2); }
 .ts-row.stamped .clear-ts-btn:hover { color:var(--red); }
+
+/* ── CHUNK 3: NUDGE ── */
+.ts-row { grid-template-columns: 60px 1fr auto 26px; }
+.ts-nudge-group {
+  display: flex; gap: 2px; align-items: center; opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.ts-row:hover .ts-nudge-group,
+.ts-row.active .ts-nudge-group { opacity: 1; }
+.ts-nudge-btn {
+  background: var(--surface2); border: 1px solid var(--border2);
+  color: var(--muted); font-family: 'Space Mono', monospace;
+  font-size: 8px; padding: 2px 5px; border-radius: 2px;
+  cursor: pointer; line-height: 1; height: 20px;
+  transition: background .12s, color .12s, border-color .12s;
+  white-space: nowrap;
+}
+.ts-nudge-btn:hover { background: var(--accentDim); color: var(--accent); border-color: rgba(232,160,32,.3); }
+
+/* ── CHUNK 3: GLOBAL OFFSET ── */
+.ts-offset-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 14px; border-bottom: 1px solid var(--border);
+  font-size: 9px; color: var(--muted); letter-spacing: 1px;
+  flex-shrink: 0;
+}
+.ts-offset-row input[type=range] { flex: 1; accent-color: var(--accent); height: 3px; cursor: pointer; }
+.ts-offset-val { font-family: 'Orbitron', monospace; font-size: 9px; color: var(--accent); width: 52px; text-align: right; }
+.ts-offset-reset {
+  background: none; border: 1px solid var(--border2); color: var(--muted);
+  font-family: 'Space Mono', monospace; font-size: 8px; padding: 3px 7px;
+  border-radius: 2px; cursor: pointer; transition: all .12s;
+}
+.ts-offset-reset:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── CHUNK 5: BPM TAP + SNAP ── */
+.bpm-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 14px; border-bottom: 1px solid var(--border);
+  flex-shrink: 0; flex-wrap: wrap;
+}
+.bpm-tap-btn {
+  background: var(--surface2); border: 1px solid var(--border2);
+  color: var(--text); font-family: 'Bebas Neue', sans-serif;
+  font-size: 12px; letter-spacing: 2px; padding: 0 12px; height: 28px;
+  border-radius: 3px; cursor: pointer; transition: all .12s; white-space: nowrap;
+}
+.bpm-tap-btn:hover  { background: #222; border-color: #3a3a3a; }
+.bpm-tap-btn:active { background: var(--accentDim); border-color: var(--accent); transform: scale(0.97); }
+.bpm-display { font-family: 'Orbitron', monospace; font-size: 11px; color: var(--accent); min-width: 68px; letter-spacing: 1px; }
+.snap-toggle {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 9px; letter-spacing: 1px; color: var(--muted);
+  text-transform: uppercase; cursor: pointer; user-select: none; margin-left: auto;
+}
+.snap-toggle input { display: none; }
+.snap-toggle-dot {
+  width: 28px; height: 16px; background: var(--border2);
+  border-radius: 8px; position: relative; transition: background .2s; flex-shrink: 0;
+}
+.snap-toggle-dot::after {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 12px; height: 12px; background: var(--muted);
+  border-radius: 50%; transition: transform .2s, background .2s;
+}
+.snap-toggle input:checked + .snap-toggle-dot { background: var(--green); }
+.snap-toggle input:checked + .snap-toggle-dot::after { transform: translateX(12px); background: #000; }
+
+/* ── CHUNK 6: LOOP REGION ── */
+.loop-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 14px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.loop-label { font-size: 9px; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; white-space: nowrap; }
+.loop-btn {
+  background: var(--surface2); border: 1px solid var(--border2);
+  color: var(--muted); font-family: 'Space Mono', monospace; font-size: 9px;
+  letter-spacing: 1px; padding: 0 8px; height: 24px; border-radius: 2px;
+  cursor: pointer; white-space: nowrap; transition: all .12s;
+}
+.loop-btn:hover  { background: #222; color: var(--text); }
+.loop-btn.active { background: var(--greenDim); border-color: var(--green); color: var(--green); }
+.loop-pts { font-family: 'Orbitron', monospace; font-size: 9px; color: var(--muted); flex: 1; letter-spacing: 1px; }
+
+/* ── CHUNK 7: LYRIC COLOR + SIZE ── */
+.lyric-controls-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap;
+}
+.lyric-controls-row .field-label { margin-bottom: 0; flex-shrink: 0; }
+.color-swatch-group { display: flex; gap: 5px; align-items: center; }
+.color-swatch {
+  width: 20px; height: 20px; border-radius: 50%; cursor: pointer;
+  border: 2px solid transparent; transition: border-color .15s, transform .15s; flex-shrink: 0;
+}
+.color-swatch:hover  { transform: scale(1.15); }
+.color-swatch.active { border-color: #fff; }
+.color-swatch-custom {
+  width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border2);
+  cursor: pointer; overflow: hidden; flex-shrink: 0; position: relative;
+}
+.color-swatch-custom input[type=color] {
+  position: absolute; inset: -4px; width: calc(100% + 8px); height: calc(100% + 8px);
+  border: none; padding: 0; cursor: pointer; opacity: 0;
+}
+.color-swatch-custom-preview { width: 100%; height: 100%; border-radius: 50%; background: #fff; }
+.size-control { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.size-control label { font-size: 9px; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; white-space: nowrap; }
+.size-slider { width: 72px; accent-color: var(--accent); cursor: pointer; }
+.size-val { font-family: 'Orbitron', monospace; font-size: 9px; color: var(--accent); width: 30px; }
 .ts-empty {
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   gap:8px; padding:32px 16px; color:var(--muted); opacity:.5;
@@ -2000,6 +2176,7 @@ header {
       <div class="progress-wrap">
         <div class="progress-bar" id="mainProgress" onclick="mainSeek(event)">
           <div class="progress-fill" id="mainFill"></div>
+          <div class="progress-loop-region" id="loopRegion" style="display:none;left:0%;width:0%"></div>
         </div>
         <div class="progress-time" id="mainTime">0:00 / 0:00</div>
       </div>
@@ -2083,7 +2260,30 @@ header {
             </div>
           </div>
         </div>
- 
+
+        <!-- CHUNK 7: Lyric Color + Size Controls -->
+        <div class="lyric-controls-row" style="margin-top:8px;">
+          <span class="field-label">Color</span>
+          <div class="color-swatch-group">
+            <div class="color-swatch active" style="background:#ffffff" data-color="#ffffff" onclick="setLyricColor('#ffffff',this)" title="White"></div>
+            <div class="color-swatch" style="background:#e8a020" data-color="#e8a020" onclick="setLyricColor('#e8a020',this)" title="Gold"></div>
+            <div class="color-swatch" style="background:#f0c040" data-color="#f0c040" onclick="setLyricColor('#f0c040',this)" title="Yellow"></div>
+            <div class="color-swatch" style="background:#fc3c5d" data-color="#fc3c5d" onclick="setLyricColor('#fc3c5d',this)" title="Red/Pink"></div>
+            <div class="color-swatch" style="background:#38b8ff" data-color="#38b8ff" onclick="setLyricColor('#38b8ff',this)" title="Blue"></div>
+            <div class="color-swatch" style="background:#78ffb0" data-color="#78ffb0" onclick="setLyricColor('#78ffb0',this)" title="Mint"></div>
+            <div class="color-swatch-custom" title="Custom color">
+              <input type="color" id="lyricColorPicker" value="#ffffff" oninput="setLyricColor(this.value,null)">
+              <div class="color-swatch-custom-preview" id="customColorPreview"></div>
+            </div>
+          </div>
+          <div class="size-control">
+            <label>Size</label>
+            <input type="range" class="size-slider" id="lyricSizeSlider" min="60" max="160" value="100" step="5"
+              oninput="setLyricSize(this.value)">
+            <span class="size-val" id="lyricSizeVal">100%</span>
+          </div>
+        </div>
+
         <!-- FX Toggles -->
         <div class="fx-row">
           <span class="field-label" style="margin-bottom:0">Visual FX</span>
@@ -2167,6 +2367,35 @@ header {
           <kbd>Space</kbd> stamp current line
           <kbd>P</kbd> play/pause
           <kbd>↑↓</kbd> navigate
+          <kbd>Ctrl+Z</kbd> undo
+        </div>
+        <!-- Global Offset Slider -->
+        <div class="ts-offset-row">
+          <span>GLOBAL OFFSET</span>
+          <input type="range" id="globalOffsetSlider" min="-2000" max="2000" value="0" step="50"
+            oninput="applyGlobalOffset(this.value)">
+          <span class="ts-offset-val" id="globalOffsetVal">0 ms</span>
+          <button class="ts-offset-reset" onclick="resetGlobalOffset()">RESET</button>
+        </div>
+        <!-- BPM Tap + Snap Row -->
+        <div class="bpm-row">
+          <button class="bpm-tap-btn" id="tapTempoBtn" onclick="tapTempo()">TAP TEMPO</button>
+          <span class="bpm-display" id="bpmDisplay">— BPM</span>
+          <button class="bpm-tap-btn" onclick="clearTapTempo()" style="font-size:9px;opacity:.5">RESET</button>
+          <label class="snap-toggle" title="Snap stamps to nearest beat grid">
+            <input type="checkbox" id="snapToBeat">
+            <div class="snap-toggle-dot"></div>
+            Snap to Beat
+          </label>
+        </div>
+        <!-- Loop Region -->
+        <div class="loop-row">
+          <span class="loop-label">Loop</span>
+          <button class="loop-btn" id="loopInBtn"  onclick="setLoopPoint('in')" title="Set loop in">IN</button>
+          <button class="loop-btn" id="loopOutBtn" onclick="setLoopPoint('out')" title="Set loop out">OUT</button>
+          <span class="loop-pts" id="loopDisplay">–––</span>
+          <button class="loop-btn" id="loopActiveBtn" onclick="toggleLoop()">⟳ LOOP OFF</button>
+          <button class="loop-btn" onclick="clearLoop()">CLEAR</button>
         </div>
         <div class="ts-list" id="tsList">
           <div class="ts-empty">
@@ -2827,12 +3056,32 @@ function seekClick(e, el) {
   audio.currentTime = ((e.clientX - r.left) / r.width) * (audio.duration || 0);
 }
  
-function mainSeek(e) {
-  const bar  = document.getElementById('mainProgress');
+// ─── DRAG-TO-SEEK ────────────────────────
+let isSeeking = false;
+
+function seekPct(e, bar) {
   const rect = bar.getBoundingClientRect();
-  const pct  = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  const x = (e.touches ? e.touches[0].clientX : e.clientX);
+  const pct = Math.max(0, Math.min(1, (x - rect.left) / rect.width));
   audio.currentTime = pct * (audio.duration || 0);
+  bar.style.setProperty('--prog-pct', (pct * 100).toFixed(1) + '%');
 }
+
+function mainSeek(e) { seekPct(e, document.getElementById('mainProgress')); }
+
+(function initSeekDrag() {
+  const bar = document.getElementById('mainProgress');
+  bar.addEventListener('mousedown', e => { isSeeking = true; seekPct(e, bar); });
+  bar.addEventListener('touchstart', e => { isSeeking = true; seekPct(e, bar); }, { passive: true });
+  document.addEventListener('mousemove', e => { if (isSeeking) seekPct(e, bar); });
+  document.addEventListener('touchmove', e => { if (isSeeking) seekPct(e, bar); }, { passive: true });
+  document.addEventListener('mouseup',  () => { isSeeking = false; });
+  document.addEventListener('touchend', () => { isSeeking = false; });
+  audio.addEventListener('timeupdate', () => {
+    const pct = (audio.currentTime / (audio.duration || 1) * 100).toFixed(1);
+    bar.style.setProperty('--prog-pct', pct + '%');
+  });
+})();
  
 function fmt(s) {
   const m = Math.floor(s / 60), sec = Math.floor(s % 60);
@@ -2863,9 +3112,9 @@ audio.addEventListener('timeupdate', () => {
  
 function updateLyrics(t) {
   const { prev, curr, next } = getLyricForTime(t);
-  setLyricGroup(['lcdPrev','cdPrev','ttPrev','overlayPrev','vhsPrev','boomboxPrev','ampPrev','amPrev','spPrev','filmPrev','neonPrev','ticketPrev','polaroidPrev','jcardPrev'], prev);
-  setLyricGroup(['lcdCurr','cdCurr','ttCurr','overlayCurr','vhsCurr','boomboxCurr','ampCurr','amCurr','spCurr','dawCurr','filmCurr','neonCurr','ticketCurr','waveformCurr','polaroidCurr','jcardCurr'], curr);
-  setLyricGroup(['lcdNext','cdNext','ttNext','overlayNext','vhsNext','boomboxNext','ampNext','amNext','spNext','filmNext','neonNext','ticketNext','polaroidNext','jcardNext'], next);
+  setLyricGroup(['lcdPrev','cdPrev','ttPrev','overlayPrev','vhsPrev','boomboxPrev','ampPrev','amPrev','spPrev','filmPrev','neonPrev','ticketPrev','polaroidPrev','jcardPrev'], prev, false);
+  setLyricGroup(['lcdCurr','cdCurr','ttCurr','overlayCurr','vhsCurr','boomboxCurr','ampCurr','amCurr','spCurr','dawCurr','filmCurr','neonCurr','ticketCurr','waveformCurr','polaroidCurr','jcardCurr'], curr, true);
+  setLyricGroup(['lcdNext','cdNext','ttNext','overlayNext','vhsNext','boomboxNext','ampNext','amNext','spNext','filmNext','neonNext','ticketNext','polaroidNext','jcardNext'], next, false);
   // Progress bars for new skins
   const pct = (t / (audio.duration || 1) * 100).toFixed(1) + '%';
   ['amFill','spFill'].forEach(id => { const el = document.getElementById(id); if(el) el.style.width = pct; });
@@ -2907,8 +3156,17 @@ function updateWaveformBars() {
   }
 }
  
-function setLyricGroup(ids, text) {
-  ids.forEach(id => { const el = document.getElementById(id); if(el) el.textContent = text; });
+function setLyricGroup(ids, text, animate) {
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (animate && el.textContent !== text) {
+      el.style.animation = 'none';
+      el.offsetHeight; // reflow
+      el.style.animation = '';
+    }
+    el.textContent = text;
+  });
 }
  
 function getLyricForTime(t) {
@@ -2921,6 +3179,147 @@ function getLyricForTime(t) {
   return { prev: prevL?.text || '', curr: curr?.text || '', next: nextL?.text || '' };
 }
  
+// ─── UNDO STACK ──────────────────────────
+const undoStack = [];
+const MAX_UNDO  = 50;
+
+function pushUndo() {
+  const snapshot = lineItems.map(li => ({ ...li }));
+  undoStack.push(snapshot);
+  if (undoStack.length > MAX_UNDO) undoStack.shift();
+}
+
+function undoTs() {
+  if (!undoStack.length) return;
+  lineItems = undoStack.pop();
+  renderTsList();
+  updateCounts();
+}
+
+// ─── GLOBAL TIMESTAMP OFFSET ─────────────
+let globalOffsetMs = 0;
+
+function applyGlobalOffset(val) {
+  globalOffsetMs = parseInt(val, 10);
+  document.getElementById('globalOffsetVal').textContent = (globalOffsetMs >= 0 ? '+' : '') + globalOffsetMs + ' ms';
+}
+
+function resetGlobalOffset() {
+  globalOffsetMs = 0;
+  document.getElementById('globalOffsetSlider').value = 0;
+  document.getElementById('globalOffsetVal').textContent = '0 ms';
+}
+
+// ─── TIMESTAMP NUDGE ─────────────────────
+function nudgeTs(idx, deltaSec) {
+  const item = lineItems[idx];
+  if (!item || item.ts === null) return;
+  pushUndo();
+  item.ts = Math.max(0, parseFloat((item.ts + deltaSec).toFixed(3)));
+  const valEl = document.getElementById(`tsv-${idx}`);
+  if (valEl) { valEl.textContent = fmt(item.ts); valEl.className = 'ts-val set'; }
+  updateCounts();
+}
+
+// ─── TAP TEMPO ───────────────────────────
+let tapTimes = [];
+let detectedBpm = null;
+
+function tapTempo() {
+  const now = performance.now();
+  tapTimes.push(now);
+  if (tapTimes.length > 8) tapTimes.shift();
+  if (tapTimes.length >= 2) {
+    const intervals = [];
+    for (let i = 1; i < tapTimes.length; i++) intervals.push(tapTimes[i] - tapTimes[i-1]);
+    const avg = intervals.reduce((a,b) => a+b, 0) / intervals.length;
+    detectedBpm = Math.round(60000 / avg);
+    document.getElementById('bpmDisplay').textContent = detectedBpm + ' BPM';
+  } else {
+    document.getElementById('bpmDisplay').textContent = 'TAP…';
+  }
+  const btn = document.getElementById('tapTempoBtn');
+  btn.style.background = 'var(--accentDim)';
+  setTimeout(() => btn.style.background = '', 80);
+}
+
+function clearTapTempo() {
+  tapTimes = []; detectedBpm = null;
+  document.getElementById('bpmDisplay').textContent = '— BPM';
+}
+
+function snapToNearestBeat(t) {
+  if (!detectedBpm) return t;
+  const beatInterval = 60 / detectedBpm;
+  return Math.round(t / beatInterval) * beatInterval;
+}
+
+// ─── LOOP REGION ─────────────────────────
+let loopIn  = null;
+let loopOut = null;
+let loopActive = false;
+
+function setLoopPoint(which) {
+  const t = audio.currentTime;
+  if (which === 'in')  { loopIn  = t; document.getElementById('loopInBtn').classList.add('active'); }
+  if (which === 'out') { loopOut = t; document.getElementById('loopOutBtn').classList.add('active'); }
+  updateLoopDisplay();
+}
+
+function toggleLoop() {
+  loopActive = !loopActive;
+  const btn = document.getElementById('loopActiveBtn');
+  btn.textContent = loopActive ? '⟳ LOOP ON' : '⟳ LOOP OFF';
+  btn.classList.toggle('active', loopActive);
+}
+
+function clearLoop() {
+  loopIn = loopOut = null; loopActive = false;
+  ['loopInBtn','loopOutBtn','loopActiveBtn'].forEach(id => document.getElementById(id)?.classList.remove('active'));
+  document.getElementById('loopActiveBtn').textContent = '⟳ LOOP OFF';
+  document.getElementById('loopRegion').style.display = 'none';
+  updateLoopDisplay();
+}
+
+function updateLoopDisplay() {
+  const dur = audio.duration || 1;
+  if (loopIn !== null && loopOut !== null) {
+    document.getElementById('loopDisplay').textContent = `${fmt(loopIn)} → ${fmt(loopOut)}`;
+    const region = document.getElementById('loopRegion');
+    region.style.display = 'block';
+    region.style.left  = (loopIn  / dur * 100).toFixed(1) + '%';
+    region.style.width = ((loopOut - loopIn) / dur * 100).toFixed(1) + '%';
+  } else {
+    document.getElementById('loopDisplay').textContent = '–––';
+  }
+}
+
+audio.addEventListener('timeupdate', () => {
+  if (loopActive && loopIn !== null && loopOut !== null && loopOut > loopIn) {
+    if (audio.currentTime >= loopOut || audio.currentTime < loopIn) {
+      audio.currentTime = loopIn;
+    }
+  }
+}, true);
+
+// ─── LYRIC COLOR & SIZE ──────────────────
+let lyricColor = '#ffffff';
+let lyricSizeScale = 1.0;
+
+function setLyricColor(hex, swatchEl) {
+  lyricColor = hex;
+  document.getElementById('customColorPreview').style.background = hex;
+  document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+  if (swatchEl) swatchEl.classList.add('active');
+  document.getElementById('app').style.setProperty('--lyric-color-override', hex);
+}
+
+function setLyricSize(val) {
+  lyricSizeScale = parseInt(val, 10) / 100;
+  document.getElementById('lyricSizeVal').textContent = val + '%';
+  document.getElementById('app').style.setProperty('--lyric-size-scale', lyricSizeScale);
+}
+
 // ─── KEYBOARD ────────────────────────────
 document.addEventListener('keydown', e => {
   const tag = document.activeElement.tagName;
