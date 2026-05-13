@@ -2721,7 +2721,7 @@ function setSkinPos(v, h, btn) {
   if (label) label.textContent = v.toUpperCase() + ' · ' + h.toUpperCase();
 }
 
-
+function fitFrame() {
   const zone  = document.getElementById('previewZone');
   const frame = document.getElementById('canvasFrame');
   const ratio = currentOrient === 'landscape' ? 16/9
