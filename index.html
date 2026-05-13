@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Lyric Video Studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;1,700&family=Anton&family=Raleway:wght@100;200;300;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;1,700&family=Anton&family=Raleway:wght@100;200;300;700;900&family=Teko:wght@300;400;600&family=Righteous&family=Secular+One&family=Abril+Fatface&family=Black+Han+Sans&display=swap" rel="stylesheet">
 <style>
 /* ══════════════════════════════════════════
    TOKENS
@@ -333,6 +333,58 @@ header {
   letter-spacing:1px; color:rgba(232,160,32,.28);
 }
 
+/* ── Style: Teko ── */
+.lyr-style-teko .lyric-curr-line {
+  font-family:'Teko',sans-serif; font-weight:600;
+  font-size:clamp(22px,4vw,58px);
+  letter-spacing:8px; color:#fff; text-transform:uppercase;
+  text-shadow:0 0 40px rgba(255,255,255,.5), 0 2px 20px rgba(0,0,0,.9);
+}
+.lyr-style-teko .lyric-prev-line,
+.lyr-style-teko .lyric-next-line {
+  font-family:'Teko',sans-serif; font-weight:300;
+  letter-spacing:5px; color:rgba(255,255,255,.15);
+}
+
+/* ── Style: Righteous ── */
+.lyr-style-righteous .lyric-curr-line {
+  font-family:'Righteous',sans-serif;
+  font-size:clamp(18px,3.2vw,44px);
+  letter-spacing:4px; color:#f0c040;
+  text-shadow:0 0 50px rgba(240,192,64,.7), 0 3px 20px rgba(0,0,0,1);
+}
+.lyr-style-righteous .lyric-prev-line,
+.lyr-style-righteous .lyric-next-line {
+  font-family:'Righteous',sans-serif;
+  letter-spacing:3px; color:rgba(240,192,64,.18);
+}
+
+/* ── Style: Abril ── */
+.lyr-style-abril .lyric-curr-line {
+  font-family:'Abril Fatface',serif;
+  font-size:clamp(18px,3.2vw,46px);
+  letter-spacing:3px; color:#fff;
+  text-shadow:0 0 60px rgba(192,57,43,.8), 0 3px 24px rgba(0,0,0,1);
+}
+.lyr-style-abril .lyric-prev-line,
+.lyr-style-abril .lyric-next-line {
+  font-family:'Abril Fatface',serif;
+  letter-spacing:2px; color:rgba(255,255,255,.14);
+}
+
+/* ── Style: Black Han ── */
+.lyr-style-blackhan .lyric-curr-line {
+  font-family:'Black Han Sans',sans-serif;
+  font-size:clamp(16px,3vw,42px);
+  letter-spacing:6px; color:#fff;
+  text-shadow:0 0 40px rgba(100,200,255,.6), 0 2px 16px rgba(0,0,0,1);
+}
+.lyr-style-blackhan .lyric-prev-line,
+.lyr-style-blackhan .lyric-next-line {
+  font-family:'Black Han Sans',sans-serif;
+  letter-spacing:4px; color:rgba(100,200,255,.18);
+}
+   
 /* ── Style: Playfair ── */
 .lyr-style-playfair .lyric-curr-line {
   font-family:'Playfair Display',serif; font-style:italic; font-weight:700;
@@ -456,6 +508,7 @@ header {
   display:grid; grid-template-columns:repeat(4,1fr); gap:6px;
 }
 @media (max-width:500px) { .style-cards { grid-template-columns:repeat(2,1fr); } }
+@media (min-width:501px) { .style-cards { grid-template-columns:repeat(4,1fr); } }
  
 .style-card {
   border:1px solid var(--border2); border-radius:var(--radius);
@@ -1749,6 +1802,22 @@ header {
               <div class="sc-preview">𝓕</div>
               <div class="sc-name">Elegant</div>
             </div>
+            <div class="style-card" onclick="setLyrStyle('teko',this)">
+              <div class="sc-preview">T</div>
+              <div class="sc-name">Teko</div>
+            </div>
+            <div class="style-card" onclick="setLyrStyle('righteous',this)">
+              <div class="sc-preview">R</div>
+              <div class="sc-name">Righteous</div>
+            </div>
+            <div class="style-card" onclick="setLyrStyle('abril',this)">
+              <div class="sc-preview">A</div>
+              <div class="sc-name">Abril</div>
+            </div>
+            <div class="style-card" onclick="setLyrStyle('blackhan',this)">
+              <div class="sc-preview">B</div>
+              <div class="sc-name">Black Han</div>
+            </div>
           </div>
         </div>
  
@@ -2027,9 +2096,7 @@ function updateCodecUI() {
   const isMp4 = codec.ext === 'mp4';
   badge.textContent = codec.ext.toUpperCase();
   badge.className = 'codec-badge' + (isMp4 ? '' : ' webm');
-  info.innerHTML = isMp4
-    ? `<strong>✓ MP4 export supported</strong> — ${codec.label}<br>Exports directly as .mp4, ready for YouTube, TikTok, and Instagram.`
-    : `<strong>WebM export</strong> — ${codec.label}<br>Your browser exports as .webm. For MP4, convert with <strong>HandBrake</strong> or <code>ffmpeg -i input.webm output.mp4</code>`;
+  info.innerHTML = `<strong>WebM export</strong> — ${codec.label}<br>Your browser exports as .webm. For MP4, convert with <strong>HandBrake</strong> or <code>ffmpeg -i input.webm output.mp4</code>`;
 }
  
 // ─── ORIENTATION ─────────────────────────
@@ -2643,8 +2710,40 @@ const LYRIC_STYLES = {
     currShadow:'rgba(240,192,64,0.7)',
     currBlur:  50,
   },
+  teko: {
+    currFont:  (sc) => `600 ${Math.round(58*sc)}px 'Teko', sans-serif`,
+    dimFont:   (sc) => `300 ${Math.round(24*sc)}px 'Teko', sans-serif`,
+    currColor: '#ffffff',
+    dimColor:  'rgba(255,255,255,0.15)',
+    currShadow:'rgba(255,255,255,0.5)',
+    currBlur:  40,
+  },
+  righteous: {
+    currFont:  (sc) => `${Math.round(44*sc)}px 'Righteous', sans-serif`,
+    dimFont:   (sc) => `${Math.round(20*sc)}px 'Righteous', sans-serif`,
+    currColor: '#f0c040',
+    dimColor:  'rgba(240,192,64,0.18)',
+    currShadow:'rgba(240,192,64,0.8)',
+    currBlur:  50,
+  },
+  abril: {
+    currFont:  (sc) => `${Math.round(46*sc)}px 'Abril Fatface', serif`,
+    dimFont:   (sc) => `${Math.round(20*sc)}px 'Abril Fatface', serif`,
+    currColor: '#ffffff',
+    dimColor:  'rgba(255,255,255,0.14)',
+    currShadow:'rgba(192,57,43,0.9)',
+    currBlur:  55,
+  },
+  blackhan: {
+    currFont:  (sc) => `${Math.round(42*sc)}px 'Black Han Sans', sans-serif`,
+    dimFont:   (sc) => `${Math.round(18*sc)}px 'Black Han Sans', sans-serif`,
+    currColor: '#ffffff',
+    dimColor:  'rgba(100,200,255,0.18)',
+    currShadow:'rgba(100,200,255,0.7)',
+    currBlur:  45,
+  },
 };
-
+   
 // ─── FRAME RENDERER ──────────────────────
 function drawFrame(ctx, W, H, t) {
   // Background
@@ -3366,22 +3465,18 @@ async function startExport() {
   offCanvas.width  = w; offCanvas.height = h;
   const offCtx = offCanvas.getContext('2d');
  
-  let expAudioCtx = null, dest = null;
+  let dest = null;
   try {
-    expAudioCtx = new AudioContext();
-    dest = expAudioCtx.createMediaStreamDestination();
-    const src = expAudioCtx.createMediaElementSource(audio);
-    src.connect(dest);
-    src.connect(expAudioCtx.destination);
-    audioCtxGlobal = expAudioCtx;
-    sourceGlobal   = src;
-  } catch(e) {
-    expAudioCtx = null;
-  }
+    if (!audioCtxGlobal) initAnalyser();
+    if (audioCtxGlobal && sourceGlobal) {
+      dest = audioCtxGlobal.createMediaStreamDestination();
+      sourceGlobal.connect(dest);
+    }
+  } catch(e) { dest = null; }
  
   const canvasStream = offCanvas.captureStream(30);
   const tracks = [...canvasStream.getTracks()];
-  if (expAudioCtx && dest) dest.stream.getAudioTracks().forEach(t => tracks.push(t));
+  if (dest) dest.stream.getAudioTracks().forEach(t => tracks.push(t));
   const combined = new MediaStream(tracks);
  
   detectCodec();
@@ -3407,17 +3502,11 @@ async function startExport() {
  
   await new Promise(r => setTimeout(r, 100));
   audio.play();
-  if (expAudioCtx && expAudioCtx.state === 'suspended') expAudioCtx.resume();
+  if (audioCtxGlobal && audioCtxGlobal.state === 'suspended') audioCtxGlobal.resume();
  
-  let exportAnalyser = null, exportFreqBuf = null;
-  if (expAudioCtx) {
-    try {
-      exportAnalyser = expAudioCtx.createAnalyser();
-      exportAnalyser.fftSize = 256;
-      if (sourceGlobal) { sourceGlobal.disconnect(); sourceGlobal.connect(exportAnalyser); exportAnalyser.connect(expAudioCtx.destination); }
-      exportFreqBuf = new Uint8Array(exportAnalyser.frequencyBinCount);
-    } catch(e) {}
-  }
+  // reuse existing analyser for waveform during export
+  const exportAnalyser = analyserGlobal;
+  let exportFreqBuf = exportAnalyser ? new Uint8Array(exportAnalyser.frequencyBinCount) : null;
  
   await new Promise((resolve) => {
     let raf;
@@ -3454,12 +3543,12 @@ async function startExport() {
   a.href = url; a.download = fname; a.click();
   setTimeout(() => URL.revokeObjectURL(url), 5000);
  
-  try { if(expAudioCtx) expAudioCtx.close(); } catch(e){}
+  // audio context stays alive for continued playback after export
  
   btn.disabled = false; btn.textContent = '⬇ EXPORT VIDEO';
   pl.textContent = `✓ Saved: ${fname}`;
   document.getElementById('statusDot').className = 'status-dot';
-  audioCtxGlobal = null; sourceGlobal = null; analyserGlobal = null;
+  // context kept alive intentionally
 }
 
 // ─── SMART PRODUCER ──────────────────────────────────────────────────────────
