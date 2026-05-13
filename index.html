@@ -2300,6 +2300,7 @@ let currentOrient = 'landscape';
 let exportFormat  = 'landscape';
 let exportQuality = 'standard';
 let currentLyrStyle = 'cinematic';
+let lockedLyricFs   = null;
 let fxWaveform      = true;
 let fxVignette      = true;
 let fxParticles     = true;
@@ -2365,6 +2366,7 @@ function updateCodecUI() {
 // ─── ORIENTATION ─────────────────────────
 function setOrient(o, btn) {
   currentOrient = o;
+  computeLockedFontSize():
   document.querySelectorAll('.pill-group:first-child .pill-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   const frame = document.getElementById('canvasFrame');
@@ -2433,6 +2435,7 @@ function setSkinFromSelect(sel) {
 // ─── LYRIC STYLE ─────────────────────────
 function setLyrStyle(style, card) {
   currentLyrStyle = style;
+  computeLockedFontSize();
   const app = document.getElementById('app');
   app.className = 'layout skin-' + currentSkin + ' lyr-style-' + style;
   document.querySelectorAll('.style-card').forEach(c => c.classList.remove('sel'));
@@ -2620,6 +2623,7 @@ function buildTimestamps() {
   if (!raw) { alert('Paste your lyrics first!'); return; }
   lines     = parseLyrics(raw);
   lineItems = lines.filter(l => l.type === 'line');
+  computeLockedFontSize();
   const title  = document.getElementById('songTitle').value  || 'UNTITLED';
   const artist = document.getElementById('songArtist').value || 'ARTIST';
   refreshMeta(title, artist);
@@ -2627,7 +2631,37 @@ function buildTimestamps() {
   switchCtrlTab('timestamps');
   setStatus('Play audio · Space to stamp each line', false);
 }
- 
+
+function computeLockedFontSize() {
+  if (!lineItems.length) { lockedLyricFs = null; return; }
+
+  const tmp  = document.createElement('canvas');
+  const tctx = tmp.getContext('2d');
+  const { w, h } = DIMS[currentOrient];
+  const sc       = Math.min(w, h) / 900;
+  const isPortrait = h > w;
+  const maxW     = w * 0.88;
+  const style    = LYRIC_STYLES[currentLyrStyle] || LYRIC_STYLES.cinematic;
+  const minFs    = sc * 18;
+  const step     = sc * 4;
+
+  let fs = sc * 58 * (isPortrait ? 1.25 : 1.0);
+
+  // Find the widest line text
+  const texts = lineItems.map(l => l.text.toUpperCase());
+
+  // Binary search would be faster but step-down is fine for <100 lines
+  let done = false;
+  while (!done && fs > minFs) {
+    tctx.font = style.currFont(fs / sc);
+    const fits = texts.every(t => tctx.measureText(t).width <= maxW);
+    if (fits) done = true;
+    else fs = Math.max(minFs, fs - step);
+  }
+
+  lockedLyricFs = fs / sc;
+}
+   
 function refreshMeta(title, artist) {
   document.getElementById('lcdTitle').textContent  = title.toUpperCase();
   document.getElementById('lcdTrack').textContent  = artist.toUpperCase();
@@ -3196,23 +3230,41 @@ function drawLyricOverlay(ctx, W, H, prev, curr, next) {
     ctx.restore();
   }
 
-  // — CURRENT LINE — hero text
   ctx.save();
-  ctx.font        = style.currFont(sc * (isPortrait ? 1.25 : 1));
   ctx.fillStyle   = style.currColor;
   ctx.shadowColor = style.currShadow;
-  ctx.shadowBlur  = style.currBlur * sc * 2;
 
-  // Measure and auto-shrink if too wide
   const maxW = W * 0.88;
-  let   fs   = isPortrait ? sc * 72 : sc * 58;
-  ctx.font   = style.currFont(sc * (isPortrait ? 1.25 : 1));
-  while (ctx.measureText(curr.toUpperCase()).width > maxW && fs > sc * 24) {
-    fs -= sc * 2;
+  const text = curr.toUpperCase();
+
+  // Use pre-computed locked size if available, else fall back to fit-to-current
+  let fs;
+  if (lockedLyricFs !== null) {
+    fs = lockedLyricFs * sc;
+  } else {
+    fs = sc * 58 * (isPortrait ? 1.25 : 1.0);
     ctx.font = style.currFont(fs / sc);
+    const minFs = sc * 18;
+    const step  = sc * 4;
+    while (ctx.measureText(text).width > maxW && fs > minFs) {
+      fs = Math.max(minFs, fs - step);
+      ctx.font = style.currFont(fs / sc);
+    }
   }
 
-  ctx.fillText(curr.toUpperCase(), W / 2, anchor);
+  ctx.font = style.currFont(fs / sc);
+
+  // Ellipsis safety net regardless
+  let displayText = text;
+  if (ctx.measureText(displayText).width > maxW) {
+    while (ctx.measureText(displayText + '…').width > maxW && displayText.length > 1) {
+      displayText = displayText.slice(0, -1);
+    }
+    displayText = displayText.trim() + '…';
+  }
+
+  ctx.shadowBlur = style.currBlur * sc * 2;
+  ctx.fillText(displayText, W / 2, anchor);
   ctx.shadowBlur = 0;
   ctx.restore();
 
