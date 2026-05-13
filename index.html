@@ -3708,14 +3708,14 @@ function drawFrame(ctx, W, H, t) {
     const sh = H * skinScale;
 
     const marginX =
-      isPortrait ? W * 0.008 :
-      isSquare   ? W * 0.007 :
-                   W * 0.006;
+      isPortrait ? W * 0.0025 :
+      isSquare   ? W * 0.002 :
+                   W * 0.0007;
 
     const marginY =
-      isPortrait ? H * 0.008 :
-      isSquare   ? H * 0.007 :
-                   H * 0.006;
+      isPortrait ? H * 0.0025 :
+      isSquare   ? H * 0.002 :
+                   H * 0.0007;
 
     let x;
     switch (skinPosH) {
