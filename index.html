@@ -3699,9 +3699,9 @@ function drawFrame(ctx, W, H, t) {
     const isSquare = Math.abs(W - H) < 10;
 
     const skinScale =
-      isPortrait ? 0.34 :
-      isSquare   ? 0.30 :
-                   0.26;
+    isPortrait ? 0.72 :
+    isSquare   ? 0.64 :
+                 0.58;
 
     // REAL rendered dimensions
     const sw = W * skinScale;
