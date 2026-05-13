@@ -2943,64 +2943,64 @@ function initPreviewCanvas() {
 // ─── LYRIC STYLE CONFIGS FOR CANVAS ──────
 const LYRIC_STYLES = {
   cinematic: {
-    currFont:  (sc) => `900 ${Math.round(56*sc)}px Anton, sans-serif`,
-    dimFont:   (sc) => `${Math.round(22*sc)}px 'Bebas Neue', sans-serif`,
+    currFont:  (px) => `900 ${Math.round(px)}px Anton, sans-serif`,
+    dimFont:   (px) => `${Math.round(px)}px 'Bebas Neue', sans-serif`,
     currColor: '#ffffff',
     dimColor:  'rgba(255,255,255,0.15)',
     currShadow:'rgba(232,160,32,0.9)',
     currBlur:  50,
   },
   centered: {
-    currFont:  (sc) => `200 ${Math.round(48*sc)}px Raleway, sans-serif`,
-    dimFont:   (sc) => `100 ${Math.round(20*sc)}px Raleway, sans-serif`,
+    currFont:  (px) => `200 ${Math.round(px)}px Raleway, sans-serif`,
+    dimFont:   (px) => `100 ${Math.round(px)}px Raleway, sans-serif`,
     currColor: '#ffffff',
     dimColor:  'rgba(255,255,255,0.12)',
     currShadow:'rgba(255,255,255,0.5)',
     currBlur:  40,
   },
   karaoke: {
-    currFont:  (sc) => `900 ${Math.round(44*sc)}px Orbitron, monospace`,
-    dimFont:   (sc) => `${Math.round(18*sc)}px Orbitron, monospace`,
+    currFont:  (px) => `900 ${Math.round(px)}px Orbitron, monospace`,
+    dimFont:   (px) => `${Math.round(px)}px Orbitron, monospace`,
     currColor: '#e8a020',
     dimColor:  'rgba(232,160,32,0.2)',
     currShadow:'rgba(232,160,32,1)',
     currBlur:  40,
   },
   playfair: {
-    currFont:  (sc) => `bold italic ${Math.round(52*sc)}px 'Playfair Display', serif`,
-    dimFont:   (sc) => `italic ${Math.round(22*sc)}px 'Playfair Display', serif`,
+    currFont:  (px) => `bold italic ${Math.round(px)}px 'Playfair Display', serif`,
+    dimFont:   (px) => `italic ${Math.round(px)}px 'Playfair Display', serif`,
     currColor: '#f5e6c8',
     dimColor:  'rgba(240,200,120,0.18)',
     currShadow:'rgba(240,192,64,0.7)',
     currBlur:  50,
   },
   teko: {
-    currFont:  (sc) => `600 ${Math.round(58*sc)}px 'Teko', sans-serif`,
-    dimFont:   (sc) => `300 ${Math.round(24*sc)}px 'Teko', sans-serif`,
+    currFont:  (px) => `600 ${Math.round(px)}px 'Teko', sans-serif`,
+    dimFont:   (px) => `300 ${Math.round(px)}px 'Teko', sans-serif`,
     currColor: '#ffffff',
     dimColor:  'rgba(255,255,255,0.15)',
     currShadow:'rgba(255,255,255,0.5)',
     currBlur:  40,
   },
   righteous: {
-    currFont:  (sc) => `${Math.round(44*sc)}px 'Righteous', sans-serif`,
-    dimFont:   (sc) => `${Math.round(20*sc)}px 'Righteous', sans-serif`,
+    currFont:  (px) => `${Math.round(px)}px 'Righteous', sans-serif`,
+    dimFont:   (px) => `${Math.round(px)}px 'Righteous', sans-serif`,
     currColor: '#f0c040',
     dimColor:  'rgba(240,192,64,0.18)',
     currShadow:'rgba(240,192,64,0.8)',
     currBlur:  50,
   },
   abril: {
-    currFont:  (sc) => `${Math.round(46*sc)}px 'Abril Fatface', serif`,
-    dimFont:   (sc) => `${Math.round(20*sc)}px 'Abril Fatface', serif`,
+    currFont:  (px) => `${Math.round(px)}px 'Abril Fatface', serif`,
+    dimFont:   (px) => `${Math.round(px)}px 'Abril Fatface', serif`,
     currColor: '#ffffff',
     dimColor:  'rgba(255,255,255,0.14)',
     currShadow:'rgba(192,57,43,0.9)',
     currBlur:  55,
   },
   blackhan: {
-    currFont:  (sc) => `${Math.round(42*sc)}px 'Black Han Sans', sans-serif`,
-    dimFont:   (sc) => `${Math.round(18*sc)}px 'Black Han Sans', sans-serif`,
+    currFont:  (px) => `${Math.round(px)}px 'Black Han Sans', sans-serif`,
+    dimFont:   (px) => `${Math.round(px)}px 'Black Han Sans', sans-serif`,
     currColor: '#ffffff',
     dimColor:  'rgba(100,200,255,0.18)',
     currShadow:'rgba(100,200,255,0.7)',
@@ -3159,14 +3159,13 @@ function drawTrackInfoOverlay(ctx, W, H) {
   ctx.textAlign = 'left';
 }
 
-// FIND AND REPLACE the entire drawLyricOverlay function:
 function drawLyricOverlay(ctx, W, H, prev, curr, next) {
   if (!curr && !prev && !next) return;
 
-  const style    = LYRIC_STYLES[currentLyrStyle] || LYRIC_STYLES.cinematic;
-  const sc       = Math.min(W, H) / 900;
+  const style      = LYRIC_STYLES[currentLyrStyle] || LYRIC_STYLES.cinematic;
   const isPortrait = H > W;
-  const maxW     = W * 0.88;
+  const sc         = W / 1920;
+  const maxW       = W * 0.82;
 
   // Bottom gradient
   const gradH = H * 0.55;
@@ -3177,70 +3176,65 @@ function drawLyricOverlay(ctx, W, H, prev, curr, next) {
   ctx.fillStyle = g;
   ctx.fillRect(0, H - gradH, W, gradH);
 
-  // ── fit-to-width for current line ──
-  const maxFs = sc * 52;
-  const minFs = sc * 14;
+  const maxFs = isPortrait ? sc * 72 : sc * 52;
+  const minFs = sc * 18;
   const text  = curr.toUpperCase();
 
-  // Binary search — fast, accurate, no step-size guessing
+  // Binary search: largest size that fits maxW
   let lo = minFs, hi = maxFs, fs = maxFs;
-  ctx.font = style.currFont(hi / sc);
+  ctx.font = style.currFont(hi);
   if (ctx.measureText(text).width > maxW) {
-    while (hi - lo > sc * 0.5) {
+    while (hi - lo > 0.5) {
       const mid = (lo + hi) / 2;
-      ctx.font = style.currFont(mid / sc);
+      ctx.font = style.currFont(mid);
       if (ctx.measureText(text).width <= maxW) lo = mid;
       else hi = mid;
     }
     fs = lo;
   }
-  ctx.font = style.currFont(fs / sc);
+  ctx.font = style.currFont(fs);
 
-  // ellipsis if still overflowing at minFs
+  // Only ellipsize if the line genuinely can't fit at minFs
   let displayText = text;
-  if (ctx.measureText(displayText).width > maxW) {
+  if (fs <= minFs && ctx.measureText(displayText).width > maxW) {
+    ctx.font = style.currFont(minFs);
     while (ctx.measureText(displayText + '…').width > maxW && displayText.length > 1)
       displayText = displayText.slice(0, -1);
     displayText = displayText.trim() + '…';
+    fs = minFs;
   }
 
-  // dim font size — fixed fraction of current, never its own independent size
-  const dimFs = Math.max(sc * 13, fs * 0.36);
-
-  // anchor — current line sits at 80% height
+  const dimFs  = Math.max(sc * 14, fs * 0.42);
   const anchor = H * 0.80;
 
   ctx.textAlign = 'center';
 
-  // — PREVIOUS —
   if (prev) {
     ctx.save();
     ctx.globalAlpha = 0.25;
-    ctx.font        = style.dimFont(dimFs / sc);
+    ctx.font        = style.dimFont(dimFs);
     ctx.fillStyle   = style.dimColor.replace(/[\d.]+\)$/, '1)');
     const prevText  = clipText(prev.toUpperCase(), W * 0.80, ctx);
-    ctx.fillText(prevText, W / 2, anchor - fs * 1.18);
+    ctx.fillText(prevText, W / 2, anchor - fs * 1.22);
     ctx.restore();
   }
 
-  // — CURRENT —
   ctx.save();
-  ctx.font        = style.currFont(fs / sc);
+  ctx.font        = style.currFont(fs);
   ctx.fillStyle   = style.currColor;
   ctx.shadowColor = style.currShadow;
-  ctx.shadowBlur  = style.currBlur * sc * 2;
+  ctx.shadowBlur  = style.currBlur * sc * 1.5;
   ctx.fillText(displayText, W / 2, anchor);
   ctx.shadowBlur  = 0;
   ctx.restore();
 
-  // — NEXT —
   if (next) {
     ctx.save();
     ctx.globalAlpha = 0.22;
-    ctx.font        = style.dimFont(dimFs / sc);
+    ctx.font        = style.dimFont(dimFs);
     ctx.fillStyle   = style.dimColor.replace(/[\d.]+\)$/, '1)');
     const nextText  = clipText(next.toUpperCase(), W * 0.80, ctx);
-    ctx.fillText(nextText, W / 2, anchor + fs * 1.12);
+    ctx.fillText(nextText, W / 2, anchor + fs * 1.18);
     ctx.restore();
   }
 
