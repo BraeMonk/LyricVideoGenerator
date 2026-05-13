@@ -3876,7 +3876,7 @@ function drawLyricOverlay(ctx, W, H, prev, curr, next) {
     fs = minFs;
   }
 
-  const dimFs  = Math.max(sc * 14, fs * 0.42);
+  const dimFs  = Math.max(sc * 14 * lyricSizeScale, fs * 0.42);
   const anchor = H * 0.80;
 
   ctx.textAlign = 'center';
@@ -3892,9 +3892,9 @@ function drawLyricOverlay(ctx, W, H, prev, curr, next) {
   }
 
   ctx.save();
-  ctx.font        = style.currFont(fs);
-  ctx.fillStyle   = style.currColor;
-  ctx.shadowColor = style.currShadow;
+  ctx.font        = style.currFont(fs * lyricSizeScale);
+  ctx.fillStyle   = lyricColor;
+  ctx.shadowColor = lyricColor;
   ctx.shadowBlur  = style.currBlur * sc * 1.5;
   ctx.fillText(displayText, W / 2, anchor);
   ctx.shadowBlur  = 0;
