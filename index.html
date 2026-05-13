@@ -1582,6 +1582,11 @@ header {
   transition: width .3s ease; border-radius: 4px;
 }
 
+.mp3-wrap, .cd-wrap, .vinyl-wrap-outer, .ext-wrap,
+.lyric-overlay, .track-overlay, #waveCanvas, .empty-state {
+  display: none !important;
+}
+   
 </style>
 </head>
 <body>
@@ -1643,7 +1648,7 @@ header {
   <!-- ── PREVIEW ZONE ── -->
   <div class="preview-zone" id="previewZone">
     <div class="canvas-frame landscape" id="canvasFrame">
-      <div class="bg-layer" id="bgLayer"></div>
+      <canvas id="liveCanvas" style="position:absolute;inset:0;width:100%;height:100%;display:block;"></canvas>
  
       <!-- Waveform canvas -->
       <canvas id="waveCanvas"></canvas>
@@ -2362,22 +2367,23 @@ function fitFrame() {
   const frame = document.getElementById('canvasFrame');
   const ratio = currentOrient === 'landscape' ? 16/9
               : currentOrient === 'portrait'  ? 9/16 : 1;
-  const avW = zone.clientWidth  - 8;
-  const avH = zone.clientHeight - 8;
+
+  const avW = zone.offsetWidth  - 8;
+  const avH = zone.offsetHeight - 8;
+  if (avW <= 0 || avH <= 0) { requestAnimationFrame(fitFrame); return; }
+
   let fw, fh;
-  if (avW / ratio <= avH) { fw = avW; fh = avW / ratio; }
-  else                    { fh = avH; fw = avH * ratio; }
+  if (avW / ratio <= avH) { fw = avW; fh = Math.round(avW / ratio); }
+  else                    { fh = avH; fw = Math.round(avH * ratio); }
+
   frame.style.width  = fw + 'px';
   frame.style.height = fh + 'px';
- 
-  const wc = document.getElementById('waveCanvas');
-  wc.width  = Math.round(fw);
-  wc.height = 60;
 
-  document.getElementById('canvasFrame').style.display = 'none';
-  requestAnimationFrame(() => {
-    document.getElementById('canvasFrame').style.display = 'block';
-  });
+  // Size the live canvas to match export dimensions (not screen pixels)
+  const { w, h } = DIMS[currentOrient];
+  const lc = document.getElementById('liveCanvas');
+  lc.width  = w;
+  lc.height = h;
 }
  
 window.addEventListener('resize', fitFrame);
@@ -3024,6 +3030,19 @@ function drawFrame(ctx, W, H, t) {
     ctx.fillRect(0, 0, W, H);
   }
  
+   // Empty state — no audio loaded
+  if (!audio.src || audio.src === window.location.href) {
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(255,255,255,0.08)';
+    ctx.font = `${Math.round(Math.min(W,H)*0.06)}px 'Bebas Neue', sans-serif`;
+    ctx.fillText('UPLOAD AUDIO TO BEGIN', W/2, H/2 + Math.min(W,H)*0.03);
+    ctx.font = `${Math.round(Math.min(W,H)*0.09)}px 'Bebas Neue', sans-serif`;
+    ctx.fillStyle = 'rgba(255,255,255,0.04)';
+    ctx.fillText('🎬', W/2, H/2 - Math.min(W,H)*0.04);
+    ctx.textAlign = 'left';
+    return;
+  }
+
   // Vignette
   if (fxVignette) {
     const vig = ctx.createRadialGradient(W/2,H/2,H*.25,W/2,H/2,H*.85);
@@ -4507,9 +4526,26 @@ async function runSmartProduce() {
   }
 }
 
+// ─── LIVE CANVAS LOOP ────────────────────
+let liveCtx = null;
+let liveRaf = null;
+
+function startLiveLoop() {
+  const lc = document.getElementById('liveCanvas');
+  liveCtx = lc.getContext('2d');
+  const tick = () => {
+    const { w, h } = DIMS[currentOrient];
+    if (lc.width !== w || lc.height !== h) { lc.width = w; lc.height = h; }
+    drawFrame(liveCtx, w, h, audio.currentTime);
+    liveRaf = requestAnimationFrame(tick);
+  };
+  liveRaf = requestAnimationFrame(tick);
+}
+
 // ─── INIT ────────────────────────────────
 fitFrame();
 spawnParticles();
+startLiveLoop();
 
 window.addEventListener('load', fitFrame);
 window.addEventListener('resize', fitFrame);
